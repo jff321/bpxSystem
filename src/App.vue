@@ -56,7 +56,6 @@
           name: 'login'
         });
       }
-      console.log('路径', this.$route.meta);
     },
     methods: {
       listenLoginOut (res) {

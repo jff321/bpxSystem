@@ -15,14 +15,14 @@ export default new Router({
       },
       component: () => import('./views/Index.vue')
     },
-    // {
-    //   path: '/index',
-    //   name: 'index',
-    //   meta: {
-    //     requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
-    //   },
-    //   component: () => import('./views/Index.vue')
-    // },
+    {
+      path: '/',
+      name: 'index',
+      meta: {
+        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+      },
+      component: () => import('./views/Index.vue')
+    },
     {
       path: '/login',
       name: 'login',

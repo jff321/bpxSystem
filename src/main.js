@@ -22,6 +22,9 @@ import "font-awesome/css/font-awesome.css";
 // 引入公共样式
 import './common.css'
 
+// 引入公共方法
+import commonFun from './commonFun'
+
 //  引入vue-amap
 import VueAMap from 'vue-amap';
 
@@ -37,20 +40,21 @@ Vue.use(ElementUI);
 Vue.use(VueAMap);
 Vue.use(Vuex);
 Vue.use(Router);
+Vue.use(commonFun);
 
 // 导航守卫（navigation-guards）
-router.beforeEach((to, from, next) => {
-  const nextRoute = [ 'index', 'group', 'rules', 'admin', 'agents', 'addMate', 'sms', 'smslog', 'boxs', 'lists', 'counts', 'agents', 'users'];
-  //跳转至上述3个页面
-  if (nextRoute.indexOf(to.name) >= 0) {
-    //未登录
-    if (!localStorage.getItem('token')) {
-      router.push({name: 'login'})
-    }
-  }
-  // 确保要调用 next 方法，否则钩子就不会被 resolved。
-  next();
-});
+// router.beforeEach((to, from, next) => {
+//   const nextRoute = [ 'index', 'group', 'rules', 'admin', 'agents', 'addMate', 'sms', 'smslog', 'boxs', 'lists', 'counts', 'agents', 'users'];
+//   //跳转至上述3个页面
+//   if (nextRoute.indexOf(to.name) >= 0) {
+//     //未登录
+//     if (!localStorage.getItem('token')) {
+//       router.push({name: 'login'})
+//     }
+//   }
+//   // 确保要调用 next 方法，否则钩子就不会被 resolved。
+//   next();
+// });
 
 Vue.config.productionTip = false;
 

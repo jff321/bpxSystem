@@ -6,8 +6,8 @@
     :unique-opened="uniqueOpened"
     router
     >
-    <div v-for="(nav) in menus">
-      <el-submenu v-if="nav.child" :key="nav.id" :index="(nav.id).toString()">
+    <div v-for="(nav) in menus" :key="nav.id" >
+      <el-submenu v-if="nav.child" :index="(nav.id).toString()">
         <template slot="title">
           <i class="el-icon-location"></i>
           <span>{{nav.title}}</span>
@@ -36,7 +36,7 @@
     },
     mounted(){
       this.leftHeight = (document.documentElement.clientHeight - 65) + 'px';
-      console.log('MENU:', this.menus)
+      // console.log('MENU:', this.menus)
     },
     methods: {
       handleOpen(key, keyPath) {

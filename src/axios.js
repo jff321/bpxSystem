@@ -40,7 +40,7 @@ axios.interceptors.response.use(
           router.currentRoute.path !== 'login' &&
           router.replace({
             path: '/login',
-          })
+          });
       }
     }
     // console.log(JSON.stringify(error));//console : Error: Request failed with status code 402
