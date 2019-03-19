@@ -1,0 +1,63 @@
+import Vue from 'vue'
+import App from './App.vue'
+import Vuex from 'vuex'
+import store from './store'
+import router from './router'
+import Router from 'vue-router'
+
+// axios是promise实现的，提到promise，首先应该想到IE不支持，所以应该先加个垫片，给IE做下兼容性处理
+import 'babel-polyfill'
+
+// 引入Axios
+import Axios from 'axios'
+
+// 引入bootstrap
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/js/bootstrap'
+import 'popper.js/dist/esm/popper'
+
+// 引入font-awesome
+import "font-awesome/css/font-awesome.css";
+
+// 引入公共样式
+import './common.css'
+
+//  引入vue-amap
+import VueAMap from 'vue-amap';
+
+// 引入elementUI
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+
+import  './axios'
+
+Vue.prototype.$axios = Axios;
+
+Vue.use(ElementUI);
+Vue.use(VueAMap);
+Vue.use(Vuex);
+Vue.use(Router);
+
+// 导航守卫（navigation-guards）
+router.beforeEach((to, from, next) => {
+  const nextRoute = [ 'index', 'group', 'rules', 'admin', 'agents', 'addMate', 'sms', 'smslog', 'boxs', 'lists', 'counts', 'agents', 'users'];
+  //跳转至上述3个页面
+  if (nextRoute.indexOf(to.name) >= 0) {
+    //未登录
+    if (!localStorage.getItem('token')) {
+      router.push({name: 'login'})
+    }
+  }
+  // 确保要调用 next 方法，否则钩子就不会被 resolved。
+  next();
+});
+
+Vue.config.productionTip = false;
+
+new Vue({
+  store,
+  router,
+  render: h => h(App)
+}).$mount('#app');
+
+
