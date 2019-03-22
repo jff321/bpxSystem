@@ -12,6 +12,7 @@
       <el-table
         :data="list"
         stripe
+        v-loading="loading"
         style="width: 100%">
         <el-table-column
           prop="name"
@@ -155,6 +156,7 @@
       return{
         input: '',
         list: [],
+        loading: true,
         currentPage: 1,
         pageSize: 10,
         total: 0,
@@ -212,6 +214,7 @@
       // 得到列表
       async getBoxsList(){
         const result = await boxs(this.input, this.currentPage, this.pageSize);
+        this.loading = false;
         // console.log('result:', result);
         if(result.data.code === 200){
           this.list = result.data.data.list;

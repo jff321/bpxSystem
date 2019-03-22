@@ -5,7 +5,7 @@
       <el-button type="primary" class="mx-3" @click="query">查询</el-button>
       <el-button type="success" @click="openAddDialog">新增</el-button>
     </div>
-    <!--代理列表-->
+    <!--用户列表-->
     <el-table
       class="mt-3"
       v-loading="loading"
@@ -154,7 +154,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <!--代理分页-->
+    <!--用户分页-->
     <div class="float-right mt-3">
       <el-pagination
         @size-change="handleSizeChange"
@@ -167,7 +167,7 @@
       </el-pagination>
     </div>
     <!--新增对话框-->
-    <el-dialog title="新增用户" status-icon :visible.sync="addVisible" width="700px" center>
+    <el-dialog title="新增用户" status-icon :visible.sync="addVisible" width="700px" center :before-close="handleAddClose">
       <el-form :model="addForm" :rules="addRules" ref="addForm">
         <el-form-item label="登录账号" :label-width="formLabelWidth" prop="mobile" required>
           <el-input v-model="addForm.mobile" autocomplete="off" class="w-75"></el-input>
@@ -181,24 +181,24 @@
         <el-form-item label="公司名称" :label-width="formLabelWidth" prop="company">
           <el-input v-model="addForm.company" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="公司签名" :label-width="formLabelWidth" prop="sign">
+        <el-form-item label="短信签名" :label-width="formLabelWidth" prop="sign">
           <el-input v-model="addForm.sign" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="联系人" :label-width="formLabelWidth" prop="uname">
+        <el-form-item label="负责人" :label-width="formLabelWidth" prop="uname">
           <el-input v-model="addForm.uname" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <!--<el-form-item label="选择省市" :label-width="formLabelWidth">-->
-          <!--<el-cascader-->
-            <!--class="w-75"-->
-            <!--size="large"-->
-            <!--:options="addForm.options"-->
-            <!--v-model="addForm.selectedOptions"-->
-            <!--@change="addAddressChange">-->
-          <!--</el-cascader>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item label="详细地址" :label-width="formLabelWidth" prop="address">-->
-          <!--<el-input v-model="addForm.address" autocomplete="off" class="w-75"></el-input>-->
-        <!--</el-form-item>-->
+        <el-form-item label="选择省市" :label-width="formLabelWidth">
+          <el-cascader
+            class="w-75"
+            size="large"
+            :options="addForm.options"
+            v-model="addForm.selectedOptions"
+            @change="addAddressChange">
+          </el-cascader>
+        </el-form-item>
+        <el-form-item label="详细地址" :label-width="formLabelWidth" prop="address">
+          <el-input v-model="addForm.address" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
         <el-form-item label="短信金额" :label-width="formLabelWidth" prop="sms">
           <el-input v-model.number="addForm.sms" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
@@ -214,6 +214,13 @@
         <el-form-item label="是否登录" :label-width="formLabelWidth">
           <el-switch
             v-model="addForm.status"
+            :active-value= "1"
+            :inactive-value= "0"
+          >
+          </el-switch>
+          <span class="mx-3">是否外呼</span>
+          <el-switch
+            v-model="addForm.is_outcall"
             :active-value= "1"
             :inactive-value= "0"
           >
@@ -247,18 +254,33 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="addVisible = false">取 消</el-button>
+        <el-button @click="closeAddDialog('addForm')">取 消</el-button>
         <el-button type="primary" @click="submitAddAgent('addForm')">确 定</el-button>
       </div>
     </el-dialog>
     <!--编辑对话框-->
-    <el-dialog title="编辑代理商" :visible.sync="dialogFormVisible" width="700px" center>
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisible" width="700px" center :before-close="handleEditClose">
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
         <el-form-item label="公司名称" :label-width="formLabelWidth" prop="company">
           <el-input v-model="ruleForm.company" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="负责人" :label-width="formLabelWidth" prop="contact">
-          <el-input v-model="ruleForm.contact" autocomplete="off" class="w-75"></el-input>
+        <el-form-item label="短信签名" :label-width="formLabelWidth" prop="sign">
+          <el-input v-model="ruleForm.sign" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="负责人" :label-width="formLabelWidth" prop="uname">
+          <el-input v-model="ruleForm.uname" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="选择省市" :label-width="formLabelWidth">
+          <el-cascader
+            class="w-75"
+            size="large"
+            :options="ruleForm.options"
+            v-model="ruleForm.selectedOptions"
+            @change="handleChange">
+          </el-cascader>
+        </el-form-item>
+        <el-form-item label="详细地址" :label-width="formLabelWidth" prop="address">
+          <el-input v-model="ruleForm.address" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="是否登录" :label-width="formLabelWidth">
           <el-switch
@@ -267,8 +289,7 @@
             :inactive-value= "0"
           >
           </el-switch>
-        </el-form-item>
-        <el-form-item label="是否外呼" :label-width="formLabelWidth">
+          <span class="mx-3">是否外呼</span>
           <el-switch
             v-model="ruleForm.is_outcall"
             :active-value= "1"
@@ -304,12 +325,12 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="editClose('ruleForm')">取 消</el-button>
         <el-button type="primary" @click="submit('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
     <!--设置对话框-->
-    <el-dialog title="设置" :visible.sync="setDialogVisible" width="700px" center>
+    <el-dialog title="设置" :visible.sync="setDialogVisible" width="700px" center :before-close="setClose">
       <el-form :model="setForm" :rules="setRules" ref="setForm">
         <el-form-item label="短信扣费金额" :label-width="formLabelWidth" prop="sms">
           <el-input v-model.number="setForm.sms" autocomplete="off" class="w-75"></el-input>
@@ -325,12 +346,12 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="setDialogVisible = false">取 消</el-button>
+        <el-button @click="closeSetDialog('setForm')">取 消</el-button>
         <el-button type="primary" @click="submitSet('setForm')">确 定</el-button>
       </div>
     </el-dialog>
     <!--修改密码对话框-->
-    <el-dialog title="修改密码" :visible.sync="PwdVisible" width="700px" center>
+    <el-dialog title="修改密码" :visible.sync="PwdVisible" width="700px" center :before-close="handlePwdClose">
       <el-form :model="pwdForm" :rules="pwdRules" ref="pwdForm">
         <el-form-item label="登录账号 :" :label-width="formLabelWidth">
           <p>{{pwdForm.pwdAgent ? pwdForm.pwdAgent : '无'}}</p>
@@ -346,12 +367,12 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="PwdVisible = false">取 消</el-button>
+        <el-button @click="pwdClose('pwdForm')">取 消</el-button>
         <el-button type="primary" @click="submitPwd('pwdForm')">确 定</el-button>
       </div>
     </el-dialog>
     <!--绑定盒子对话框-->
-    <el-dialog title="绑定盒子" :visible.sync="bindVisible" width="700px" center>
+    <el-dialog title="绑定盒子" :visible.sync="bindVisible" width="700px" center :before-close="handleBindClose">
       <el-form :model="bindForm" :rules="bindRules" ref="bindForm">
         <el-form-item label="盒子名称" :label-width="formLabelWidth" prop="name" required>
           <el-input v-model="bindForm.name" autocomplete="off" class="w-75"></el-input>
@@ -372,7 +393,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="bindVisible = false">取 消</el-button>
+        <el-button @click="bindClose('bindForm')">取 消</el-button>
         <el-button type="primary" @click="submitBindBox('bindForm')">确 定</el-button>
       </div>
     </el-dialog>
@@ -425,12 +446,16 @@
         dialogFormVisible: false,
         ruleForm: {
           company: '',
-          cardUrl: '',
-          licenceUrl: '',
           myHeaders:{
             authToken: localStorage.getItem('token')
           },
+          options: provinceAndCityData,
+          selectedOptions: [],
+          address: '',
+          cardUrl: '',
+          licenceUrl: '',
           uname: '',
+          sign: '',
           status: '',
           is_outcall: ''
         },
@@ -451,7 +476,11 @@
           ],
           uname: [
             { required: true, message: '请输入联系人', trigger: 'blur' }
-          ]
+          ],
+          sign: [
+            { required: true, message: '请输入短信签名', trigger: 'blur' },
+            { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
+          ],
         },
         setDialogVisible: false,
         setForm:{
@@ -493,7 +522,7 @@
           epwd: [
             { required: true, message: '请输入确认密码', trigger: 'blur' },
             { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
-          ],
+          ]
         },
         addVisible: false,
         addForm: {
@@ -504,6 +533,9 @@
           myHeaders:{
             authToken: localStorage.getItem('token')
           },
+          options: provinceAndCityData,
+          selectedOptions: [],
+          address: '',
           cardUrl: '',
           licenceUrl: '',
           uname: '',
@@ -513,6 +545,7 @@
           mate: '',
           tel: '',
           status: '',
+          is_outcall: ''
         },
         addRules: {
           mobile: [
@@ -527,10 +560,10 @@
             { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
           ],
           uname: [
-            { required: true, message: '请输入联系人', trigger: 'blur' }
+            { required: true, message: '请输入负责人', trigger: 'blur' }
           ],
           sign: [
-            { required: true, message: '请输入公司签名', trigger: 'blur' },
+            { required: true, message: '请输入短信签名', trigger: 'blur' },
             { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
           ],
           sms: [
@@ -585,11 +618,21 @@
         if(result.data.code === 200){
           this.list = result.data.data.list;
           this.tempList = result.data.data.list;
-          this.total = result.data.data.dataCount;
+          this.total = result.data.data.count;
         } else {
           this.$status(result.data.msg);
         }
       },
+      // 选择地址并赋值
+      addAddressChange(value){
+        // 新增对话框
+        this.addForm.address = CodeToText[value[0]]+""+CodeToText[value[1]];
+      },
+      handleChange (value) {
+        // 编辑对话框
+        this.ruleForm.address = CodeToText[value[0]]+""+CodeToText[value[1]];
+      },
+      // 新增对话框
       openAddDialog(){
         this.addVisible = true;
         this.addForm.mobile = '';
@@ -600,14 +643,17 @@
         this.addForm.licenceUrl = '';
         this.addForm.uname = '';
         this.addForm.sign = '';
+        this.addForm.selectedOptions = [];
+        this.addForm.address = '';
         this.addForm.sms = '';
         this.addForm.fms = '';
         this.addForm.mate = '';
         this.addForm.tel = '';
         this.addForm.status = '';
       },
+      // 新增确认提交
       submitAddAgent(formName){
-        console.log('新增');
+        // console.log('新增');
         this.$refs[formName].validate((valid) => {
           if (valid) {
             let params = {
@@ -619,6 +665,9 @@
               sign: this.addForm.sign,
               id_url: this.addForm.cardUrl,
               biz_url: this.addForm.licenceUrl,
+              province_id: this.addForm.selectedOptions[0],
+              city_id: this.addForm.selectedOptions[1],
+              address: this.addForm.address,
               sms: this.addForm.sms,
               fms: this.addForm.fms,
               mate: this.addForm.mate,
@@ -656,7 +705,7 @@
         this.currentPage = val;
         this.getUserList()
       },
-      // 编辑
+      // 编辑对话框
       async handleEditShow(index, userId) {
         this.userEditIndex = index;
         this.userEditId = userId;
@@ -665,16 +714,14 @@
           // console.log('result:', result);
           this.dialogFormVisible = true;
           this.ruleForm.company = result.data.data.company;
-          this.ruleForm.imageUrl = result.data.data.logo_url;
-          this.ruleForm.contact = result.data.data.contact;
-          // ？？？此处字段名没有
-          // this.ruleForm.sms = result.data.data.sms;
-          // this.ruleForm.fms = result.data.data.fms;
-          // this.ruleForm.mate = result.data.data.mate;
-          // this.ruleForm.tel = result.data.data.tel;
+          this.ruleForm.sign = result.data.data.sign;
+          this.ruleForm.cardUrl = result.data.data.id_url;
+          this.ruleForm.licenceUrl = result.data.data.biz_url;
+          this.ruleForm.uname = result.data.data.uname;
           this.ruleForm.selectedOptions = [result.data.data.province_id, result.data.data.city_id];
           this.ruleForm.address = result.data.data.address;
           this.ruleForm.status = result.data.data.status;
+          this.ruleForm.is_outcall = result.data.data.is_outcall;
         } else {
           this.$status(result.data.msg);
         }
@@ -686,15 +733,15 @@
             let params = {
               company: this.ruleForm.company,
               logo_url: this.ruleForm.imageUrl,
-              contact: this.ruleForm.contact,
-              // sms: this.ruleForm.sms,
-              // fms: this.ruleForm.fms,
-              // mate: this.ruleForm.mate,
-              // tel: this.ruleForm.tel,
+              uname: this.ruleForm.uname,
+              id_url: this.ruleForm.cardUrl,
+              biz_url: this.ruleForm.licenceUrl,
               province_id: this.ruleForm.selectedOptions[0],
               city_id: this.ruleForm.selectedOptions[1],
               address: this.ruleForm.address,
-              status: this.ruleForm.status
+              status: this.ruleForm.status,
+              is_outcall: this.ruleForm.is_outcall,
+              sign: this.ruleForm.sign
             };
             commitAgent(this.userEditId, params).then((result)=>{
               // console.log('result:', result);
@@ -848,27 +895,6 @@
           this.$status(result.data.msg);
         }
       },
-      // 上传LOGO
-      handleAvatarSuccess(result) {
-        if (result.code === 200) {
-          this.ruleForm.imageUrl = result.data.small_url;
-        } else {
-          this.$status(result.msg);
-        }
-      },
-      // 限制图片大小和格式
-      beforeAvatarUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
-        const isLt2M = file.size / 1024 / 1024 < 2;
-
-        if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
-        }
-        if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
-        }
-        return isJPG && isLt2M;
-      },
       // 新增上传身份证
       addCardSuccess(result){
         console.log(1);
@@ -931,7 +957,7 @@
                   message: result.data.msg,
                   type: 'success'
                 });
-                this.addVisible = false;
+                this.bindVisible = false;
               } else {
                 this.$status(result.data.msg);
               }
@@ -940,8 +966,53 @@
             return false;
           }
         });
-      }
-    }
+      },
+      // 新增弹框取消按钮
+      closeAddDialog(formName){
+        this.addVisible = false;
+        this.$refs[formName].clearValidate();
+      },
+      // 新增弹框关闭按钮
+      handleAddClose(){
+        this.closeAddDialog('addForm');
+      },
+      // 设置弹框取消按钮
+      closeSetDialog(formName){
+        this.setDialogVisible = false;
+        this.$refs[formName].clearValidate();
+      },
+      // 设置弹框关闭按钮
+      setClose(){
+        this.closeSetDialog('setForm');
+      },
+      // 编辑弹框取消按钮
+      editClose(formName){
+        this.dialogFormVisible = false;
+        this.$refs[formName].clearValidate();
+      },
+      // 编辑弹框关闭按钮
+      handleEditClose(){
+        this.editClose('ruleForm');
+      },
+      // 绑定盒子弹框取消按钮
+      bindClose(formName){
+        this.bindVisible = false;
+        this.$refs[formName].clearValidate();
+      },
+      // 绑定盒子弹框关闭按钮
+      handleBindClose(){
+        this.bindClose('bindForm');
+      },
+      // 修改密码弹框取消按钮
+      pwdClose(formName){
+        this.PwdVisible = false;
+        this.$refs[formName].clearValidate();
+      },
+      // 修改密码弹框关闭按钮
+      handlePwdClose(){
+        this.pwdClose('pwdForm');
+      },
+    },
   }
 </script>
 

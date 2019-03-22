@@ -675,11 +675,6 @@
           this.ruleForm.company = result.data.data.company;
           this.ruleForm.imageUrl = result.data.data.logo_url;
           this.ruleForm.contact = result.data.data.contact;
-          // ？？？此处字段名没有
-          // this.ruleForm.sms = result.data.data.sms;
-          // this.ruleForm.fms = result.data.data.fms;
-          // this.ruleForm.mate = result.data.data.mate;
-          // this.ruleForm.tel = result.data.data.tel;
           this.ruleForm.selectedOptions = [result.data.data.province_id, result.data.data.city_id];
           this.ruleForm.address = result.data.data.address;
           this.ruleForm.status = result.data.data.status;
@@ -695,10 +690,6 @@
               company: this.ruleForm.company,
               logo_url: this.ruleForm.imageUrl,
               contact: this.ruleForm.contact,
-              // sms: this.ruleForm.sms,
-              // fms: this.ruleForm.fms,
-              // mate: this.ruleForm.mate,
-              // tel: this.ruleForm.tel,
               province_id: this.ruleForm.selectedOptions[0],
               city_id: this.ruleForm.selectedOptions[1],
               address: this.ruleForm.address,
@@ -940,9 +931,11 @@
       },
       // 选择地址并赋值
       handleChange (value) {
+        // 编辑对话框
         this.ruleForm.address = CodeToText[value[0]]+""+CodeToText[value[1]];
       },
       addAddressChange(value){
+        // 新增对话框
         this.addForm.address = CodeToText[value[0]]+""+CodeToText[value[1]];
       },
       // 绑定盒子对话框
@@ -973,7 +966,7 @@
                   message: result.data.msg,
                   type: 'success'
                 });
-                this.addVisible = false;
+                this.bindVisible = false;
               } else {
                 this.$status(result.data.msg);
               }
