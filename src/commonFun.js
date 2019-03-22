@@ -5,22 +5,13 @@ commonFun.install = function (Vue) {
   Vue.prototype.$status = function (msg) {
     this.$message.error(msg);
   };
-  // Vue.prototype.$confirmDialog = function () {
-  //   this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-  //     confirmButtonText: '确定',
-  //     cancelButtonText: '取消',
-  //     type: 'warning'
-  //   }).then(() => {
-  //     this.$message({
-  //       type: 'success',
-  //       message: '删除成功!'
-  //     });
-  //   }).catch(() => {
-  //     this.$message({
-  //       type: 'info',
-  //       message: '已取消删除'
-  //     });
-  //   });
+  // 上传文件
+  // Vue.prototype.$uploadFile = function (result) {
+  //   if (result.code === 200) {
+  //     this.addForm.licenceUrl = result.data.biz_url;
+  //   } else {
+  //     this.$status(result.msg);
+  //   }
   // }
 };
 

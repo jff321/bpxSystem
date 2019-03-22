@@ -53,3 +53,9 @@ export function deleteAgent(userId) {
   const result = axios.delete(`manage/agents/${userId}`);
   return result ? result : false
 }
+
+// 绑定盒子
+export function bindBox(data) {
+  const result = axios.post(`manage/agents/bindbox`, data);
+  return result ? result : false
+}

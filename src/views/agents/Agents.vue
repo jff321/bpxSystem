@@ -115,17 +115,22 @@
           <!--</el-switch>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column label="操作" width="250">
+      <el-table-column label="操作" width="200">
         <template slot-scope="scope" class="text-left border">
           <el-button
             size="mini"
             @click="handleRecharge(scope.$index, scope.row.id)">充值</el-button>
           <el-button
             size="mini"
+            style="margin-right: 10px;"
             @click="handleSet(scope.$index, scope.row.id)">设置</el-button>
           <el-button
             size="mini"
+            class="mt-2 ml-0"
             @click="handleEditShow(scope.$index, scope.row.id)">编辑</el-button>
+          <el-button
+            size="mini"
+            @click="handleBindBox(scope.$index, scope.row.id)">绑定盒子</el-button>
           <el-button
             class="mt-2 ml-0"
             size="mini"
@@ -232,7 +237,7 @@
           <p>{{payForm.payBalance ? payForm.payBalance : '0.00'}}</p>
         </el-form-item>
         <el-form-item label="充值金额" :label-width="formLabelWidth" prop="pay">
-          <el-input v-model="payForm.pay" autocomplete="off" class="w-75"></el-input>
+          <el-input v-model.number="payForm.pay" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -338,6 +343,32 @@
         <el-button type="primary" @click="submitPwd('pwdForm')">确 定</el-button>
       </div>
     </el-dialog>
+    <!--绑定盒子对话框-->
+    <el-dialog title="绑定盒子" :visible.sync="bindVisible" width="700px" center>
+      <el-form :model="bindForm" :rules="bindRules" ref="bindForm">
+        <el-form-item label="盒子名称" :label-width="formLabelWidth" prop="name" required>
+          <el-input v-model="bindForm.name" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="盒子编码" :label-width="formLabelWidth" prop="code">
+          <el-input v-model="bindForm.code" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="盒子sim编码" :label-width="formLabelWidth" prop="sim">
+          <el-input v-model="bindForm.sim" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="盒子状态" :label-width="formLabelWidth">
+          <el-switch
+            v-model="bindForm.status"
+            :active-value= "1"
+            :inactive-value= "0"
+          >
+          </el-switch>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="bindVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitBindBox('bindForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -351,7 +382,8 @@
     deleteAgent,
     commitCost,
     commitPwd,
-    commitPay
+    commitPay,
+    bindBox
   } from "../../apis/agents";
   import {
     provinceAndCityData ,
@@ -468,6 +500,7 @@
         payRules: {
           pay: [
             { required: true, message: '请输入充值金额', trigger: 'blur' },
+            { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ],
         },
         addVisible: false,
@@ -524,7 +557,30 @@
             { required: true, message: '请选择拨号金额', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ]
-        }
+        },
+        bindVisible: false,
+        userBindId: 0,
+        userBindIndex: 0,
+        bindForm: {
+          name: '',
+          code: '',
+          sim: '',
+          status: 0,
+        },
+        bindRules: {
+          name: [
+            { required: true, message: '请输入盒子名称', trigger: 'blur' },
+            { min: 2, max: 11, message: '长度在 2 到 11 个字符', trigger: 'blur' }
+          ],
+          code: [
+            { required: true, message: '请输入盒子编码', trigger: 'blur' },
+            { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
+          ],
+          sim: [
+            { required: true, message: '请输入盒子sim编号', trigger: 'blur' },
+            { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
+          ]
+        },
       }
     },
     async mounted(){
@@ -888,6 +944,44 @@
       },
       addAddressChange(value){
         this.addForm.address = CodeToText[value[0]]+""+CodeToText[value[1]];
+      },
+      // 绑定盒子对话框
+      handleBindBox(index, userId){
+        this.userBindId = userId;
+        this.userBindIndex = index;
+        this.bindVisible = true;
+        this.bindForm.name = '';
+        this.bindForm.code = '';
+        this.bindForm.sim = '';
+        this.bindForm.status = '';
+      },
+      // 绑定盒子确认框
+      submitBindBox(formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let params = {
+              uid: this.userBindId,
+              name: this.bindForm.name,
+              code: this.bindForm.code,
+              sim: this.bindForm.sim,
+              status: this.bindForm.status
+            };
+            bindBox(params).then((result)=>{
+              // console.log('result:', result);
+              if(result.data.code === 200){
+                this.$message({
+                  message: result.data.msg,
+                  type: 'success'
+                });
+                this.addVisible = false;
+              } else {
+                this.$status(result.data.msg);
+              }
+            });
+          } else {
+            return false;
+          }
+        });
       }
     }
   }

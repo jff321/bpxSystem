@@ -2,224 +2,359 @@
   <div>
     <div class="navigation">盒子管理/盒子列表</div>
     <!--搜索-->
-    <div class="mt-3">
-      <div>
-        <el-input
-          class="inputStyle mr-4 mt-3"
-          placeholder="盒子名称"
-          v-model="inputName"
-          clearable>
-        </el-input>
-        <el-input
-          class="inputStyle mr-4 mt-3"
-          placeholder="用户"
-          v-model="inputName"
-          clearable>
-        </el-input>
-        <el-input
-          class="inputStyle mr-4 mt-3"
-          placeholder="探针编号"
-          v-model="inputName"
-          clearable>
-        </el-input>
-        <el-input
-          class="inputStyle mr-4 mt-3"
-          placeholder="探针sim编号"
-          v-model="inputName"
-          clearable>
-        </el-input>
-        <el-input
-          class="inputStyle mr-4 mt-3"
-          placeholder="探针sim编号"
-          v-model="inputName"
-          clearable>
-        </el-input>
-        <div class="d-inline-block mr-4">
-          <el-date-picker
-            v-model="date"
-            type="daterange"
-            range-separator="-"
-            start-placeholder="开始创建日期"
-            end-placeholder="结束创建日期">
-          </el-date-picker>
-        </div>
-        <el-button class="mt-3" type="primary">查询</el-button>
-        <el-button type="success" class="mx-4 mt-3" @click="dialogFormVisible = true">新增</el-button>
-      </div>
+    <div class="my-3">
+      <el-input class="w-25" v-model="input" placeholder="请输入联系人名称/盒子名称/编码/sim编码" @keyup.enter.native="query"></el-input>
+      <el-button type="primary" class="mx-3" @click="query">查询</el-button>
+      <el-button type="success" @click="openAddDialog">新增</el-button>
     </div>
-    <!--表格-->
+    <!--盒子表格-->
     <div class="mt-3">
       <el-table
-        :data="tableData"
+        :data="list"
         stripe
         style="width: 100%">
         <el-table-column
-          prop="date"
-          label="盒子编号"
-          style="width: 20%;"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="date"
-          label="盒子名称"
-          style="width: 20%;"
-        >
-        </el-table-column>
-        <el-table-column
           prop="name"
-          label="用户"
-          style="width: 20%;"
+          label="盒子名称"
         >
         </el-table-column>
         <el-table-column
-          prop="address"
-          label="探针编号"
-          style="width: 20%;"
+          prop="uname"
+          label="联系人姓名"
         >
         </el-table-column>
         <el-table-column
-          prop="address"
-          label="探针sim编号"
-          style="width: 20%;"
+          prop="code"
+          label="盒子编码"
         >
         </el-table-column>
         <el-table-column
-          prop="address"
-          label="状态"
-          style="width: 20%;"
+          prop="sim"
+          label="盒子sim编码"
         >
         </el-table-column>
         <el-table-column
-          prop="address"
+          prop="times"
           label="创建时间"
-          style="width: 20%;"
         >
         </el-table-column>
         <el-table-column
-          prop="address"
-          label="操作"
-          style="width: 20%;"
+          prop="status"
+          label="盒子状态"
         >
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.status"
+              :active-value= "1"
+              :inactive-value= "0"
+              @change="changeStatus(scope.row.id, scope.row.status)"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作"
+        >
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              @click="handleEditShow(scope.$index, scope.row.id)">编辑</el-button>
+            <el-button
+              size="mini"
+              @click="handleDelete(scope.$index, scope.row.id)"
+              type="danger">删除</el-button>
+          </template>
         </el-table-column>
       </el-table>
-      <div class="mt-3 float-right">
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="1000">
-        </el-pagination>
-      </div>
+    </div>
+    <!--分页-->
+    <div class="float-right mt-3">
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[10, 20, 40, 60, 80, 100]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
     </div>
     <!--新增对话框-->
-    <div>
-      <el-dialog title="添加盒子" :visible.sync="dialogFormVisible" width="500px">
-        <el-form :model="form" :rules="rules" ref="form">
-          <el-form-item label="盒子名称" prop="name" :label-width="formLabelWidth">
-            <el-input v-model="form.name" style="width: 300px"></el-input>
-          </el-form-item>
-          <el-form-item label="盒子ID" prop="code" :label-width="formLabelWidth">
-            <el-input v-model="form.code" style="width: 300px"></el-input>
-          </el-form-item>
-          <el-form-item label="探针sim编号" prop="code" :label-width="formLabelWidth">
-            <el-input v-model="form.code" style="width: 300px"></el-input>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="submitBox('form')">确 定</el-button>
-        </div>
-      </el-dialog>
-    </div>
+    <el-dialog title="新增盒子" :visible.sync="addVisible" width="700px" center>
+      <el-form :model="addForm" :rules="addRules" ref="addForm">
+        <el-form-item label="盒子名称" :label-width="formLabelWidth" prop="name" required>
+          <el-input v-model="addForm.name" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <!--<el-form-item label="盒子用户" :label-width="formLabelWidth" prop="uname">-->
+          <!--<el-input v-model="addForm.uname" autocomplete="off" class="w-75"></el-input>-->
+        <!--</el-form-item>-->
+        <el-form-item label="盒子编码" :label-width="formLabelWidth" prop="code">
+          <el-input v-model="addForm.code" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="盒子sim编码" :label-width="formLabelWidth" prop="sim">
+          <el-input v-model="addForm.sim" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="盒子状态" :label-width="formLabelWidth">
+          <el-switch
+            v-model="addForm.status"
+            :active-value= "1"
+            :inactive-value= "0"
+          >
+          </el-switch>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitAddBox('addForm')">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!--编辑对话框-->
+    <el-dialog title="编辑" :visible.sync="editVisible" width="700px" center>
+      <el-form :model="editForm" :rules="editRules" ref="editForm">
+        <el-form-item label="盒子名称" :label-width="formLabelWidth" prop="name" required>
+          <el-input v-model="editForm.name" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <!--<el-form-item label="盒子用户" :label-width="formLabelWidth" prop="uname">-->
+        <!--<el-input v-model="addForm.uname" autocomplete="off" class="w-75"></el-input>-->
+        <!--</el-form-item>-->
+        <el-form-item label="盒子编码" :label-width="formLabelWidth" prop="code">
+          <el-input v-model="editForm.code" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="盒子sim编码" :label-width="formLabelWidth" prop="sim">
+          <el-input v-model="editForm.sim" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="盒子状态" :label-width="formLabelWidth">
+          <el-switch
+            v-model="editForm.status"
+            :active-value= "1"
+            :inactive-value= "0"
+          >
+          </el-switch>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitEditBox('editForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+  import {
+    boxs,
+    addBox,
+    editBoxShow,
+    editBox,
+    deleteBox,
+    change
+  } from '@/apis/boxs'
   export default {
     name: "BoxList",
     data(){
       return{
-        inputName: '',
-        tableData: [
-          // {
-          //   date: '2016-05-01',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1519 弄'
-          // },
-          // {
-          //   date: '2016-05-03',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1516 弄'
-          // },
-          // {
-          //   date: '2016-05-02',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1518 弄'
-          // },
-          // {
-          //   date: '2016-05-04',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1517 弄'
-          // },
-          // {
-          //   date: '2016-05-01',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1519 弄'
-          // },
-          // {
-          //   date: '2016-05-03',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1516 弄'
-          // },
-          // {
-          //   date: '2016-05-02',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1518 弄'
-          // },
-          // {
-          //   date: '2016-05-04',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1517 弄'
-          // },
-          // {
-          //   date: '2016-05-01',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1519 弄'
-          // },
-          // {
-          //   date: '2016-05-03',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1516 弄'
-          // }
-        ],
-        dialogFormVisible: false,
-        form: {
+        input: '',
+        list: [],
+        currentPage: 1,
+        pageSize: 10,
+        total: 0,
+        formLabelWidth: '180px',
+        addVisible: false,
+        addForm: {
           name: '',
           code: '',
-          address: '',
-          remark: ''
+          sim: '',
+          status: 0,
         },
-        formLabelWidth: '120px',
-        rules: {
+        addRules: {
           name: [
-            { required: true, message: '请输入盒子名称', trigger: 'blur' }
+            { required: true, message: '请输入盒子名称', trigger: 'blur' },
+            { min: 2, max: 11, message: '长度在 2 到 11 个字符', trigger: 'blur' }
           ],
           code: [
-            { required: true, message: '请输入设备码', trigger: 'blur' }
+            { required: true, message: '请输入盒子编码', trigger: 'blur' },
+            { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
+          ],
+          sim: [
+            { required: true, message: '请输入盒子sim编号', trigger: 'blur' },
+            { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
           ]
-        }
+        },
+        boxEditIndex: 0,
+        boxEditId: 0,
+        editVisible: false,
+        editForm: {
+          name: '',
+          code: '',
+          sim: '',
+          status: 0,
+        },
+        editRules: {
+          name: [
+            { required: true, message: '请输入盒子名称', trigger: 'blur' },
+            { min: 2, max: 11, message: '长度在 2 到 11 个字符', trigger: 'blur' }
+          ],
+          code: [
+            { required: true, message: '请输入盒子编码', trigger: 'blur' },
+            { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
+          ],
+          sim: [
+            { required: true, message: '请输入盒子sim编号', trigger: 'blur' },
+            { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
+          ]
+        },
       }
     },
+    async mounted(){
+      this.getBoxsList();
+    },
     methods: {
-      submitBox (formName) {
+      // 得到列表
+      async getBoxsList(){
+        const result = await boxs(this.input, this.currentPage, this.pageSize);
+        // console.log('result:', result);
+        if(result.data.code === 200){
+          this.list = result.data.data.list;
+          this.total = result.data.data.count;
+        } else {
+          this.$status(result.data.msg);
+        }
+      },
+      // 查询
+      async query(){
+        console.log(this.input);
+        this.getBoxsList()
+      },
+      // 每页几条
+      handleSizeChange(val) {
+        // console.log(`每页 ${val} 条`);
+        this.pageSize = val;
+        this.getBoxsList()
+      },
+      // 当前页
+      handleCurrentChange(val) {
+        // console.log(`当前 ${val} 页`);
+        this.currentPage = val;
+        this.getBoxsList()
+      },
+      // 新增对话框
+      openAddDialog(){
+        this.addVisible = true;
+        this.addForm.name = '';
+        this.addForm.code = '';
+        this.addForm.sim = '';
+        this.addForm.status = '';
+      },
+      // 新增确认框
+      submitAddBox(formName){
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.dialogFormVisible = false
+            let params = {
+              name: this.addForm.name,
+              code: this.addForm.code,
+              sim: this.addForm.sim,
+              status: this.addForm.status
+            };
+            addBox(params).then((result)=>{
+              // console.log('result:', result);
+              if(result.data.code === 200){
+                this.getBoxsList();
+                this.$message({
+                  message: result.data.msg,
+                  type: 'success'
+                });
+                this.addVisible = false;
+              } else {
+                this.$status(result.data.msg);
+              }
+            });
           } else {
-            console.log('error submit!!');
             return false;
           }
         });
-      }
+      },
+      // 编辑显示对话框
+      async handleEditShow(index, boxId) {
+        this.boxEditIndex = index;
+        this.boxEditId = boxId;
+        const result = await editBoxShow(boxId);
+        if (result.data.code === 200) {
+          this.editVisible = true;
+          this.editForm.name = result.data.data.name;
+          this.editForm.code = result.data.data.code;
+          this.editForm.sim = result.data.data.sim;
+          this.editForm.status = result.data.data.status;
+        } else {
+          this.$status(result.data.msg);
+        }
+      },
+      // 编辑确认框
+      submitEditBox(formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let params = {
+              name: this.editForm.name,
+              code: this.editForm.code,
+              sim: this.editForm.sim,
+              status: this.editForm.status
+            };
+            editBox(this.boxEditId, params).then((result)=>{
+              if(result.data.code === 200){
+                this.$message({
+                  message: result.data.msg,
+                  type: 'success'
+                });
+                this.list[this.boxEditIndex].name = this.editForm.name;
+                this.list[this.boxEditIndex].code = this.editForm.code;
+                this.list[this.boxEditIndex].sim = this.editForm.sim;
+                this.list[this.boxEditIndex].status = this.editForm.status;
+                this.editVisible = false;
+              } else {
+                this.$status(result.data.msg);
+              }
+            });
+          } else {
+            return false;
+          }
+        });
+      },
+      // 删除
+      handleDelete(index, boxId) {
+        this.$confirm('确定删除该条数据?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteBox(boxId).then((result)=> {
+            if(result.data.code === 200) {
+              this.list.splice(index, 1);
+              this.total--;
+              this.$message({
+                type: 'success',
+                message: result.data.msg
+              });
+            } else {
+              this.$status(result.data.msg);
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
+      // 启用/禁用盒子状态
+      async changeStatus(id, status){
+        let params = {
+          id: id,
+          types: status
+        };
+        const result = await change(params);
+        if (result.data.code !== 200){
+          this.$status(result.data.msg);
+        }
+      },
     }
   }
 </script>
