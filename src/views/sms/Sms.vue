@@ -90,7 +90,6 @@
         >
         </el-table-column>
         <el-table-column
-          style="width: 25%;"
           label="操作"
         >
           <template slot-scope="scope">

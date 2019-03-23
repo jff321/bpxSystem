@@ -7,7 +7,7 @@ import router from './router'
 
 // axios 配置
 axios.defaults.timeout = 5000;
-axios.defaults.baseURL = 'http://192.168.0.120/';
+axios.defaults.baseURL = 'http://test.bpx.adbpx.com/';
 
 // http request 拦截器
 axios.interceptors.request.use(

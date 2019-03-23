@@ -1,127 +1,50 @@
 <template>
   <div>
     <div class="navigation">短信管理/信息发送记录</div>
-    <div class="mt-3">
-      <!--<el-select class="mr-4" v-model="value" placeholder="请选择模板">-->
-      <!--<el-option-->
-      <!--v-for="item in options"-->
-      <!--:key="item.value"-->
-      <!--:label="item.label"-->
-      <!--:value="item.value">-->
-      <!--</el-option>-->
-      <!--</el-select>-->
-      <el-input
-        class="mr-4"
-        style="width: 200px"
-        placeholder="标题"
-        v-model="inputPhone">
-      </el-input>
-      <el-input
-        class="mr-4"
-        style="width: 200px"
-        placeholder="签名"
-        v-model="inputPhone">
-      </el-input>
-      <el-input
-        class="mr-4"
-        style="width: 200px"
-        placeholder="内容"
-        v-model="inputPhone">
-      </el-input>
-      <el-input
-        class="mr-4"
-        style="width: 200px"
-        placeholder="用户"
-        v-model="inputPhone">
-      </el-input>
-      <el-input
-        class="mr-4"
-        style="width: 200px"
-        placeholder="类型"
-        v-model="inputPhone">
-      </el-input>
-      <el-date-picker
-        class="mr-4"
-        v-model="date"
-        type="daterange"
-        range-separator="-"
-        start-placeholder="开始发送日期"
-        end-placeholder="结束发送日期">
-      </el-date-picker>
-      <el-date-picker
-        class="mr-4 mt-3"
-        v-model="date"
-        type="daterange"
-        range-separator="-"
-        start-placeholder="到达/失败日期"
-        end-placeholder="到达/失败日期">
-      </el-date-picker>
-      <el-input
-        class="mr-4"
-        style="width: 200px"
-        placeholder="备注"
-        v-model="inputPhone">
-      </el-input>
-      <el-button class="mx-4" type="primary">查询</el-button>
-    </div>
     <!--表格-->
     <div class="mt-3">
-      <!--表格-->
       <div class="mt-3">
         <el-table
-          :data="tableData"
+          :loading="loading"
+          :data="list"
           stripe
           style="width: 100%">
           <el-table-column
-            prop="date"
-            label="标题"
-            style="width: 25%;"
-          >
-          </el-table-column>
-          <el-table-column
-            prop="date"
-            label="签名"
-            style="width: 25%;"
-          >
-          </el-table-column>
-          <el-table-column
-            prop="name"
-            label="内容"
-            style="width: 25%;"
-          >
-          </el-table-column>
-          <el-table-column
-            prop="name"
+            prop="uname"
             label="用户"
-            style="width: 25%;"
           >
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="content"
+            label="内容"
+          >
+          </el-table-column>
+          <el-table-column
             label="类型"
-            style="width: 25%;"
+          >
+            <template slot-scope="scope">
+              <span>{{scope.row.types ? '短信' : '闪信'}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="times"
+            label="提交时间"
           >
           </el-table-column>
           <el-table-column
-            prop="name"
-            label="发送时间"
-            style="width: 25%;"
+            label="审核状态"
           >
+            <template slot-scope="scope">
+              <el-switch
+                v-model="scope.row.status"
+                :active-value= "1"
+                :inactive-value= "0"
+                @change="changeStatus(scope.row.id, scope.row.status)"
+              >
+              </el-switch>
+            </template>
           </el-table-column>
           <el-table-column
-            prop="name"
-            label="到达/失败时间"
-            style="width: 25%;"
-          >
-          </el-table-column>
-          <el-table-column
-            prop="name"
-            label="备注"
-            style="width: 25%;"
-          >
-          </el-table-column>
-          <el-table-column
-            style="width: 25%;"
             label="操作"
           >
             <template slot-scope="scope">
@@ -135,19 +58,17 @@
             </template>
           </el-table-column>
         </el-table>
-        <div class="mt-3 float-right">
-          <el-pagination
-            background
-            layout="prev, pager, next"
-            :total="1000">
-          </el-pagination>
-        </div>
       </div>
-      <div class="mt-3 float-right">
+      <!--分页-->
+      <div class="float-right mt-3">
         <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="1000">
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="[10, 20, 40, 60, 80, 100]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total">
         </el-pagination>
       </div>
     </div>
@@ -155,88 +76,92 @@
 </template>
 
 <script>
+  import {smsLog} from "@/apis/smsLog";
+
   export default {
-    name: "Sms",
+    name: "SmsLog",
     data() {
       return {
-        inputPhone: '',
-        date: '',
-        options: [
-          // {
-          //   value: '选项1',
-          //   label: '黄金糕'
-          // },
-          // {
-          //   value: '选项2',
-          //   label: '双皮奶'
-          // },
-          // {
-          //   value: '选项3',
-          //   label: '蚵仔煎'
-          // },
-          // {
-          //   value: '选项4',
-          //   label: '龙须面'
-          // },
-          // {
-          //   value: '选项5',
-          //   label: '北京烤鸭'
-          // }
+        input: '',
+        types: [
+          {
+            type: 1,
+            label: '短信'
+          },
+          {
+            type: 0,
+            label: '闪信'
+          },
         ],
-        value: '',
-        tableData: [
-          // {
-          //   date: '2016-05-01',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1519 弄'
-          // },
-          // {
-          //   date: '2016-05-03',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1516 弄'
-          // },
-          // {
-          //   date: '2016-05-02',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1518 弄'
-          // },
-          // {
-          //   date: '2016-05-04',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1517 弄'
-          // },
-          // {
-          //   date: '2016-05-01',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1519 弄'
-          // },
-          // {
-          //   date: '2016-05-03',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1516 弄'
-          // },
-          // {
-          //   date: '2016-05-02',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1518 弄'
-          // },
-          // {
-          //   date: '2016-05-04',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1517 弄'
-          // },
-          // {
-          //   date: '2016-05-01',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1519 弄'
-          // },
-          // {
-          //   date: '2016-05-03',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1516 弄'
-          // }
-        ]
+        type: '',
+        start_time: '',
+        end_time: '',
+        pickerOptions: {
+          shortcuts: [
+            {
+              text: '最近一周',
+              onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                picker.$emit('pick', [start, end]);
+              }
+            },
+            {
+              text: '最近一个月',
+              onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                picker.$emit('pick', [start, end]);
+              }
+            },
+            {
+              text: '最近三个月',
+              onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                picker.$emit('pick', [start, end]);
+              }
+            }
+          ]
+        },
+        date: '',
+        list: [],
+        loading: true,
+        currentPage: 1,
+        pageSize: 10,
+        total: 0,
       }
+    },
+    mounted(){
+      this.getSmsLogList();
+    },
+    methods: {
+      // 短信列表
+      async getSmsLogList(){
+        const result = await smsLog(this.input, this.type, this.start_time, this.end_time, this.currentPage, this.pageSize);
+        console.log('RESULT:', result);
+        this.loading = false;
+        if(result.data.code === 200){
+          this.list = result.data.data.list;
+          this.total = result.data.data.count;
+        } else {
+          this.$status(result.data.msg);
+        }
+      },
+      // 分页
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+        this.pageSize = val;
+        this.getSmsLogList()
+      },
+      handleCurrentChange(val) {
+        console.log(`当前 ${val} 页`);
+        this.currentPage = val;
+        this.getSmsLogList()
+      },
     }
   }
 </script>

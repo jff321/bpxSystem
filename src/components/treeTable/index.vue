@@ -1,5 +1,6 @@
 <template>
-  <el-table :loading="loading" ref="multipleTable" :data="formatData" :row-style="showRow" v-bind="$attrs">   <!--  @header-click="chooseall" -->
+  <!--<el-table :loading="loading" ref="multipleTable" :data="formatData" :row-style="showRow" v-bind="$attrs">   &lt;!&ndash;  @header-click="chooseall" &ndash;&gt;-->
+  <el-table ref="multipleTable" :data="formatData" :row-style="showRow">   <!--  @header-click="chooseall" -->
     <!--<el-table-column :render-header="renderHeader" width="50" align="center">-->
       <!--<template slot-scope="scope">-->
         <!--<el-checkbox v-model="scope.row.checks" @change="toselect(scope.row)"></el-checkbox>-->
@@ -24,7 +25,31 @@
           <i v-if="!scope.row._expanded" class="el-icon-plus"/>
           <i v-else class="el-icon-minus"/>
         </span>
-        {{ scope.row[column.value] }}
+        <span v-if="column.text === '菜单显示'">
+          <el-switch
+            v-model="scope.row[column.value]"
+            :active-value= "1"
+            :inactive-value= "0">
+          </el-switch>
+        </span>
+        <span v-else-if="column.text === '状态'">
+          <el-switch
+            v-model="scope.row[column.value]"
+            :active-value= "1"
+            :inactive-value= "0">
+          </el-switch>
+        </span>
+        <span v-else>
+          {{ scope.row[column.value] }}
+        </span>
+      </template>
+    </el-table-column>
+    <el-table-column label="操作">
+      <template  slot-scope="scope">
+        <el-button
+          size="mini"
+          type="danger"
+          @click="handleDelete(scope.$index, scope.row)">删除</el-button>
       </template>
     </el-table-column>
     <slot/>
@@ -47,7 +72,6 @@
     },
     props: {
       /* eslint-disable */
-      loading: true,
       data: {
         type: [Array, Object],
         required: true
@@ -100,115 +124,115 @@
       },
 
       //设置表头全选
-      renderHeader(h, data) {
-        return h("span", [
-          h("input", {
-            attrs: {
-              id: "chooseall",
-              type: "checkbox",
-              style:
-                "border: 1px solid #dcdfe6;border-radius: 2px;box-sizing: border-box;width: 14px;height: 14px;background-color: #fff;"
-            }
-          })
-        ]);
-      },
+      // renderHeader(h, data) {
+      //   return h("span", [
+      //     h("input", {
+      //       attrs: {
+      //         id: "chooseall",
+      //         type: "checkbox",
+      //         style:
+      //           "border: 1px solid #dcdfe6;border-radius: 2px;box-sizing: border-box;width: 14px;height: 14px;background-color: #fff;"
+      //       }
+      //     })
+      //   ]);
+      // },
       //功能函数:选中部分子集
-      setchildtobeselect(arr, key) {
-        arr.forEach((v, i) => {
-          v.checks = key;
-          // v._expanded = key;//选中后展开子项
-          if (v.child) {
-            this.setchildtobeselect(v.child, v.checks);
-          }
-        });
-      },
+      // setchildtobeselect(arr, key) {
+      //   arr.forEach((v, i) => {
+      //     v.checks = key;
+      //     // v._expanded = key;//选中后展开子项
+      //     if (v.child) {
+      //       this.setchildtobeselect(v.child, v.checks);
+      //     }
+      //   });
+      // },
       //是否所有的都被选中
-      isallchecked(arr) {
-        arr.forEach((v, i) => {
-          if (!v.checks) {
-            this.key = false;
-          }
-          if (v.child) {
-            this.isallchecked(v.child);
-          }
-        });
-      },
+      // isallchecked(arr) {
+      //   arr.forEach((v, i) => {
+      //     if (!v.checks) {
+      //       this.key = false;
+      //     }
+      //     if (v.child) {
+      //       this.isallchecked(v.child);
+      //     }
+      //   });
+      // },
       //设置父级为 未选中状态（父级的父级没改变-有bug）
-      setparentfalse(arr, id, level) {
-        arr.forEach((v, i) => {
-          if (v._level == level - 1 && v.child) {
-            v.child.forEach((val, ind) => {
-              if (val.id == id) {
-                v.checks = false;
-                return false; //终止此次循环，减少循环次数
-              }
-            });
-          }
-          if (v.child) {
-            this.setparentfalse(v.child, id, level);
-          }
-        });
-      },
+      // setparentfalse(arr, id, level) {
+      //   arr.forEach((v, i) => {
+      //     if (v._level == level - 1 && v.child) {
+      //       v.child.forEach((val, ind) => {
+      //         if (val.id == id) {
+      //           v.checks = false;
+      //           return false; //终止此次循环，减少循环次数
+      //         }
+      //       });
+      //     }
+      //     if (v.child) {
+      //       this.setparentfalse(v.child, id, level);
+      //     }
+      //   });
+      // },
       //设置父级为 选中状态
-      setparenttrue(arr, id, level) {
-        arr.forEach((v, i) => {
-          if (v._level == level - 1 && v.child) {
-            let key = true;
-            let sameidkey = false;
-            v.child.forEach((val, ind) => {
-              if (val.id == id) {
-                //确保当前点击的在该父级内
-                sameidkey = true;
-              }
-              if (!val.checks) {
-                key = false;
-              }
-            });
-            if (key && sameidkey) {
-              v.checks = true;
-            }
-          }
-          if (v.child) {
-            this.setparentfalse(v.child, id, level);
-          }
-        });
-      },
+      // setparenttrue(arr, id, level) {
+      //   arr.forEach((v, i) => {
+      //     if (v._level == level - 1 && v.child) {
+      //       let key = true;
+      //       let sameidkey = false;
+      //       v.child.forEach((val, ind) => {
+      //         if (val.id == id) {
+      //           //确保当前点击的在该父级内
+      //           sameidkey = true;
+      //         }
+      //         if (!val.checks) {
+      //           key = false;
+      //         }
+      //       });
+      //       if (key && sameidkey) {
+      //         v.checks = true;
+      //       }
+      //     }
+      //     if (v.child) {
+      //       this.setparentfalse(v.child, id, level);
+      //     }
+      //   });
+      // },
       //某个复选框被点击时
-      toselect(row) {
-        console.log(row);
-        // row._expanded = row.checks;//选中后是否展开
-        //1、若有子集先让子选中
-        if (row.child) {
-          this.setchildtobeselect(row.child, row.checks);
-        }
-        //2、然后判断是否全选中
-        this.key = true; //重置为true，防止上次已经是false的状态
-        this.isallchecked(this.formatData);
-        //3、设置多选框的状态
-        if (!row.checks) {
-          this.setparentfalse(this.formatData, row.id, row._level); //设置父级选中的状态为false
-          document.getElementById("chooseall").checked = false; //设置全选框的状态
-        } else {
-          this.setparenttrue(this.formatData, row.id, row._level); //设置父级选中的状态为true
-        }
-        if (this.key) {
-          document.getElementById("chooseall").checked = true; //设置全选框的状态
-        }
-      }
+      // toselect(row) {
+      //   console.log(row);
+      //   // row._expanded = row.checks;//选中后是否展开
+      //   //1、若有子集先让子选中
+      //   if (row.child) {
+      //     this.setchildtobeselect(row.child, row.checks);
+      //   }
+      //   //2、然后判断是否全选中
+      //   this.key = true; //重置为true，防止上次已经是false的状态
+      //   this.isallchecked(this.formatData);
+      //   //3、设置多选框的状态
+      //   if (!row.checks) {
+      //     this.setparentfalse(this.formatData, row.id, row._level); //设置父级选中的状态为false
+      //     document.getElementById("chooseall").checked = false; //设置全选框的状态
+      //   } else {
+      //     this.setparenttrue(this.formatData, row.id, row._level); //设置父级选中的状态为true
+      //   }
+      //   if (this.key) {
+      //     document.getElementById("chooseall").checked = true; //设置全选框的状态
+      //   }
+      // }
     },
     mounted() {
-      this.$nextTick(() => {
-        var that = this;
-        const all = document.getElementById("chooseall");
-        all.onchange = function(e) {
-          console.log(all.checked);
-          if (all.checked == true) {
-            that.setchildtobeselect(that.formatData, true);
-          } else {
-            that.setchildtobeselect(that.formatData, false);
-          }
-        };
-      });
+      // this.$nextTick(() => {
+      //   var that = this;
+      //   const all = document.getElementById("chooseall");
+      //   all.onchange = function(e) {
+      //     console.log(all.checked);
+      //     if (all.checked == true) {
+      //       that.setchildtobeselect(that.formatData, true);
+      //     } else {
+      //       that.setchildtobeselect(that.formatData, false);
+      //     }
+      //   };
+      // });
     }
   };
 </script>
@@ -245,10 +269,10 @@
   .ms-tree-space::before {
     content: "";
   }
-  .processContainer {
-    width: 100%;
-    height: 100%;
-  }
+  /*.processContainer {*/
+    /*width: 100%;*/
+    /*height: 100%;*/
+  /*}*/
   table td {
     line-height: 26px;
   }

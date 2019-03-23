@@ -23,98 +23,104 @@
         </div>
       </div>
     </div>
-    <div class="mt-3 d-flex">
-      <div class="mr-4">
-        <span style="font-size: 14px" class="mr-3">业务类型</span>
-        <el-select v-model="value1" placeholder="请选择">
-          <el-option
-            v-for="item in options1"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-      </div>
-      <div class="mx-4">
-        <span style="font-size: 14px" class="mr-3">操作类型</span>
-        <el-select v-model="value2" placeholder="请选择">
-          <el-option
-            v-for="item in options2"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-      </div>
-      <div class="mx-4">
-        <span style="font-size: 14px" class="mx-3">时间</span>
-        <div class="d-inline-block">
-          <el-date-picker
-            v-model="date"
-            type="daterange"
-            range-separator="-"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期">
-          </el-date-picker>
-        </div>
-      </div>
+    <div class="mt-4">
+      <el-select v-model="type" placeholder="请选择操作类型" class="mr-4">
+        <el-option
+          v-for="item in types"
+          :key="item.type"
+          :label="item.label"
+          :value="item.type"
+        >
+        </el-option>
+      </el-select>
+      <el-date-picker
+        class="mr-4"
+        v-model="date"
+        type="datetimerange"
+        range-separator="-"
+        :picker-options="pickerOptions"
+        start-placeholder="开始提交日期"
+        end-placeholder="结束提交日期"
+        format="yyyy-MM-dd HH:mm:ss"
+        value-format="yyyy-MM-dd HH:mm:ss"
+        @change = "changeDate"
+      >
+      </el-date-picker>
       <el-button class="mx-4" type="primary">查询</el-button>
       <el-button class="mx-4" type="info">导出excel</el-button>
     </div>
     <!--表格-->
-    <div class="mt-3">
+    <div class="mt-4">
       <el-table
-        :data="tableData"
+        :data="list"
         stripe
+        :loading="loading"
         style="width: 100%">
         <el-table-column
-          prop="date"
+          prop="uname"
+          label="用户"
+        >
+        </el-table-column>
+        <el-table-column
           label="操作类型"
-          style="width: 16.6%;"
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.types === 1">充值</span>
+            <span v-else-if="scope.row.types === 2">退款</span>
+            <span v-else-if="scope.row.types === 3">匹配</span>
+            <span v-else-if="scope.row.types === 4">拨号</span>
+            <span v-else-if="scope.row.types === 5">短信</span>
+            <span v-else>闪信</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="b_money"
+          label="操作前余额"
         >
         </el-table-column>
         <el-table-column
-          prop="name"
-          label="操作来源"
-          style="width: 16.6%;"
+          prop="a_money"
+          label="操作后余额"
         >
         </el-table-column>
         <el-table-column
-          prop="name"
-          label="操作金额（元）"
-          style="width: 16.6%;"
+          label="标识"
+        >
+          <template slot-scope="scope">
+            <span>{{model = 1 ? '增加' : '减少'}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="remark"
+          label="备注"
         >
         </el-table-column>
         <el-table-column
-          prop="address"
-          label="账户余额（元）"
-          style="width: 16.6%;"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="说明"
-          style="width: 16.6%;"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="address"
+          prop="times"
           label="更新时间"
         >
         </el-table-column>
       </el-table>
-      <div class="mt-3 float-right">
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="1000">
-        </el-pagination>
-      </div>
+    </div>
+    <!--分页-->
+    <div class="float-right mt-3">
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[10, 20, 40, 60, 80, 100]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
     </div>
   </div>
 </template>
 
 <script>
+  import {
+    finance
+  } from '@/apis/finance'
   export default {
     name: "BoxList",
     data(){
@@ -154,72 +160,91 @@
           }
         ],
         value1: '全部',
-        options2: [
+        flow: 0,
+        input: '',
+        types: [
           {
-            value: '选项1',
+            type: 1,
             label: '收入'
           },
           {
-            value: '选项2',
+            type: 0,
             label: '支出'
-          }
+          },
         ],
-        value2: '全部',
+        type: '',
+        start_time: '',
+        end_time: '',
+        pickerOptions: {
+          shortcuts: [
+            {
+              text: '最近一周',
+              onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                picker.$emit('pick', [start, end]);
+              }
+            },
+            {
+              text: '最近一个月',
+              onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                picker.$emit('pick', [start, end]);
+              }
+            },
+            {
+              text: '最近三个月',
+              onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                picker.$emit('pick', [start, end]);
+              }
+            }
+          ]
+        },
         date: '',
-        tableData: [
-          // {
-          //   date: '2016-05-01',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1519 弄'
-          // },
-          // {
-          //   date: '2016-05-03',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1516 弄'
-          // },
-          // {
-          //   date: '2016-05-02',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1518 弄'
-          // },
-          // {
-          //   date: '2016-05-04',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1517 弄'
-          // },
-          // {
-          //   date: '2016-05-01',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1519 弄'
-          // },
-          // {
-          //   date: '2016-05-03',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1516 弄'
-          // },
-          // {
-          //   date: '2016-05-02',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1518 弄'
-          // },
-          // {
-          //   date: '2016-05-04',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1517 弄'
-          // },
-          // {
-          //   date: '2016-05-01',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1519 弄'
-          // },
-          // {
-          //   date: '2016-05-03',
-          //   name: '王小虎',
-          //   address: '上海市普陀区金沙江路 1516 弄'
-          // }
-        ],
-        flow: 0,
+        currentPage: 1,
+        pageSize: 10,
+        total: 0,
+        loading: true,
+        list: [],
+        editIndex: 0,
+        editId: 0
       }
+    },
+    mounted(){
+      this.getMoneyList();
+    },
+    methods: {
+      async getMoneyList () {
+        const result = await finance(this.input, this.type, this.start_time, this.end_time, this.currentPage, this.pageSize);
+        this.loading = false;
+        if(result.data.code === 200){
+          this.list = result.data.data.list;
+          this.total = result.data.data.count;
+        } else {
+          this.$status(result.data.msg);
+        }
+      },
+      changeDate(val){
+        this.start_time = val[0];
+        this.end_time = val[1];
+      },
+      // 分页
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+        this.pageSize = val;
+        this.getMoneyList()
+      },
+      handleCurrentChange(val) {
+        console.log(`当前 ${val} 页`);
+        this.currentPage = val;
+        this.getMoneyList()
+      },
     }
   }
 </script>
