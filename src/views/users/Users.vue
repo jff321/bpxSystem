@@ -899,7 +899,7 @@
       addCardSuccess(result){
         console.log(1);
         if (result.code === 200) {
-          this.addForm.cardUrl = result.data.small_url;
+          this.addForm.cardUrl = result.data.big_url;
         } else {
           this.$status(result.msg);
         }
@@ -907,16 +907,15 @@
       // 新增上传营业执照
       addLicenceSuccess(result){
         if (result.code === 200) {
-          this.addForm.licenceUrl = result.data.small_url;
+          this.addForm.licenceUrl = result.data.big_url;
         } else {
           this.$status(result.msg);
         }
       },
       // 编辑上传身份证
       editCardSuccess(result){
-        console.log(1);
         if (result.code === 200) {
-          this.ruleForm.cardUrl = result.data.small_url;
+          this.ruleForm.cardUrl = result.data.big_url;
         } else {
           this.$status(result.msg);
         }
@@ -924,7 +923,7 @@
       // 编辑上传营业执照
       editLicenceSuccess(result){
         if (result.code === 200) {
-          this.ruleForm.licenceUrl = result.data.small_url;
+          this.ruleForm.licenceUrl = result.data.big_url;
         } else {
           this.$status(result.msg);
         }
@@ -1011,8 +1010,8 @@
       // 修改密码弹框关闭按钮
       handlePwdClose(){
         this.pwdClose('pwdForm');
-      },
-    },
+      }
+    }
   }
 </script>
 

@@ -1,28 +1,6 @@
 <template>
   <div>
     <div class="navigation">财务管理/财务明细</div>
-    <div class="d-flex text-center">
-      <!--账户余额-->
-      <div class="mt-3 w-25 mr-4">
-        <div class="shadow p-5">
-          <p class="font-weight-bold">
-            <img src="../../assets/purse.png" alt="" style="width: 35px;height: 35px;">
-            账户余额
-          </p>
-          <p class="flow">{{flow}}</p>
-        </div>
-      </div>
-      <!--累计充值金额-->
-      <div class="mt-3 w-25">
-        <div class="shadow p-5">
-          <p class="font-weight-bold">
-            <img src="../../assets/money.png" alt="" style="width: 35px;height: 35px;">
-            累计充值金额
-          </p>
-          <p class="flow">{{flow}}</p>
-        </div>
-      </div>
-    </div>
     <div class="mt-4">
       <el-select v-model="type" placeholder="请选择操作类型" class="mr-4">
         <el-option
@@ -160,7 +138,6 @@
           }
         ],
         value1: '全部',
-        flow: 0,
         input: '',
         types: [
           {

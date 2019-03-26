@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="my-3">
-      <el-input class="w-25" v-model="input" placeholder="请输入登录账号/公司名称/联系人" @keyup.enter.native="query"></el-input>
+      <el-input class="w-25" v-model="input" placeholder="请输入登录账号/公司名称/负责人" @keyup.enter.native="query"></el-input>
       <el-button type="primary" class="mx-3" @click="query">查询</el-button>
       <el-button type="success" @click="openAddDialog">新增</el-button>
     </div>
-    <!--代理列表-->
+    <!--用户列表-->
     <el-table
       class="mt-3"
       v-loading="loading"
@@ -27,28 +27,40 @@
       >
       </el-table-column>
       <el-table-column
+        prop="balance"
+        label="冻结金额"
+        sortable
+        width="120"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="today"
+        label="今日花费"
+        sortable
+        width="120"
+      >
+      </el-table-column>
+      <el-table-column
         prop="company"
         label="公司名称"
         sortable
         width="120"
-        >
-      </el-table-column>
-      <el-table-column
-        label="公司LOGO"
-        sortable
-        width="120"
       >
-        <template slot-scope="scope">
-          <viewer>
-            <img :src="scope.row.logo_url" class="w-50">
-          </viewer>
-        </template>
       </el-table-column>
+      <!--<el-table-column-->
+      <!--label="公司LOGO"-->
+      <!--sortable-->
+      <!--width="120"-->
+      <!--&gt;-->
+      <!--<template slot-scope="scope">-->
+      <!--<img :src="scope.row.logo_url" class="w-50">-->
+      <!--</template>-->
+      <!--</el-table-column>-->
       <el-table-column
-        prop="contact"
-        label="联系人"
+        prop="uname"
+        label="负责人"
         sortable
-        >
+      >
       </el-table-column>
       <el-table-column
         prop="sms"
@@ -74,12 +86,12 @@
         sortable
       >
       </el-table-column>
-      <el-table-column
-        prop="address"
-        label="地址"
-        sortable
-      >
-      </el-table-column>
+      <!--<el-table-column-->
+      <!--prop="address"-->
+      <!--label="地址"-->
+      <!--sortable-->
+      <!--&gt;-->
+      <!--</el-table-column>-->
       <el-table-column
         prop="times"
         label="创建时间"
@@ -102,6 +114,21 @@
           </el-switch>
         </template>
       </el-table-column>
+      <!--<el-table-column-->
+      <!--label="是否外呼"-->
+      <!--sortable-->
+      <!--width="120px"-->
+      <!--&gt;-->
+      <!--<template slot-scope="scope">-->
+      <!--<el-switch-->
+      <!--v-model="scope.row.is_outcall"-->
+      <!--:active-value= "1"-->
+      <!--:inactive-value= "0"-->
+      <!--@change="changeStatus(scope.row.id, scope.row.status)"-->
+      <!--&gt;-->
+      <!--</el-switch>-->
+      <!--</template>-->
+      <!--</el-table-column>-->
       <el-table-column label="操作" width="200">
         <template slot-scope="scope" class="text-left border">
           <el-button
@@ -114,23 +141,26 @@
           <el-button
             size="mini"
             class="mt-2 ml-0"
+            style="margin-right: 10px;"
             @click="handleEditShow(scope.$index, scope.row.id)">编辑</el-button>
-          <el-button
-            size="mini"
-            @click="handleBindBox(scope.$index, scope.row.id)">绑定盒子</el-button>
           <el-button
             class="mt-2 ml-0"
             size="mini"
+            @click="handleBindBox(scope.$index, scope.row.id)">绑定盒子</el-button>
+          <el-button
+            size="mini"
+            class="mt-2 ml-0"
+            style="margin-right: 10px;"
             @click="handleAgentPwd(scope.$index, scope.row.id)">修改密码</el-button>
           <el-button
-            class="mt-2"
+            class="mt-2 ml-0"
             size="mini"
             type="danger"
             @click="handleDelete(scope.$index, scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <!--代理分页-->
+    <!--用户分页-->
     <div class="float-right mt-3">
       <el-pagination
         @size-change="handleSizeChange"
@@ -143,7 +173,7 @@
       </el-pagination>
     </div>
     <!--新增对话框-->
-    <el-dialog title="新增代理" status-icon :visible.sync="addVisible" width="700px" center :before-close="handleAddClose">
+    <el-dialog title="新增用户" status-icon :visible.sync="addVisible" width="700px" center :before-close="handleAddClose">
       <el-form :model="addForm" :rules="addRules" ref="addForm">
         <el-form-item label="登录账号" :label-width="formLabelWidth" prop="mobile" required>
           <el-input v-model="addForm.mobile" autocomplete="off" class="w-75"></el-input>
@@ -151,14 +181,17 @@
         <el-form-item label="登录密码" :label-width="formLabelWidth" prop="pwd">
           <el-input type="password" v-model="addForm.pwd" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="确认密码" :label-width="formLabelWidth" prop="pwd">
+        <el-form-item label="确认密码" :label-width="formLabelWidth" prop="epwd">
           <el-input type="password" v-model="addForm.epwd" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="公司名称" :label-width="formLabelWidth" prop="company">
           <el-input v-model="addForm.company" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="联系人" :label-width="formLabelWidth" prop="contact">
-          <el-input v-model="addForm.contact" autocomplete="off" class="w-75"></el-input>
+        <el-form-item label="短信签名" :label-width="formLabelWidth" prop="sign">
+          <el-input v-model="addForm.sign" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="负责人" :label-width="formLabelWidth" prop="uname">
+          <el-input v-model="addForm.uname" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="选择省市" :label-width="formLabelWidth">
           <el-cascader
@@ -191,23 +224,43 @@
             :inactive-value= "0"
           >
           </el-switch>
+          <span class="mx-3">是否外呼</span>
+          <el-switch
+            v-model="addForm.is_outcall"
+            :active-value= "1"
+            :inactive-value= "0"
+          >
+          </el-switch>
         </el-form-item>
-        <el-form-item label="公司LOGO" :label-width="formLabelWidth">
+        <el-form-item label="身份证" :label-width="formLabelWidth">
           <el-upload
             :headers="addForm.myHeaders"
             class="avatar-uploader"
             action="http://192.168.0.120/manage/upload/image"
             :limit="1"
             :show-file-list="false"
-            :on-success="addLogoSuccess"
-            :before-upload="beforeLogoUpload">
-            <img v-if="addForm.imageUrl" :src="addForm.imageUrl" class="avatar">
+            :on-success="addCardSuccess"
+          >
+            <img v-if="addForm.cardUrl" :src="addForm.cardUrl" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="营业执照" :label-width="formLabelWidth">
+          <el-upload
+            :headers="addForm.myHeaders"
+            class="avatar-uploader"
+            action="http://192.168.0.120/manage/upload/image"
+            :limit="1"
+            :show-file-list="false"
+            :on-success="addLicenceSuccess"
+          >
+            <img v-if="addForm.licenceUrl" :src="addForm.licenceUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="addClose('addForm')">取 消</el-button>
+        <el-button @click="closeAddDialog('addForm')">取 消</el-button>
         <el-button type="primary" @click="submitAddAgent('addForm')">确 定</el-button>
       </div>
     </el-dialog>
@@ -221,7 +274,7 @@
           <p>{{payForm.payContact}}</p>
         </el-form-item>
         <el-form-item label="账户余额 :" :label-width="formLabelWidth" >
-          <p>{{payForm.payBalance ? payForm.payBalance : '0.00'}}</p>
+          <p>{{payForm.payBalance ? payForm.payBalance : '0.00'}}元</p>
         </el-form-item>
         <el-form-item label="充值金额" :label-width="formLabelWidth" prop="pay">
           <el-input v-model.number="payForm.pay" autocomplete="off" class="w-75"></el-input>
@@ -233,13 +286,16 @@
       </div>
     </el-dialog>
     <!--编辑对话框-->
-    <el-dialog title="编辑代理商" :visible.sync="dialogFormVisible" width="700px" center :before-close="handleEditClose">
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisible" width="700px" center :before-close="handleEditClose">
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
         <el-form-item label="公司名称" :label-width="formLabelWidth" prop="company">
           <el-input v-model="ruleForm.company" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="联系人" :label-width="formLabelWidth" prop="contact">
-          <el-input v-model="ruleForm.contact" autocomplete="off" class="w-75"></el-input>
+        <el-form-item label="短信签名" :label-width="formLabelWidth" prop="sign">
+          <el-input v-model="ruleForm.sign" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="负责人" :label-width="formLabelWidth" prop="uname">
+          <el-input v-model="ruleForm.uname" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="选择省市" :label-width="formLabelWidth">
           <el-cascader
@@ -250,7 +306,7 @@
             @change="handleChange">
           </el-cascader>
         </el-form-item>
-        <el-form-item label="详细地址" :label-width="formLabelWidth">
+        <el-form-item label="详细地址" :label-width="formLabelWidth" prop="address">
           <el-input v-model="ruleForm.address" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="是否登录" :label-width="formLabelWidth">
@@ -260,8 +316,7 @@
             :inactive-value= "0"
           >
           </el-switch>
-        </el-form-item>
-        <el-form-item label="是否外呼" :label-width="formLabelWidth">
+          <span class="mx-3">是否外呼</span>
           <el-switch
             v-model="ruleForm.is_outcall"
             :active-value= "1"
@@ -269,16 +324,29 @@
           >
           </el-switch>
         </el-form-item>
-        <el-form-item label="公司LOGO" :label-width="formLabelWidth">
+        <el-form-item label="身份证" :label-width="formLabelWidth">
           <el-upload
             :headers="ruleForm.myHeaders"
             class="avatar-uploader"
             action="http://192.168.0.120/manage/upload/image"
             :limit="1"
             :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload">
-            <img v-if="ruleForm.imageUrl" :src="ruleForm.imageUrl" class="avatar">
+            :on-success="editCardSuccess"
+          >
+            <img v-if="ruleForm.cardUrl" :src="ruleForm.cardUrl" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="营业执照" :label-width="formLabelWidth">
+          <el-upload
+            :headers="ruleForm.myHeaders"
+            class="avatar-uploader"
+            action="http://192.168.0.120/manage/upload/image"
+            :limit="1"
+            :show-file-list="false"
+            :on-success="editLicenceSuccess"
+          >
+            <img v-if="ruleForm.licenceUrl" :src="ruleForm.licenceUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
@@ -289,7 +357,7 @@
       </div>
     </el-dialog>
     <!--设置对话框-->
-    <el-dialog title="设置" :visible.sync="setDialogVisible" width="700px" center :before-close="handleSetClose">
+    <el-dialog title="设置" :visible.sync="setDialogVisible" width="700px" center :before-close="setClose">
       <el-form :model="setForm" :rules="setRules" ref="setForm">
         <el-form-item label="短信扣费金额" :label-width="formLabelWidth" prop="sms">
           <el-input v-model.number="setForm.sms" autocomplete="off" class="w-75"></el-input>
@@ -305,7 +373,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="setClose('setForm')">取 消</el-button>
+        <el-button @click="closeSetDialog('setForm')">取 消</el-button>
         <el-button type="primary" @click="submitSet('setForm')">确 定</el-button>
       </div>
     </el-dialog>
@@ -361,24 +429,24 @@
 
 <script>
   import {
-    agents,
+    usersList,
     change,
-    addAgent,
-    showAgent,
+    addUser,
+    showUser,
     commitAgent,
     deleteAgent,
     commitCost,
     commitPwd,
     commitPay,
     bindBox
-  } from "../../apis/agents";
+  } from "@/apis/users";
   import {
     provinceAndCityData ,
     CodeToText,
     TextToCode
   } from 'element-china-area-data'
   export default {
-    name: "agents",
+    name: "users",
     data(){
       var checkPhone = (rule, value, callback) => {
         if (!value) {
@@ -397,7 +465,6 @@
         CodeToText,
         tempList: [],
         list: [],
-        logoImages: [],
         loading: true,
         currentPage: 1,
         pageSize: 10,
@@ -406,14 +473,16 @@
         dialogFormVisible: false,
         ruleForm: {
           company: '',
-          imageUrl: '',
           myHeaders:{
             authToken: localStorage.getItem('token')
           },
-          contact: '',
           options: provinceAndCityData,
           selectedOptions: [],
           address: '',
+          cardUrl: '',
+          licenceUrl: '',
+          uname: '',
+          sign: '',
           status: '',
           is_outcall: ''
         },
@@ -432,9 +501,13 @@
           company: [
             { required: true, message: '请输入公司名称', trigger: 'blur' },
           ],
-          contact: [
+          uname: [
             { required: true, message: '请输入联系人', trigger: 'blur' }
-          ]
+          ],
+          sign: [
+            { required: true, message: '请输入短信签名', trigger: 'blur' },
+            { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
+          ],
         },
         setDialogVisible: false,
         setForm:{
@@ -476,20 +549,7 @@
           epwd: [
             { required: true, message: '请输入确认密码', trigger: 'blur' },
             { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
-          ],
-        },
-        payVisible: false,
-        payForm: {
-          payAgent: '',
-          payContact: '',
-          payBalance: '',
-          pay: ''
-        },
-        payRules: {
-          pay: [
-            { required: true, message: '请输入充值金额', trigger: 'blur' },
-            { type: 'number', message: '金额必须为数字', trigger: 'blur'}
-          ],
+          ]
         },
         addVisible: false,
         addForm: {
@@ -500,16 +560,19 @@
           myHeaders:{
             authToken: localStorage.getItem('token')
           },
-          imageUrl: '',
-          contact: '',
           options: provinceAndCityData,
           selectedOptions: [],
           address: '',
+          cardUrl: '',
+          licenceUrl: '',
+          uname: '',
+          sign: '',
           sms: '',
           fms: '',
           mate: '',
           tel: '',
           status: '',
+          is_outcall: ''
         },
         addRules: {
           mobile: [
@@ -523,11 +586,12 @@
             { required: true, message: '请输入确认密码', trigger: 'blur' },
             { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
           ],
-          contact: [
-            { required: true, message: '请输入联系人', trigger: 'blur' }
+          uname: [
+            { required: true, message: '请输入负责人', trigger: 'blur' }
           ],
-          address: [
-            { required: true, message: '请输入地址', trigger: 'blur' }
+          sign: [
+            { required: true, message: '请输入短信签名', trigger: 'blur' },
+            { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
           ],
           sms: [
             { required: true, message: '请输入短信金额', trigger: 'blur' },
@@ -569,20 +633,56 @@
             { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
           ]
         },
+        payVisible: false,
+        payForm: {
+          payAgent: '',
+          payContact: '',
+          payBalance: '',
+          pay: ''
+        },
+        payRules: {
+          pay: [
+            { required: true, message: '请输入充值金额', trigger: 'blur' },
+            { type: 'number', message: '金额必须为数字', trigger: 'blur'}
+          ],
+        }
       }
     },
     async mounted(){
-      this.getDataList();
+      this.getUserList();
     },
     methods: {
+      async getUserList(){
+        const result = await usersList(this.input, this.currentPage, this.pageSize);
+        this.loading = false;
+        if(result.data.code === 200){
+          this.list = result.data.data.list;
+          this.tempList = result.data.data.list;
+          this.total = result.data.data.count;
+        } else {
+          this.$status(result.data.msg);
+        }
+      },
+      // 选择地址并赋值
+      addAddressChange(value){
+        // 新增对话框
+        this.addForm.address = CodeToText[value[0]]+""+CodeToText[value[1]];
+      },
+      handleChange (value) {
+        // 编辑对话框
+        this.ruleForm.address = CodeToText[value[0]]+""+CodeToText[value[1]];
+      },
+      // 新增对话框
       openAddDialog(){
         this.addVisible = true;
         this.addForm.mobile = '';
         this.addForm.pwd = '';
         this.addForm.epwd = '';
         this.addForm.company = '';
-        this.addForm.imageUrl = '';
-        this.addForm.contact = '';
+        this.addForm.cardUrl = '';
+        this.addForm.licenceUrl = '';
+        this.addForm.uname = '';
+        this.addForm.sign = '';
         this.addForm.selectedOptions = [];
         this.addForm.address = '';
         this.addForm.sms = '';
@@ -591,7 +691,9 @@
         this.addForm.tel = '';
         this.addForm.status = '';
       },
+      // 新增确认提交
       submitAddAgent(formName){
+        // console.log('新增');
         this.$refs[formName].validate((valid) => {
           if (valid) {
             let params = {
@@ -599,8 +701,10 @@
               pwd: this.addForm.pwd,
               epwd: this.addForm.epwd,
               company: this.addForm.company,
-              logo_url: this.addForm.imageUrl,
-              contact: this.addForm.contact,
+              uname: this.addForm.uname,
+              sign: this.addForm.sign,
+              id_url: this.addForm.cardUrl,
+              biz_url: this.addForm.licenceUrl,
               province_id: this.addForm.selectedOptions[0],
               city_id: this.addForm.selectedOptions[1],
               address: this.addForm.address,
@@ -610,10 +714,10 @@
               tel: this.addForm.tel,
               status: this.addForm.status
             };
-            addAgent(params).then((result)=>{
+            addUser(params).then((result)=>{
               // console.log('result:', result);
               if(result.data.code === 200){
-                this.getDataList();
+                this.getUserList();
                 this.$message({
                   message: result.data.msg,
                   type: 'success'
@@ -628,45 +732,36 @@
           }
         });
       },
-      async getDataList(){
-        const result = await agents(this.input, this.currentPage, this.pageSize);
-        console.log('result.data.data.list:', result.data.data.list);
-        this.loading = false;
-        if(result.data.code === 200){
-          this.list = result.data.data.list;
-          this.tempList = result.data.data.list;
-          this.total = result.data.data.count;
-        } else {
-          this.$status(result.data.msg);
-        }
-      },
       async query(){
-        this.getDataList()
+        this.getUserList()
       },
       handleSizeChange(val) {
-        // console.log(`每页 ${val} 条`);
+        console.log(`每页 ${val} 条`);
         this.pageSize = val;
-        this.getDataList()
+        this.getUserList()
       },
       handleCurrentChange(val) {
-        // console.log(`当前 ${val} 页`);
+        console.log(`当前 ${val} 页`);
         this.currentPage = val;
-        this.getDataList()
+        this.getUserList()
       },
-      // 编辑
+      // 编辑对话框
       async handleEditShow(index, userId) {
         this.userEditIndex = index;
         this.userEditId = userId;
-        const result = await showAgent(userId);
+        const result = await showUser(userId);
         if (result.data.code === 200) {
           // console.log('result:', result);
           this.dialogFormVisible = true;
           this.ruleForm.company = result.data.data.company;
-          this.ruleForm.imageUrl = result.data.data.logo_url;
-          this.ruleForm.contact = result.data.data.contact;
+          this.ruleForm.sign = result.data.data.sign;
+          this.ruleForm.cardUrl = result.data.data.id_url;
+          this.ruleForm.licenceUrl = result.data.data.biz_url;
+          this.ruleForm.uname = result.data.data.uname;
           this.ruleForm.selectedOptions = [result.data.data.province_id, result.data.data.city_id];
           this.ruleForm.address = result.data.data.address;
           this.ruleForm.status = result.data.data.status;
+          this.ruleForm.is_outcall = result.data.data.is_outcall;
         } else {
           this.$status(result.data.msg);
         }
@@ -678,11 +773,15 @@
             let params = {
               company: this.ruleForm.company,
               logo_url: this.ruleForm.imageUrl,
-              contact: this.ruleForm.contact,
+              uname: this.ruleForm.uname,
+              id_url: this.ruleForm.cardUrl,
+              biz_url: this.ruleForm.licenceUrl,
               province_id: this.ruleForm.selectedOptions[0],
               city_id: this.ruleForm.selectedOptions[1],
               address: this.ruleForm.address,
-              status: this.ruleForm.status
+              status: this.ruleForm.status,
+              is_outcall: this.ruleForm.is_outcall,
+              sign: this.ruleForm.sign
             };
             commitAgent(this.userEditId, params).then((result)=>{
               // console.log('result:', result);
@@ -733,52 +832,11 @@
           });
         });
       },
-      // 充值显示
-      async handleRecharge(index, userId){
-        this.payForm.pay = '';
-        this.userPayIndex = index;
-        this.userPayId = userId;
-        const result = await showAgent(userId);
-        if (result.data.code === 200) {
-          this.payVisible = true;
-          this.payForm.payAgent = result.data.data.mobile;
-          this.payForm.payContact = result.data.data.contact;
-          this.payForm.payBalance = result.data.data.balance;
-        } else {
-          this.$status(result.data.msg);
-        }
-      },
-      // 充值提交
-      submitPay(formName){
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            let params = {
-              id: this.userPayId,
-              money: this.payForm.pay
-            };
-            commitPay(params).then((result)=>{
-              // console.log('result:', result);
-              if(result.data.code === 200){
-                this.$message({
-                  message: result.data.msg,
-                  type: 'success'
-                });
-                this.list[this.userPayIndex].balance = this.payForm.pay;
-                this.payVisible = false;
-              } else {
-                this.$status(result.data.msg);
-              }
-            });
-          } else {
-            return false;
-          }
-        });
-      },
       // 设置显示
       async handleSet(index, userId){
         this.userSetIndex = index;
         this.userSetId = userId;
-        const result = await showAgent(userId);
+        const result = await showUser(userId);
         if (result.data.code === 200) {
           this.setDialogVisible = true;
           // ？？？此处字段名没有  新增之后才有
@@ -829,7 +887,7 @@
         this.pwdForm.epwd = '';
         this.userPwdIndex = index;
         this.userPwdId = userId;
-        const result = await showAgent(userId);
+        const result = await showUser(userId);
         if (result.data.code === 200) {
           this.PwdVisible = true;
           this.pwdForm.pwdAgent = result.data.data.mobile;
@@ -867,6 +925,7 @@
       },
       // 启用/禁用用户登录状态
       async changeStatus(id, status){
+        console.log(id, status);
         let params = {
           id: id,
           types: status
@@ -876,56 +935,38 @@
           this.$status(result.data.msg);
         }
       },
-      // 上传LOGO
-      handleAvatarSuccess(result) {
+      // 新增上传身份证
+      addCardSuccess(result){
+        console.log(1);
         if (result.code === 200) {
-          this.ruleForm.imageUrl = result.data.big_url;
+          this.addForm.cardUrl = result.data.big_url;
         } else {
           this.$status(result.msg);
         }
       },
-      // 限制图片大小和格式
-      beforeAvatarUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
-        const isLt2M = file.size / 1024 / 1024 < 2;
-
-        if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
-        }
-        if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
-        }
-        return isJPG && isLt2M;
-      },
-      // 新增上传LOGO
-      addLogoSuccess(result){
+      // 新增上传营业执照
+      addLicenceSuccess(result){
         if (result.code === 200) {
-          this.addForm.imageUrl = result.data.big_url;
+          this.addForm.licenceUrl = result.data.big_url;
         } else {
           this.$status(result.msg);
         }
       },
-      // 新增上传LOGO 限制图片大小
-      beforeLogoUpload(file){
-        const isJPG = file.type === 'image/jpeg';
-        const isLt2M = file.size / 1024 / 1024 < 2;
-
-        if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
+      // 编辑上传身份证
+      editCardSuccess(result){
+        if (result.code === 200) {
+          this.ruleForm.cardUrl = result.data.big_url;
+        } else {
+          this.$status(result.msg);
         }
-        if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
+      },
+      // 编辑上传营业执照
+      editLicenceSuccess(result){
+        if (result.code === 200) {
+          this.ruleForm.licenceUrl = result.data.big_url;
+        } else {
+          this.$status(result.msg);
         }
-        return isJPG && isLt2M;
-      },
-      // 选择地址并赋值
-      handleChange (value) {
-        // 编辑对话框
-        this.ruleForm.address = CodeToText[value[0]]+""+CodeToText[value[1]];
-      },
-      addAddressChange(value){
-        // 新增对话框
-        this.addForm.address = CodeToText[value[0]]+""+CodeToText[value[1]];
       },
       // 绑定盒子对话框
       handleBindBox(index, userId){
@@ -966,22 +1007,22 @@
         });
       },
       // 新增弹框取消按钮
-      addClose(formName){
+      closeAddDialog(formName){
         this.addVisible = false;
         this.$refs[formName].clearValidate();
       },
       // 新增弹框关闭按钮
       handleAddClose(){
-        this.addClose('addForm');
+        this.closeAddDialog('addForm');
       },
-      // 充值弹框取消按钮
-      payClose(formName){
-        this.payVisible = false;
+      // 设置弹框取消按钮
+      closeSetDialog(formName){
+        this.setDialogVisible = false;
         this.$refs[formName].clearValidate();
       },
-      // 充值弹框关闭按钮
-      handlePayClose(){
-        this.payClose('payForm');
+      // 设置弹框关闭按钮
+      setClose(){
+        this.closeSetDialog('setForm');
       },
       // 编辑弹框取消按钮
       editClose(formName){
@@ -992,14 +1033,14 @@
       handleEditClose(){
         this.editClose('ruleForm');
       },
-      // 设置弹框取消按钮
-      setClose(formName){
-        this.setDialogVisible = false;
+      // 绑定盒子弹框取消按钮
+      bindClose(formName){
+        this.bindVisible = false;
         this.$refs[formName].clearValidate();
       },
-      // 设置弹框关闭按钮
-      handleSetClose(){
-        this.setClose('setForm');
+      // 绑定盒子弹框关闭按钮
+      handleBindClose(){
+        this.bindClose('bindForm');
       },
       // 修改密码弹框取消按钮
       pwdClose(formName){
@@ -1010,15 +1051,56 @@
       handlePwdClose(){
         this.pwdClose('pwdForm');
       },
-      // 绑定盒子弹框取消按钮
-      bindClose(formName){
-        this.bindVisible = false;
+      // 充值显示
+      async handleRecharge(index, userId){
+        this.payForm.pay = '';
+        this.userPayIndex = index;
+        this.userPayId = userId;
+        const result = await showUser(userId);
+        if (result.data.code === 200) {
+          this.payVisible = true;
+          this.payForm.payAgent = result.data.data.mobile;
+          this.payForm.payContact = result.data.data.uname;
+          this.payForm.payBalance = result.data.data.balance;
+        } else {
+          this.$status(result.data.msg);
+        }
+      },
+      // 充值提交
+      submitPay(formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let params = {
+              id: this.userPayId,
+              money: this.payForm.pay
+            };
+            commitPay(params).then((result)=>{
+              // console.log('result:', result);
+              if(result.data.code === 200){
+                this.$message({
+                  message: result.data.msg,
+                  type: 'success'
+                });
+                this.list[this.userPayIndex].balance = this.payForm.pay;
+                this.payVisible = false;
+              } else {
+                this.$status(result.data.msg);
+              }
+            });
+          } else {
+            return false;
+          }
+        });
+      },
+      // 充值弹框取消按钮
+      payClose(formName){
+        this.payVisible = false;
         this.$refs[formName].clearValidate();
       },
-      // 绑定盒子弹框关闭按钮
-      handleBindClose(){
-        this.bindClose('bindForm');
-      }
+      // 充值弹框关闭按钮
+      handlePayClose(){
+        this.payClose('payForm');
+      },
     }
   }
 </script>

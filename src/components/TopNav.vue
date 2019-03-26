@@ -27,7 +27,18 @@
           <i class="fa fa-address-book-o icon"></i>17711545233
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>基本信息</el-dropdown-item>
+          <!--el-dropdown-item没有自定义click事件, 两个解决办法:
+            1. 使用原生click事件 @click.native = "logout"
+            2. 使用菜单项的指令事件
+              @command="handleCommand"
+              command="logout"
+              handleCommand(command) {
+                if (command === 'logout') {
+                    this.logout()
+                }
+              }
+          -->
+          <el-dropdown-item command="basicInfo">基本信息</el-dropdown-item>
           <!--<el-dropdown-item>安全设置</el-dropdown-item>-->
           <el-dropdown-item command="logout">退出</el-dropdown-item>
         </el-dropdown-menu>
@@ -41,7 +52,9 @@
     name: 'topNav',
     data(){
       return {
-        loginOutStatus : true
+        loginOutStatus : localStorage.getItem('token'),
+        mobile: localStorage.getItem('mobile'),
+        balance: localStorage.getItem('balance')
       }
     },
     methods: {
@@ -49,9 +62,15 @@
         if (command === 'logout') {
           this.logout()
         }
+        if (command === 'basicInfo') {
+          this.basicInfo()
+        }
       },
       logout () {
         this.$emit('listenLoginOut', this.loginOutStatus);
+      },
+      basicInfo () {
+        this.$emit('listenBasicInfo', '基本信息');
       }
     }
   };

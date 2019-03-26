@@ -152,6 +152,8 @@
           if (result.data.code === 200) {
             localStorage.setItem('token', result.data.data.auth_token);
             localStorage.setItem('menus', JSON.stringify(result.data.data.menus));
+            localStorage.setItem('mobile', result.data.data.user.mobile);
+            localStorage.setItem('balance', result.data.data.user.balance);
             this.$router.push({
               name: 'index'
             });
@@ -166,39 +168,6 @@
           }
         });
       }
-      // openCode(){
-      //   this.user.sms = !this.user.sms;
-      // },
-      // getCode(){
-      //   if(!this.user.phone){
-      //     this.$message({
-      //       message: '请输入手机号',
-      //       type: 'error'
-      //     });
-      //     return false;
-      //   }
-      //   if (!(/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/.test(this.user.phone))) {
-      //     this.$message({
-      //       message: '手机号格式不正确',
-      //       type: 'error'
-      //     });
-      //     return false;
-      //   }
-      //   this.user.sendCodeDisabled = true;
-      //   // setInterval() 方法可按照指定的周期（以毫秒计）来调用函数或计算表达式
-      //   // 参数1：code	必需。要调用的函数或要执行的代码串。
-      //   // 参数2：millisec	必须。周期性执行或调用 code 之间的时间间隔，以毫秒计。
-      //   let interval = window.setInterval(() => {
-      //     if ((this.user.time--) <= 0) {
-      //       this.user.sendCodeDisabled = false;
-      //       this.user.time = 60;
-      //       this.user.isDisabled = false;
-      //       window.clearInterval(interval);
-      //     } else{
-      //       this.user.isDisabled = true;
-      //     }
-      //   }, 1000);
-      // }
     }
   };
 </script>

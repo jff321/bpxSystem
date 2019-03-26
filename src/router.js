@@ -150,6 +150,30 @@ export default new Router({
         requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
       },
       component: () => import('./views/users/Users.vue')
+    },
+    {
+      path: '/users/userList',
+      name: 'pays',
+      meta: {
+        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+      },
+      component: () => import('./views/users/UserList.vue')
+    },
+    {
+      path: '/details',
+      name: 'details',
+      meta: {
+        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+      },
+      component: () => import('./views/mates/Details.vue')
+    },
+    {
+      path: '/basicInfo',
+      name: 'basicInfo',
+      meta: {
+        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+      },
+      component: () => import('./views/BasicInfo.vue')
     }
   ]
 })

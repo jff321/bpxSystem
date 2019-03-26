@@ -6,17 +6,17 @@
       <div class="mt-3 w-25 mr-4">
         <div class="shadow p-5">
           <p class="font-weight-bold">
-            <img src="../../assets/purse.png" alt="" style="width: 35px;height: 35px;">
+            <img src="../../assets/yue.png" alt="" style="width: 35px;height: 35px;">
             账户余额
           </p>
           <p class="flow">{{balance}}</p>
         </div>
       </div>
       <!--累计收入-->
-      <div class="mt-3 w-25">
+      <div class="mt-3 w-25 mr-4">
         <div class="shadow p-5">
           <p class="font-weight-bold">
-            <img src="../../assets/money.png" alt="" style="width: 35px;height: 35px;">
+            <img src="../../assets/shouru.png" alt="" style="width: 35px;height: 35px;">
             累计收入
           </p>
           <p class="flow">{{income}}</p>
@@ -26,7 +26,7 @@
       <div class="mt-3 w-25">
         <div class="shadow p-5">
           <p class="font-weight-bold">
-            <img src="../../assets/pays.png" alt="" style="width: 35px;height: 35px;">
+            <img src="../../assets/zhichu.png" alt="" style="width: 35px;height: 35px;">
             累计支出
           </p>
           <p class="flow">{{pays}}</p>

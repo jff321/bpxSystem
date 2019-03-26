@@ -25,18 +25,22 @@
           <i v-if="!scope.row._expanded" class="el-icon-plus"/>
           <i v-else class="el-icon-minus"/>
         </span>
-        <span v-if="column.text === '菜单显示'">
+        <span v-if="column.value === 'show'">
           <el-switch
             v-model="scope.row[column.value]"
             :active-value= "1"
-            :inactive-value= "0">
+            :inactive-value= "0"
+            @change="menuShow(scope.row.id, scope.row[column.value])"
+          >
           </el-switch>
         </span>
-        <span v-else-if="column.text === '状态'">
+        <span v-else-if="column.value === 'status'">
           <el-switch
             v-model="scope.row[column.value]"
             :active-value= "1"
-            :inactive-value= "0">
+            :inactive-value= "0"
+            @change="menuEnables(scope.row.id, scope.row[column.value])"
+          >
           </el-switch>
         </span>
         <span v-else>
@@ -49,7 +53,7 @@
         <el-button
           size="mini"
           type="danger"
-          @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          @click="handleDelete(scope.$index, scope.row.id)">删除</el-button>
       </template>
     </el-table-column>
     <slot/>
@@ -103,6 +107,20 @@
         return func.apply(null, args);
       }
     },
+    mounted() {
+      // this.$nextTick(() => {
+      //   var that = this;
+      //   const all = document.getElementById("chooseall");
+      //   all.onchange = function(e) {
+      //     console.log(all.checked);
+      //     if (all.checked == true) {
+      //       that.setchildtobeselect(that.formatData, true);
+      //     } else {
+      //       that.setchildtobeselect(that.formatData, false);
+      //     }
+      //   };
+      // });
+    },
     methods: {
       showRow: function(row) {
         const show = row.row.parent
@@ -121,6 +139,21 @@
       // 图标显示
       iconShow(index, record) {
         return index === 0 && record.child && record.child.length > 0;
+      },
+
+      // 是否显示菜单
+      async menuShow(id, value){
+        this.$emit('listenToMenuShow', id, value);
+      },
+
+      // 菜单启用禁用
+      async menuEnables(id, value){
+        this.$emit('listenToMenuEnables', id, value);
+      },
+
+      // 删除菜单
+      async handleDelete(index, id){
+        this.$emit('listenToHandleDelete', index, id);
       },
 
       //设置表头全选
@@ -220,20 +253,7 @@
       //   }
       // }
     },
-    mounted() {
-      // this.$nextTick(() => {
-      //   var that = this;
-      //   const all = document.getElementById("chooseall");
-      //   all.onchange = function(e) {
-      //     console.log(all.checked);
-      //     if (all.checked == true) {
-      //       that.setchildtobeselect(that.formatData, true);
-      //     } else {
-      //       that.setchildtobeselect(that.formatData, false);
-      //     }
-      //   };
-      // });
-    }
+
   };
 </script>
 <style rel="stylesheet/css">

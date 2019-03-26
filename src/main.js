@@ -34,6 +34,10 @@ import 'element-ui/lib/theme-chalk/index.css'
 
 import  './axios'
 
+// 引入viewerjs
+import Viewer from 'v-viewer'
+import 'viewerjs/dist/viewer.css'
+
 Vue.prototype.$axios = Axios;
 
 Vue.use(ElementUI);
@@ -41,6 +45,25 @@ Vue.use(VueAMap);
 Vue.use(Vuex);
 Vue.use(Router);
 Vue.use(commonFun);
+Vue.use(Viewer);
+Viewer.setDefaults({
+  Options: {
+    "inline": true,
+    "button": true,
+    "navbar": true,
+    "title": true,
+    "toolbar": true,
+    "tooltip": true,
+    "movable": true,
+    "zoomable": true,
+    "rotatable": true,
+    "scalable": true,
+    "transition": true,
+    "fullscreen": true,
+    "keyboard": true,
+    "url": "data-source"
+  }
+});
 
 // 导航守卫（navigation-guards）
 // router.beforeEach((to, from, next) => {

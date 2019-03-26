@@ -1,14 +1,23 @@
 <template>
   <div class="mt-4">
     <!--表格-->
-    <tree-table :data="data" :columns="columns" border/>
+    <tree-table
+      :data="data"
+      :columns="columns"
+      @listenToMenuShow="isMenuShow"
+      @listenToMenuEnables="isMenuEnables"
+      @listenToHandleDelete = "isMenuDelete"
+      border/>
   </div>
 </template>
 
 <script>
   import treeTable from "@/components/treeTable/index";
   import {
-    rules
+    rules,
+    showMenu,
+    enableMenu,
+    deleteMenu
   } from '@/apis/rules'
   export default {
     name: "rules",
@@ -46,96 +55,11 @@
             value: "show"
           },
           {
-            text: "状态",
+            text: "菜单启用/禁用",
             value: "status"
           }
-          // {
-          //   text: "操作",
-          //   value: "order_number"
-          // }
         ],
-        data: [
-          // {
-          //   id: 0,
-          //   event: "事件1",
-          //   timeLine: 50,
-          //   comment: "无"
-          // },
-          // {
-          //   id: 1,
-          //   event: "事件1",
-          //   timeLine: 100,
-          //   comment: "无",
-          //   child: [
-          //     {
-          //       id: 2,
-          //       event: "事件2",
-          //       timeLine: 10,
-          //       comment: "无"
-          //     },
-          //     {
-          //       id: 3,
-          //       event: "事件3",
-          //       timeLine: 90,
-          //       comment: "无",
-          //       child: [
-          //         {
-          //           id: 4,
-          //           event: "事件4",
-          //           timeLine: 5,
-          //           comment: "无"
-          //         },
-          //         {
-          //           id: 5,
-          //           event: "事件5",
-          //           timeLine: 10,
-          //           comment: "无"
-          //         },
-          //         {
-          //           id: 6,
-          //           event: "事件6",
-          //           timeLine: 75,
-          //           comment: "无",
-          //           child: [
-          //             {
-          //               id: 7,
-          //               event: "事件7",
-          //               timeLine: 50,
-          //               comment: "无",
-          //               child: [
-          //                 {
-          //                   id: 71,
-          //                   event: "事件71",
-          //                   timeLine: 25,
-          //                   comment: "xx"
-          //                 },
-          //                 {
-          //                   id: 72,
-          //                   event: "事件72",
-          //                   timeLine: 5,
-          //                   comment: "xx"
-          //                 },
-          //                 {
-          //                   id: 73,
-          //                   event: "事件73",
-          //                   timeLine: 20,
-          //                   comment: "xx"
-          //                 }
-          //               ]
-          //             },
-          //             {
-          //               id: 8,
-          //               event: "事件8",
-          //               timeLine: 25,
-          //               comment: "无"
-          //             }
-          //           ]
-          //         }
-          //       ]
-          //     }
-          //   ]
-          // }
-        ],
+        data: [],
       };
     },
     mounted(){
@@ -151,6 +75,72 @@
         } else {
           this.$status(result.data.msg);
         }
+      },
+      // 菜单显示及隐藏
+      async isMenuShow(data1, data2){
+        // console.log(data1, data2);
+        let params = {
+          id: data1,
+          types: data2
+        };
+        const result = await showMenu(params);
+        // console.log('result:', result);
+        if(result.data.code !== 200){
+          this.$status(result.data.msg);
+          return false;
+        }
+      },
+      // 菜单启用禁用
+      async isMenuEnables(data1, data2){
+        // console.log(data1, data2);
+        let params = {
+          id: data1,
+          types: data2
+        };
+        const result = await enableMenu(params);
+        // console.log('result:', result);
+        if(result.data.code !== 200){
+          this.$status(result.data.msg);
+          return false;
+        }
+      },
+      // 删除
+      isMenuDelete(index, id) {
+        console.log(index, id);
+        this.$confirm('确定删除该条数据?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteMenu(id).then((result)=> {
+            console.log('result:', result);
+            if(result.data.code === 200) {
+              // if(this.data.child.length === 0){
+              //   this.data.splice(index, 1);
+              // } else {
+              //   this.data.child.splice(index, 1);
+              // }
+              // if (this.data.child.child.length === 0){
+              //   this.data.child.splice(index, 1);
+              // } else {
+              //   this.data.child.child.splice(index, 1);
+              // }
+              this.getRulesList();
+              this.$message({
+                type: 'success',
+                message: result.data.msg
+              });
+            } else {
+              this.$status(result.data.msg);
+            }
+          })
+        }).catch(() => {
+          console.log('result:', result);
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
       },
     }
   }

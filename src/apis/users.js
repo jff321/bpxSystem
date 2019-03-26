@@ -6,6 +6,12 @@ export async function  users(keys, page, limit){
   return result ? result : false
 }
 
+// 用户列表, 搜索用户列表
+export async function  usersList(keys, page, limit){
+  const result = axios.get('manage/users/userlist?keys='+keys+'&page='+page+'&limit='+limit);
+  return result ? result : false
+}
+
 // 启用，禁用用户商
 export async function change(data) {
   const result = axios.post('manage/users/enables', data);

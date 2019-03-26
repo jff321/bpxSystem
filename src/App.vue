@@ -2,7 +2,7 @@
   <div id="app">
     <el-container v-if="$route.meta.requireAuth">
       <el-header class="fixed-top">
-        <TopNav @listenLoginOut="listenLoginOut"></TopNav>
+        <TopNav @listenLoginOut="listenLoginOut" @listenBasicInfo="listenBasicInfo"></TopNav>
       </el-header>
       <el-container style="padding-top: 65px;">
         <el-aside width="200px">
@@ -26,13 +26,13 @@
     <el-container v-else>
       <router-view></router-view>
     </el-container>
-    <!--<login v-else v-on:listenToLogin="showLogin"></login>-->
   </div>
 </template>
 
 <script>
   import LeftNav from '@/components/LeftNav.vue'
   import TopNav from '@/components/TopNav.vue'
+  import {logout} from "@/apis/login";
 
   export default {
     name: 'App',
@@ -59,23 +59,40 @@
     },
     methods: {
       listenLoginOut (res) {
-        if (res === true) {
+        if (res) {
           this.$confirm('确定退出?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            localStorage.clear();
-            // location.reload();
-            this.$router.push({
-              path: '/login'
+            logout(res).then(result => {
+              // console.log('result:', result);
+              if(result.data.code === 200){
+                this.$message({
+                  type: 'success',
+                  message: result.data.msg
+                });
+                localStorage.clear();
+                // location.reload();
+                this.$router.push({
+                  path: '/login'
+                });
+              } else {
+                this.$status(result.data.msg);
+              }
             });
+
           }).catch(() => {
             this.$message({
               type: 'info',
               message: '已取消操作'
             });
           });
+        }
+      },
+      listenBasicInfo (data) {
+        if (data) {
+         this.$router.push({name: 'basicInfo'});
         }
       }
     }
