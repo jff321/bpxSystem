@@ -630,7 +630,7 @@
       },
       async getDataList(){
         const result = await agents(this.input, this.currentPage, this.pageSize);
-        console.log('result.data.data.list:', result.data.data.list);
+        // console.log('result.data.data.list:', result.data.data.list);
         this.loading = false;
         if(result.data.code === 200){
           this.list = result.data.data.list;

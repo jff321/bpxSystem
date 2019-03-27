@@ -225,7 +225,7 @@
       },
       // 查询
       async query(){
-        console.log(this.input);
+        // console.log(this.input);
         this.getBoxsList()
       },
       // 每页几条

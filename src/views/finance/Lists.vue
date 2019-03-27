@@ -2,7 +2,7 @@
   <div>
     <div class="navigation">财务管理/财务明细</div>
     <div class="mt-4">
-      <el-select v-model="type" placeholder="请选择操作类型" class="mr-4">
+      <el-select clearable v-model="type" placeholder="请选择操作类型" class="mr-4">
         <el-option
           v-for="item in types"
           :key="item.type"
@@ -24,8 +24,8 @@
         @change = "changeDate"
       >
       </el-date-picker>
-      <el-button class="mx-4" type="primary">查询</el-button>
-      <el-button class="mx-4" type="info">导出excel</el-button>
+      <el-button type="primary" @click="query">查询</el-button>
+      <!--<el-button class="mx-4" type="info">导出excel</el-button>-->
     </div>
     <!--表格-->
     <div class="mt-4">
@@ -44,11 +44,11 @@
         >
           <template slot-scope="scope">
             <span v-if="scope.row.types === 1">充值</span>
-            <span v-else-if="scope.row.types === 2">退款</span>
-            <span v-else-if="scope.row.types === 3">匹配</span>
-            <span v-else-if="scope.row.types === 4">拨号</span>
-            <span v-else-if="scope.row.types === 5">短信</span>
-            <span v-else>闪信</span>
+            <span v-if="scope.row.types === 2">匹配</span>
+            <span v-if="scope.row.types === 3">拨号</span>
+            <span v-if="scope.row.types === 4">短信</span>
+            <span v-if="scope.row.types === 5">闪信</span>
+            <span v-if="scope.row.types === 6">退款</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -62,10 +62,11 @@
         >
         </el-table-column>
         <el-table-column
-          label="标识"
+          label="金额"
         >
           <template slot-scope="scope">
-            <span>{{model = 1 ? '增加' : '减少'}}</span>
+            <span v-if="scope.row.model === 1">+ {{scope.row.money}}</span>
+            <span v-else>- {{scope.row.money}}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -103,51 +104,33 @@
     name: "BoxList",
     data(){
       return{
-        options1: [
-          {
-            value: '选项1',
-            label: '余额充值'
-          },
-          {
-            value: '选项2',
-            label: '余额扣除'
-          },
-          {
-            value: '选项3',
-            label: '外呼扣款'
-          },
-          {
-            value: '选项4',
-            label: '短信扣款'
-          },
-          // {
-          //   value: '选项5',
-          //   label: '月租扣费'
-          // },
-          {
-            value: '选项5',
-            label: '线索匹配扣款'
-          },
-          {
-            value: '选项6',
-            label: '失败短信返还'
-          },
-          {
-            value: '选项7',
-            label: '失败线索返还'
-          }
-        ],
         value1: '全部',
         input: '',
         types: [
           {
             type: 1,
-            label: '收入'
+            label: '充值'
           },
           {
-            type: 0,
-            label: '支出'
+            type: 2,
+            label: '匹配'
           },
+          {
+            type: 3,
+            label: '拨号'
+          },
+          {
+            type: 4,
+            label: '短信'
+          },
+          {
+            type: 5,
+            label: '闪信'
+          },
+          {
+            type: 6,
+            label: '退款'
+          }
         ],
         type: '',
         start_time: '',
@@ -208,8 +191,14 @@
         }
       },
       changeDate(val){
-        this.start_time = val[0];
-        this.end_time = val[1];
+        if (val == null) {
+          this.start_time = '';
+          this.end_time = '';
+        }
+        if(val.length > 0){
+          this.start_time = val[0];
+          this.end_time = val[1];
+        }
       },
       // 分页
       handleSizeChange(val) {
@@ -220,6 +209,10 @@
       handleCurrentChange(val) {
         console.log(`当前 ${val} 页`);
         this.currentPage = val;
+        this.getMoneyList()
+      },
+      // 查询
+      async query(){
         this.getMoneyList()
       },
     }

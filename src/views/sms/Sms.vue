@@ -10,7 +10,7 @@
         @keyup.enter.native="query"
       >
       </el-input>
-      <el-select v-model="type" placeholder="请选择模板类型" class="mr-4">
+      <el-select clearable v-model="type" placeholder="请选择模板类型" class="mr-4">
         <el-option
           v-for="item in types"
           :key="item.type"
@@ -61,7 +61,8 @@
           label="类型"
         >
           <template slot-scope="scope">
-            <span>{{scope.row.types ? '短信' : '闪信'}}</span>
+            <span v-if="scope.row.types === 1">短信</span>
+            <span v-if="scope.row.types === 2">闪信</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -121,7 +122,7 @@
       <el-dialog title="添加短信模板" :visible.sync="addVisible" width="500px" :before-close="handleAddClose">
         <el-form :model="addForm" :rules="addRules" ref="addForm">
           <el-form-item label="模板类型" prop="type" :label-width="formLabelWidth">
-            <el-select v-model="addForm.type" placeholder="请选择">
+            <el-select clearable v-model="addForm.type" placeholder="请选择">
               <el-option
                 v-for="item in addForm.types"
                 :key="item.type"
@@ -166,7 +167,7 @@
       <el-dialog title="编辑短信模板" :visible.sync="editVisible" width="500px" :before-close="handleEditClose">
         <el-form :model="editForm" :rules="editRules" ref="editForm">
           <el-form-item label="模板类型" prop="type" :label-width="formLabelWidth">
-            <el-select v-model="editForm.type" placeholder="请选择">
+            <el-select clearable v-model="editForm.type" placeholder="请选择">
               <el-option
                 v-for="item in editForm.types"
                 :key="item.type"
@@ -229,7 +230,7 @@
             label: '短信'
           },
           {
-            type: 0,
+            type: 2,
             label: '闪信'
           },
         ],
@@ -282,7 +283,7 @@
               label: '短信'
             },
             {
-              type: 0,
+              type: 2,
               label: '闪信'
             },
           ],
@@ -317,7 +318,7 @@
               label: '短信'
             },
             {
-              type: 0,
+              type: 2,
               label: '闪信'
             },
           ],
@@ -518,8 +519,14 @@
         this.getSmsList();
       },
       changeDate(val){
-        this.start_time = val[0];
-        this.end_time = val[1];
+        if (val == null) {
+          this.start_time = '';
+          this.end_time = '';
+        }
+        if(val.length > 0){
+          this.start_time = val[0];
+          this.end_time = val[1];
+        }
       }
     }
   }

@@ -142,7 +142,7 @@
       // 短信列表
       async getSmsLogList(){
         const result = await smsLog(this.input, this.type, this.start_time, this.end_time, this.currentPage, this.pageSize);
-        console.log('RESULT:', result);
+        // console.log('RESULT:', result);
         this.loading = false;
         if(result.data.code === 200){
           this.list = result.data.data.list;

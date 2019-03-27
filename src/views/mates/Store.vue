@@ -21,7 +21,7 @@
       <div v-if="radioButton === '盒子线索'">
         <div class="mt-4">
           <span class="navigation mr-3 text-right d-inline-block " style="width: 120px;">盒子设备</span>
-          <el-select v-model="value" placeholder="请选择">
+          <el-select clearable v-model="value" placeholder="请选择">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -49,7 +49,7 @@
       <div v-else>
         <div class="mt-4">
           <span class="navigation mr-3 text-right d-inline-block " style="width: 120px;">数据类型</span>
-          <el-select v-model="dataValue" placeholder="请选择">
+          <el-select clearable v-model="dataValue" placeholder="请选择">
             <el-option
               v-for="item in dataTypes"
               :key="item.value"

@@ -111,7 +111,7 @@
               init(o) {
                 // o 是高德地图定位插件实例
                 o.getCurrentPosition((status, result) => {
-                  console.log('RESULT:', result);
+                  // console.log('RESULT:', result);
                   // if (result.status === 0) {
                   //   Dialog.alert({
                   //     title: "提示",

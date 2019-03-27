@@ -1,6 +1,31 @@
 <template>
   <div>
     <div class="navigation">匹配列表</div>
+    <!--筛选-->
+    <div>
+      <el-select clearable class="mt-3 mr-4" v-model="code" placeholder="请选择" @change="changeCode">
+        <el-option
+          v-for="item in codes"
+          :key="item.code"
+          :label="item.name"
+          :value="item.code"
+        >
+        </el-option>
+      </el-select>
+      <el-date-picker
+        v-model="selDate"
+        type="datetimerange"
+        range-separator="-"
+        :picker-options="pickerOptions"
+        start-placeholder="开始筛选日期"
+        end-placeholder="结束筛选日期"
+        format="yyyy-MM-dd HH:mm:ss"
+        value-format="yyyy-MM-dd HH:mm:ss"
+        @change = "changeSelDate"
+      >
+      </el-date-picker>
+      <el-button type="primary" class="ml-4" @click="queryMac">查询</el-button>
+    </div>
     <!--人群采集-->
     <div class="mt-3">
       <div class="maps">
@@ -22,11 +47,19 @@
         <div class="maptop"></div>
         <div class="radar">
           <div class="radartext">{{MatesTotal}}</div>
-          <!--<transition-group tag="ul" name="fade">-->
-          <!--<li  v-for="(items, index) in dataset" :key="index">-->
-          <!--<div class="dot" :style="{left: items.left + 'px', top: items.right + 'px'}"></div>-->
-          <!--</li>-->
-          <!--</transition-group>-->
+
+          <transition-group
+            name="fade"
+            tag="ul"
+          >
+            <li
+              v-for="(items, index) in dataset"
+              v-bind:key="index+1"
+              v-bind:data-index="index"
+              class="dot" :style="{left: items.left + 'px', top: items.right + 'px'}"
+            >
+            </li>
+          </transition-group>
 
           <div class="circleone circle">
             <div class="circletwo circle"></div>
@@ -170,7 +203,7 @@
           <el-input v-model="addForm.name" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="探知器盒子ID" :label-width="formLabelWidth" class="w-75">
-          <el-select v-model="addForm.code" placeholder="请选择" @change="changeCode">
+          <el-select clearable v-model="addForm.code" placeholder="请选择" @change="changeCode">
             <el-option
               v-for="item in addForm.codes"
               :key="item.code"
@@ -181,7 +214,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="距离范围" :label-width="formLabelWidth" class="w-75">
-          <el-select v-model="addForm.range" placeholder="请选择" @change="changeRange">
+          <el-select clearable v-model="addForm.range" placeholder="请选择" @change="changeRange">
             <el-option
               v-for="item in addForm.ranges"
               :key="item.range"
@@ -235,6 +268,7 @@
     boxs,
     addMates,
     getMayNums,
+    todaymac
   } from '@/apis/mates'
   export default {
     components: {
@@ -242,6 +276,14 @@
     },
     data(){
       return{
+        interval: null,
+        interval1: null,
+        dataset: [],
+        circleNumber: 30,
+        circlenumbers: null,
+        selDate: [],
+        codes: [],
+        code: '',
         MatesTotal:0,
         list: [],
         loading: true,
@@ -291,7 +333,7 @@
           min_time: 0,
           max_time: '不限',
           codes: [],
-          code: '0',
+          code: '',
           ranges: [
             {
               label: '不限',
@@ -342,8 +384,46 @@
     async mounted(){
       this.getMatesList();
       this.getBoxs();
+      this.interval = setInterval(()=>{
+        this.setRondom();
+      },3000);
+      this.interval1 = setInterval(()=>{
+        this.deleteCircle();
+      },5000);
+      // 地图上获取盒子
+      const result = await boxs();
+      if(result.data.code === 200){
+        result.data.data.forEach((item) => {
+          this.codes.push({
+            code: item.code,
+            name: item.name
+          })
+        });
+      } else {
+        this.$status(result.data.msg);
+      }
+    },
+    beforeDestroy: function () {
+      clearInterval(this.interval);
     },
     methods: {
+      //随机出现扫描的探针点
+      setRondom() {
+        // this.dataset = [];
+        this.circleNumber = Math.floor((Math.random() * 10) + 10);
+        this.circlenumbers += this.circleNumber;
+        // console.info( '每次', this.circleNumber);
+        // console.info( '总的', this.circlenumbers);
+        for(let i=0;i<=this.circleNumber;i++) {
+          this.dataset.push({left:Math.floor(Math.random() * 400),right:Math.floor(Math.random() * 400)});
+        }
+      },
+      // 删除扫描点
+      deleteCircle() {
+        this.dataset.splice(0,this.circlenumbers+3);
+        // console.info( '删除剩下的', this.dataset.length);
+        this.circlenumbers = null;
+      },
       // 匹配列表
       async getMatesList(){
         const result = await mates(this.id, this.start_date, this.end_date, this.input, this.currentPage, this.pageSize);
@@ -392,36 +472,41 @@
       },
       // 新增确认框
       submitAdd(formName){
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            let params = {
-              name: this.addForm.name,
-              box_id: this.addForm.code,
-              range_id: this.addForm.range,
-              min_time: this.addForm.min_time,
-              max_time: this.addForm.max_time,
-              start_date: this.addForm.start_date,
-              end_date: this.addForm.end_date,
-              y_nums: this.addForm.y_nums,
-              money: this.addForm.money
-            };
-            addMates(params).then((result)=>{
-              // console.log('result:', result);
-              if(result.data.code === 200){
-                this.getMatesList();
-                this.$message({
-                  message: result.data.msg,
-                  type: 'success'
-                });
-                this.addVisible = false;
-              } else {
-                this.$status(result.data.msg);
-              }
-            });
-          } else {
-            return false;
-          }
-        });
+        if(this.addForm.y_nums === 0){
+          this.$status('预计匹配数量为0，请重新匹配');
+          return false
+        } else {
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              let params = {
+                name: this.addForm.name,
+                box_id: this.addForm.code,
+                range_id: this.addForm.range,
+                min_time: this.addForm.min_time,
+                max_time: this.addForm.max_time,
+                start_date: this.addForm.start_date,
+                end_date: this.addForm.end_date,
+                y_nums: this.addForm.y_nums,
+                money: this.addForm.money
+              };
+              addMates(params).then((result)=>{
+                console.log('result:', result);
+                if(result.data.code === 200){
+                  this.getMatesList();
+                  this.$message({
+                    message: result.data.msg,
+                    type: 'success'
+                  });
+                  this.addVisible = false;
+                } else {
+                  this.$status(result.data.msg);
+                }
+              });
+            } else {
+              return false;
+            }
+          });
+        }
       },
       // 新增弹框取消按钮
       addClose(formName){
@@ -444,8 +529,24 @@
         }
         this.addForm.money = result.data.data.total;
       },
+      // 地图上筛选创建时间
+      changeSelDate(val){
+        console.log(val);
+        if (val == null) {
+          this.start_date = '';
+          this.end_date = '';
+        }
+        if(val.length > 0){
+          this.start_date = val[0];
+          this.end_date = val[1];
+        }
+      },
       // 筛选创建时间
       changeTimes(val){
+        if (val == null) {
+          this.start_date = '';
+          this.end_date = '';
+        }
         if(val.length > 0){
           this.start_date = val[0];
           this.end_date = val[1];
@@ -453,11 +554,14 @@
       },
       // 新增筛选日期选择完之后触发
       changeDate(val){
+        if (val == null) {
+          this.start_date = '';
+          this.end_date = '';
+        }
         if(val.length > 0){
           this.addForm.start_date = val[0];
           this.addForm.end_date = val[1];
         }
-        this.getMayData();
       },
       // 新增筛选感知器选择完之后触发
       changeCode(){
@@ -506,6 +610,18 @@
             id: id
           }
         })
+      },
+      async getTodayMac(){
+        const result = await todaymac(this.code, this.start_date, this.end_date);
+        // console.log('result: ', result);
+        if(result.data.code === 200){
+          this.MatesTotal = result.data.data;
+        } else {
+          this.$status(result.data.msg);
+        }
+      },
+      queryMac(){
+        this.getTodayMac();
       }
     }
   };
@@ -541,6 +657,7 @@
     height: 10px;
     border-radius: 50%;
     background-color: #29ea26;
+    list-style: none;
   }
   .circleone{
     position: absolute;

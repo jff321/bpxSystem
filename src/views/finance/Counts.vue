@@ -35,7 +35,8 @@
     </div>
     <!--搜索-->
     <div class="mt-4">
-      <el-select v-model="type" placeholder="请选择操作类型" class="mr-4">
+      <el-input class="inputStyle mr-4" v-model="input" placeholder="请输入备注" @keyup.enter.native="query"></el-input>
+      <el-select clearable v-model="type" placeholder="请选择操作类型" class="mr-4">
         <el-option
           v-for="item in types"
           :key="item.type"
@@ -44,6 +45,15 @@
         >
         </el-option>
       </el-select>
+      <!--<el-select v-model="type" placeholder="请选择标识类型" class="mr-4">-->
+        <!--<el-option-->
+          <!--v-for="item in types"-->
+          <!--:key="item.type"-->
+          <!--:label="item.label"-->
+          <!--:value="item.type"-->
+        <!--&gt;-->
+        <!--</el-option>-->
+      <!--</el-select>-->
       <el-date-picker
         class="mr-4"
         v-model="date"
@@ -57,8 +67,8 @@
         @change = "changeDate"
       >
       </el-date-picker>
-      <el-button class="mx-4" type="primary">查询</el-button>
-      <el-button class="mx-4" type="info">导出excel</el-button>
+      <el-button type="primary" @click="query">查询</el-button>
+      <!--<el-button class="mx-4" type="info">导出excel</el-button>-->
     </div>
     <!--表格-->
     <div class="mt-4">
@@ -72,11 +82,7 @@
         >
           <template slot-scope="scope">
             <span v-if="scope.row.types === 1">充值</span>
-            <span v-else-if="scope.row.types === 2">退款</span>
-            <span v-else-if="scope.row.types === 3">匹配</span>
-            <span v-else-if="scope.row.types === 4">拨号</span>
-            <span v-else-if="scope.row.types === 5">短信</span>
-            <span v-else>闪信</span>
+            <span v-else-if="scope.row.types === 2">匹配</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -90,10 +96,11 @@
         >
         </el-table-column>
         <el-table-column
-          label="标识"
+          label="金额"
         >
           <template slot-scope="scope">
-            <span>{{model = 1 ? '增加' : '减少'}}</span>
+            <span v-if="scope.row.model === 1">+ {{scope.row.money}}</span>
+            <span v-else>- {{scope.row.money}}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -138,11 +145,11 @@
         types: [
           {
             type: 1,
-            label: '收入'
+            label: '充值'
           },
           {
-            type: 0,
-            label: '支出'
+            type: 2,
+            label: '匹配'
           },
         ],
         type: '',
@@ -207,8 +214,14 @@
         }
       },
       changeDate(val){
-        this.start_time = val[0];
-        this.end_time = val[1];
+        if (val == null) {
+          this.start_time = '';
+          this.end_time = '';
+        }
+        if(val.length > 0){
+          this.start_time = val[0];
+          this.end_time = val[1];
+        }
       },
       // 分页
       handleSizeChange(val) {
@@ -221,11 +234,18 @@
         this.currentPage = val;
         this.getCountsList()
       },
+      // 查询
+      async query(){
+        this.getCountsList()
+      },
     }
   }
 </script>
 
 <style scoped>
+  .inputStyle{
+    width: 15%;
+  }
   .flow{
     font-weight: 400;
     color: rgb(0, 172, 214);

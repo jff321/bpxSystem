@@ -71,7 +71,7 @@
         const result = await rules();
         if(result.data.code === 200){
           this.data = result.data.data;
-          console.log('this.data:', this.data);
+          // console.log('this.data:', this.data);
         } else {
           this.$status(result.data.msg);
         }
@@ -113,7 +113,7 @@
           type: 'warning'
         }).then(() => {
           deleteMenu(id).then((result)=> {
-            console.log('result:', result);
+            // console.log('result:', result);
             if(result.data.code === 200) {
               // if(this.data.child.length === 0){
               //   this.data.splice(index, 1);

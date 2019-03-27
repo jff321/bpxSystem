@@ -752,7 +752,7 @@
                 });
                 this.list[this.userEditIndex].company = this.ruleForm.company;
                 this.list[this.userEditIndex].logo_url = this.ruleForm.imageUrl;
-                this.list[this.userEditIndex].contact = this.ruleForm.contact;
+                this.list[this.userEditIndex].uname = this.ruleForm.uname;
                 this.list[this.userEditIndex].address = this.ruleForm.address;
                 this.list[this.userEditIndex].status = this.ruleForm.status;
                 this.list[this.userEditIndex].is_outcall = this.ruleForm.is_outcall;

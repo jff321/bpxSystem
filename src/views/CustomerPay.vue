@@ -94,7 +94,7 @@
           <el-input class="w-75" v-model="form.money" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="支付方式" :label-width="formLabelWidth">
-          <el-select v-model="form.method" placeholder="请选择支付方式">
+          <el-select clearable v-model="form.method" placeholder="请选择支付方式">
             <el-option label="微信" value="weixin"></el-option>
             <el-option label="支付宝" value="zhifubao"></el-option>
             <el-option label="银行卡" value="yinhangka"></el-option>

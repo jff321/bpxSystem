@@ -6,6 +6,12 @@ export async function  mates (box_id, start_date, end_date, keys, page, limit){
   return result ? result : false
 }
 
+// 查询盒子采集数据
+export async function  todaymac (box_id, start_date, end_date){
+  const result = await axios.get(`manage/mates/todaymac?box_id=${box_id}&start_date=${start_date}&end_date=${end_date}`);
+  return result ? result : false
+}
+
 // 盒子数据
 export async function  boxs (){
   const result = await axios.get(`manage/mates/getbox`);
@@ -29,3 +35,4 @@ export async function  details (id, keys, page, limit, start_date, end_date){
   const result = await axios.get(`manage/mates/getlist?id=${id}&keys=${keys}&page=${page}&limit=${limit}&start_time=${start_date}&end_date=${end_date}`);
   return result ? result : false
 }
+
