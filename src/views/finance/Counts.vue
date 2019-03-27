@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="navigation">财务管理/财务统计</div>
-    <div class="d-flex text-center">
+    <div class="d-flex text-center justify-content-between">
       <!--账户余额-->
-      <div class="mt-3 w-25 mr-4">
+      <div class="mt-3 mr-4" style="width: 32%">
         <div class="shadow p-5">
           <p class="font-weight-bold">
             <img src="../../assets/yue.png" alt="" style="width: 35px;height: 35px;">
@@ -13,7 +13,7 @@
         </div>
       </div>
       <!--累计收入-->
-      <div class="mt-3 w-25 mr-4">
+      <div class="mt-3 mr-4" style="width: 32%">
         <div class="shadow p-5">
           <p class="font-weight-bold">
             <img src="../../assets/shouru.png" alt="" style="width: 35px;height: 35px;">
@@ -23,7 +23,7 @@
         </div>
       </div>
       <!--累计支出-->
-      <div class="mt-3 w-25">
+      <div class="mt-3" style="width: 32%">
         <div class="shadow p-5">
           <p class="font-weight-bold">
             <img src="../../assets/zhichu.png" alt="" style="width: 35px;height: 35px;">
@@ -84,6 +84,11 @@
             <span v-if="scope.row.types === 1">充值</span>
             <span v-else-if="scope.row.types === 2">匹配</span>
           </template>
+        </el-table-column>
+        <el-table-column
+          prop="contact"
+          label="用户"
+        >
         </el-table-column>
         <el-table-column
           prop="b_money"

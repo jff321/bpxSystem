@@ -9,7 +9,7 @@
     <div v-for="(nav) in menus" :key="nav.id" >
       <el-submenu v-if="nav.child" :index="(nav.id).toString()">
         <template slot="title">
-          <i class="el-icon-location"></i>
+          <i :class="nav.ico"></i>
           <span>{{nav.title}}</span>
         </template>
         <el-menu-item-group>
@@ -17,7 +17,7 @@
         </el-menu-item-group>
       </el-submenu>
       <el-menu-item  v-else :key="nav.id" :index="nav.action">
-        <i class="el-icon-menu"></i>
+        <i :class="nav.ico"></i>
         <span slot="title">{{nav.title}}</span>
       </el-menu-item>
     </div>

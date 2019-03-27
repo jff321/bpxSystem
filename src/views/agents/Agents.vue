@@ -589,7 +589,7 @@
         this.addForm.fms = '';
         this.addForm.mate = '';
         this.addForm.tel = '';
-        this.addForm.status = '';
+        this.addForm.status = 1;
       },
       submitAddAgent(formName){
         this.$refs[formName].validate((valid) => {
@@ -782,10 +782,10 @@
         if (result.data.code === 200) {
           this.setDialogVisible = true;
           // ？？？此处字段名没有  新增之后才有
-          this.setForm.sms = result.data.data.sms;
-          this.setForm.fms = result.data.data.fms;
-          this.setForm.mate = result.data.data.mate;
-          this.setForm.tel = result.data.data.tel;
+          this.setForm.sms = result.data.data.setting.sms;
+          this.setForm.fms = result.data.data.setting.fms;
+          this.setForm.mate = result.data.data.setting.mate;
+          this.setForm.tel = result.data.data.setting.tel;
         } else {
           this.$status(result.data.msg);
         }

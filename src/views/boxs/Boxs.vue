@@ -246,7 +246,7 @@
         this.addForm.name = '';
         this.addForm.code = '';
         this.addForm.sim = '';
-        this.addForm.status = '';
+        this.addForm.status = 1;
       },
       // 新增确认框
       submitAddBox(formName){

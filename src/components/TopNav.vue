@@ -11,7 +11,7 @@
     <div class="mx-5">
       <el-dropdown>
         <span class="el-dropdown-link d-inline-block d-flex align-items-center fontColor" style="height: 65px;cursor: pointer">
-         <i class="fa fa-rmb icon"></i> 账户余额 : 0元
+         <i class="fa fa-rmb icon"></i> 账户余额 : {{balance}}元
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>短信单价：0.05元/条</el-dropdown-item>
@@ -24,7 +24,7 @@
     <div class="mr-5">
       <el-dropdown @command="handleCommand">
         <span class="el-dropdown-link d-inline-block d-flex align-items-center fontColor" style="height: 65px;cursor: pointer">
-          <i class="fa fa-address-book-o icon"></i>17711545233
+          <i class="fa fa-address-book-o icon"></i>{{mobile}}
         </span>
         <el-dropdown-menu slot="dropdown">
           <!--el-dropdown-item没有自定义click事件, 两个解决办法:
