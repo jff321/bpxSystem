@@ -129,11 +129,14 @@
       <!--</el-switch>-->
       <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作" width="250">
         <template slot-scope="scope" class="text-left border">
           <el-button
             size="mini"
             @click="handleRecharge(scope.$index, scope.row.id)">充值</el-button>
+          <el-button
+            size="mini"
+            @click="handleEditShow(scope.$index, scope.row.id)">编辑</el-button>
           <el-button
             size="mini"
             style="margin-right: 10px;"
@@ -142,10 +145,11 @@
             size="mini"
             class="mt-2 ml-0"
             style="margin-right: 10px;"
-            @click="handleEditShow(scope.$index, scope.row.id)">编辑</el-button>
+            @click="toLists(scope.row.id)">财务明细</el-button>
           <el-button
-            class="mt-2 ml-0"
             size="mini"
+            class="mt-2 ml-0"
+            style="margin-right: 10px;"
             @click="handleBindBox(scope.$index, scope.row.id)">绑定盒子</el-button>
           <el-button
             size="mini"
@@ -443,7 +447,6 @@
   import {
     provinceAndCityData ,
     CodeToText,
-    TextToCode
   } from 'element-china-area-data'
   export default {
     name: "users",
@@ -1082,6 +1085,7 @@
                   type: 'success'
                 });
                 this.list[this.userPayIndex].balance = this.payForm.pay;
+                console.log(this.list[this.userPayIndex].balance);
                 this.payVisible = false;
               } else {
                 this.$status(result.data.msg);
@@ -1101,6 +1105,14 @@
       handlePayClose(){
         this.payClose('payForm');
       },
+      toLists(id){
+        this.$router.push({
+          name: 'userLists',
+          query: {
+            id: id
+          }
+        })
+      }
     }
   }
 </script>

@@ -5,10 +5,12 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    token: localStorage.getItem('token')
+    isShowMenu: 1
   },
   mutations: {
-
+    menuShowed(state, types){
+      state.isShowMenu = types
+    }
   },
   actions: {
 

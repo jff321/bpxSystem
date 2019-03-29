@@ -32,7 +32,7 @@ export async function  getMayNums (box_id, range_id, min_time, max_time, start_d
 
 // 列表详情
 export async function  details (id, keys, page, limit, start_date, end_date){
-  const result = await axios.get(`manage/mates/getlist?id=${id}&keys=${keys}&page=${page}&limit=${limit}&start_time=${start_date}&end_date=${end_date}`);
+  const result = await axios.get(`manage/mates/getlist?id=${id}&keys=${keys}&page=${page}&limit=${limit}&start_date=${start_date}&end_date=${end_date}`);
   return result ? result : false
 }
 

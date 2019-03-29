@@ -8,13 +8,6 @@
         <el-aside width="200px">
           <LeftNav></LeftNav>
         </el-aside>
-        <!--<el-main-->
-          <!--v-if="$route.path==='/index'"-->
-          <!--class="mainMap"-->
-          <!--:style={height:leftHeight}-->
-        <!--&gt;-->
-          <!--<router-view></router-view>-->
-        <!--</el-main>-->
         <el-main
           class="main"
           :style={height:leftHeight}
@@ -44,8 +37,6 @@
     components:{
       LeftNav,
       TopNav
-    },
-    computed: {
     },
     watch: {
     },

@@ -120,6 +120,22 @@ export default new Router({
       component: () => import('./views/finance/Lists.vue')
     },
     {
+      path: '/finance/userLists',
+      name: 'userLists',
+      meta: {
+        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+      },
+      component: () => import('./views/finance/UserLists.vue')
+    },
+    {
+      path: '/finance/agentCounts',
+      name: 'agentCounts',
+      meta: {
+        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+      },
+      component: () => import('./views/finance/AgentCounts.vue')
+    },
+    {
       path: '/finance/counts',
       name: 'counts',
       meta: {

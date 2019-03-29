@@ -78,7 +78,7 @@
       },
       // 菜单显示及隐藏
       async isMenuShow(data1, data2){
-        // console.log(data1, data2);
+        // console.log('id:'+data1, 'types:'+data2);
         let params = {
           id: data1,
           types: data2
@@ -89,6 +89,17 @@
           this.$status(result.data.msg);
           return false;
         }
+        // else {
+        //   // console.log('result:', result);
+        //   localStorage.getItem('menus').forEach(item => {
+        //     item.child.forEach(item => {
+        //       if(item.id === data1){
+        //         item.show = data2;
+        //       }
+        //     })
+        //   });
+        //   this.$store.commit('menuShowed', data2)
+        // }
       },
       // 菜单启用禁用
       async isMenuEnables(data1, data2){
@@ -135,7 +146,6 @@
             }
           })
         }).catch(() => {
-          console.log('result:', result);
           this.$message({
             type: 'info',
             message: '已取消删除'

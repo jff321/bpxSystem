@@ -1,38 +1,38 @@
 <template>
   <div>
     <div class="navigation">财务管理/财务统计</div>
-    <div class="d-flex text-center justify-content-between">
-      <!--账户余额-->
-      <div class="mt-3 mr-4" style="width: 32%">
-        <div class="shadow p-5">
-          <p class="font-weight-bold">
-            <img src="../../assets/yue.png" alt="" style="width: 35px;height: 35px;">
-            账户余额
-          </p>
-          <p class="flow">{{balance}}</p>
-        </div>
-      </div>
-      <!--累计收入-->
-      <div class="mt-3 mr-4" style="width: 32%">
-        <div class="shadow p-5">
-          <p class="font-weight-bold">
-            <img src="../../assets/shouru.png" alt="" style="width: 35px;height: 35px;">
-            累计收入
-          </p>
-          <p class="flow">{{income}}</p>
-        </div>
-      </div>
-      <!--累计支出-->
-      <div class="mt-3" style="width: 32%">
-        <div class="shadow p-5">
-          <p class="font-weight-bold">
-            <img src="../../assets/zhichu.png" alt="" style="width: 35px;height: 35px;">
-            累计支出
-          </p>
-          <p class="flow">{{pays}}</p>
-        </div>
-      </div>
-    </div>
+    <!--<div class="d-flex text-center justify-content-between">-->
+      <!--&lt;!&ndash;账户余额&ndash;&gt;-->
+      <!--<div class="mt-3 mr-4" style="width: 32%">-->
+        <!--<div class="shadow p-5">-->
+          <!--<p class="font-weight-bold">-->
+            <!--<img src="../../assets/yue.png" alt="" style="width: 35px;height: 35px;">-->
+            <!--账户余额-->
+          <!--</p>-->
+          <!--<p class="flow">{{balance}}</p>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--&lt;!&ndash;累计收入&ndash;&gt;-->
+      <!--<div class="mt-3 mr-4" style="width: 32%">-->
+        <!--<div class="shadow p-5">-->
+          <!--<p class="font-weight-bold">-->
+            <!--<img src="../../assets/shouru.png" alt="" style="width: 35px;height: 35px;">-->
+            <!--累计收入-->
+          <!--</p>-->
+          <!--<p class="flow">{{income}}</p>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--&lt;!&ndash;累计支出&ndash;&gt;-->
+      <!--<div class="mt-3" style="width: 32%">-->
+        <!--<div class="shadow p-5">-->
+          <!--<p class="font-weight-bold">-->
+            <!--<img src="../../assets/zhichu.png" alt="" style="width: 35px;height: 35px;">-->
+            <!--累计支出-->
+          <!--</p>-->
+          <!--<p class="flow">{{pays}}</p>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
     <!--搜索-->
     <div class="mt-4">
       <el-input class="inputStyle mr-4" v-model="input" placeholder="请输入备注" @keyup.enter.native="query"></el-input>
@@ -46,13 +46,13 @@
         </el-option>
       </el-select>
       <!--<el-select v-model="type" placeholder="请选择标识类型" class="mr-4">-->
-        <!--<el-option-->
-          <!--v-for="item in types"-->
-          <!--:key="item.type"-->
-          <!--:label="item.label"-->
-          <!--:value="item.type"-->
-        <!--&gt;-->
-        <!--</el-option>-->
+      <!--<el-option-->
+      <!--v-for="item in types"-->
+      <!--:key="item.type"-->
+      <!--:label="item.label"-->
+      <!--:value="item.type"-->
+      <!--&gt;-->
+      <!--</el-option>-->
       <!--</el-select>-->
       <el-date-picker
         class="mr-4"
@@ -206,7 +206,7 @@
     },
     methods: {
       async getCountsList () {
-        const result = await counts('', this.input, this.type, this.start_time, this.end_time, this.currentPage, this.pageSize);
+        const result = await counts(this.$route.query.id, this.input, this.type, this.start_time, this.end_time, this.currentPage, this.pageSize);
         this.loading = false;
         if(result.data.code === 200){
           this.list = result.data.data.list;

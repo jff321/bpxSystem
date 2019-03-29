@@ -147,6 +147,11 @@
             size="mini"
             @click="handleAgentPwd(scope.$index, scope.row.id)">修改密码</el-button>
           <el-button
+            size="mini"
+            class="mt-2 ml-0"
+            style="margin-right: 10px;"
+            @click="toLists(scope.row.id)">财务明细</el-button>
+          <el-button
             class="mt-2 ml-0"
             size="mini"
             type="danger"
@@ -1008,6 +1013,14 @@
       // 修改密码弹框关闭按钮
       handlePwdClose(){
         this.pwdClose('pwdForm');
+      },
+      toLists(id){
+        this.$router.push({
+          name: 'userLists',
+          query: {
+            id: id
+          }
+        })
       }
     }
   }

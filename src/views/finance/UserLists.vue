@@ -1,41 +1,7 @@
 <template>
   <div>
-    <div class="navigation">财务管理/财务统计</div>
-    <div class="d-flex text-center justify-content-between">
-      <!--账户余额-->
-      <div class="mt-3 mr-4" style="width: 32%">
-        <div class="shadow p-5">
-          <p class="font-weight-bold">
-            <img src="../../assets/yue.png" alt="" style="width: 35px;height: 35px;">
-            账户余额
-          </p>
-          <p class="flow">{{balance}}</p>
-        </div>
-      </div>
-      <!--累计收入-->
-      <div class="mt-3 mr-4" style="width: 32%">
-        <div class="shadow p-5">
-          <p class="font-weight-bold">
-            <img src="../../assets/shouru.png" alt="" style="width: 35px;height: 35px;">
-            累计收入
-          </p>
-          <p class="flow">{{income}}</p>
-        </div>
-      </div>
-      <!--累计支出-->
-      <div class="mt-3" style="width: 32%">
-        <div class="shadow p-5">
-          <p class="font-weight-bold">
-            <img src="../../assets/zhichu.png" alt="" style="width: 35px;height: 35px;">
-            累计支出
-          </p>
-          <p class="flow">{{pays}}</p>
-        </div>
-      </div>
-    </div>
-    <!--搜索-->
+    <div class="navigation">财务管理/财务明细</div>
     <div class="mt-4">
-      <el-input class="inputStyle mr-4" v-model="input" placeholder="请输入备注" @keyup.enter.native="query"></el-input>
       <el-select clearable v-model="type" placeholder="请选择操作类型" class="mr-4">
         <el-option
           v-for="item in types"
@@ -45,15 +11,6 @@
         >
         </el-option>
       </el-select>
-      <!--<el-select v-model="type" placeholder="请选择标识类型" class="mr-4">-->
-        <!--<el-option-->
-          <!--v-for="item in types"-->
-          <!--:key="item.type"-->
-          <!--:label="item.label"-->
-          <!--:value="item.type"-->
-        <!--&gt;-->
-        <!--</el-option>-->
-      <!--</el-select>-->
       <el-date-picker
         class="mr-4"
         v-model="date"
@@ -78,17 +35,21 @@
         :loading="loading"
         style="width: 100%">
         <el-table-column
+          prop="uname"
+          label="用户"
+        >
+        </el-table-column>
+        <el-table-column
           label="操作类型"
         >
           <template slot-scope="scope">
             <span v-if="scope.row.types === 1">充值</span>
-            <span v-else-if="scope.row.types === 2">匹配</span>
+            <span v-if="scope.row.types === 2">匹配</span>
+            <span v-if="scope.row.types === 3">拨号</span>
+            <span v-if="scope.row.types === 4">短信</span>
+            <span v-if="scope.row.types === 5">闪信</span>
+            <span v-if="scope.row.types === 6">退款</span>
           </template>
-        </el-table-column>
-        <el-table-column
-          prop="contact"
-          label="用户"
-        >
         </el-table-column>
         <el-table-column
           prop="b_money"
@@ -137,15 +98,13 @@
 
 <script>
   import {
-    counts
-  } from "@/apis/finance";
+    finance
+  } from '@/apis/finance'
   export default {
-    name: "counts",
-    data () {
-      return {
-        balance: '0.00',
-        income: '0.00',
-        pays: '0.00',
+    name: "BoxList",
+    data(){
+      return{
+        value1: '全部',
         input: '',
         types: [
           {
@@ -156,6 +115,22 @@
             type: 2,
             label: '匹配'
           },
+          {
+            type: 3,
+            label: '拨号'
+          },
+          {
+            type: 4,
+            label: '短信'
+          },
+          {
+            type: 5,
+            label: '闪信'
+          },
+          {
+            type: 6,
+            label: '退款'
+          }
         ],
         type: '',
         start_time: '',
@@ -202,17 +177,14 @@
       }
     },
     mounted(){
-      this.getCountsList();
+      this.getMoneyList();
     },
     methods: {
-      async getCountsList () {
-        const result = await counts('', this.input, this.type, this.start_time, this.end_time, this.currentPage, this.pageSize);
+      async getMoneyList () {
+        const result = await finance(this.$route.query.id, this.input, this.type, this.start_time, this.end_time, this.currentPage, this.pageSize);
         this.loading = false;
         if(result.data.code === 200){
           this.list = result.data.data.list;
-          this.balance = result.data.data.balance;
-          this.income = result.data.data.income;
-          this.pays = result.data.data.pays;
           this.total = result.data.data.count;
         } else {
           this.$status(result.data.msg);
@@ -232,25 +204,22 @@
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
         this.pageSize = val;
-        this.getCountsList()
+        this.getMoneyList()
       },
       handleCurrentChange(val) {
         console.log(`当前 ${val} 页`);
         this.currentPage = val;
-        this.getCountsList()
+        this.getMoneyList()
       },
       // 查询
       async query(){
-        this.getCountsList()
+        this.getMoneyList()
       },
     }
   }
 </script>
 
 <style scoped>
-  .inputStyle{
-    width: 15%;
-  }
   .flow{
     font-weight: 400;
     color: rgb(0, 172, 214);

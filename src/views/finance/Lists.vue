@@ -181,7 +181,7 @@
     },
     methods: {
       async getMoneyList () {
-        const result = await finance(this.input, this.type, this.start_time, this.end_time, this.currentPage, this.pageSize);
+        const result = await finance('', this.input, this.type, this.start_time, this.end_time, this.currentPage, this.pageSize);
         this.loading = false;
         if(result.data.code === 200){
           this.list = result.data.data.list;
