@@ -12,36 +12,43 @@
       <el-table
         :data="list"
         stripe
+        :default-sort = "{prop: 'times', order: 'descending'}"
         v-loading="loading"
         style="width: 100%">
         <el-table-column
           prop="name"
           label="盒子名称"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="uname"
           label="联系人姓名"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="code"
           label="盒子编码"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="sim"
           label="盒子sim编码"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="times"
           label="创建时间"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="status"
           label="盒子状态"
+          sortable
         >
           <template slot-scope="scope">
             <el-switch
@@ -219,6 +226,8 @@
         if(result.data.code === 200){
           this.list = result.data.data.list;
           this.total = result.data.data.count;
+        } else if(result.data.code === 403){
+          this.$noAuth(result.data.msg);
         } else {
           this.$status(result.data.msg);
         }

@@ -41,24 +41,29 @@
         v-loading="loading"
         :data="list"
         stripe
+        :default-sort = "{prop: 'times', order: 'descending'}"
         style="width: 100%">
         <el-table-column
           prop="title"
           label="标题"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="sign"
           label="签名"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="uname"
           label="用户"
+          sortable
         >
         </el-table-column>
         <el-table-column
           label="类型"
+          sortable
         >
           <template slot-scope="scope">
             <span v-if="scope.row.types === 1">短信</span>
@@ -68,6 +73,7 @@
         <el-table-column
           prop="times"
           label="提交时间"
+          sortable
         >
         </el-table-column>
         <el-table-column
@@ -88,6 +94,7 @@
         <el-table-column
           prop="u_times"
           label="审核时间"
+          sortable
         >
         </el-table-column>
         <el-table-column
@@ -356,6 +363,8 @@
         if(result.data.code === 200){
           this.list = result.data.data.list;
           this.total = result.data.data.count;
+        } else if(result.data.code === 403){
+          this.$noAuth(result.data.msg);
         } else {
           this.$status(result.data.msg);
         }

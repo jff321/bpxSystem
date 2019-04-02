@@ -32,15 +32,18 @@
       <el-table
         :data="list"
         stripe
+        :default-sort = "{prop: 'times', order: 'descending'}"
         :loading="loading"
         style="width: 100%">
         <el-table-column
           prop="uname"
           label="用户"
+          sortable
         >
         </el-table-column>
         <el-table-column
           label="操作类型"
+          sortable
         >
           <template slot-scope="scope">
             <span v-if="scope.row.types === 1">充值</span>
@@ -54,15 +57,18 @@
         <el-table-column
           prop="b_money"
           label="操作前余额"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="a_money"
           label="操作后余额"
+          sortable
         >
         </el-table-column>
         <el-table-column
           label="金额"
+          sortable
         >
           <template slot-scope="scope">
             <span v-if="scope.row.model === 1">+ {{scope.row.money}}</span>
@@ -72,11 +78,13 @@
         <el-table-column
           prop="remark"
           label="备注"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="times"
           label="更新时间"
+          sortable
         >
         </el-table-column>
       </el-table>
@@ -186,6 +194,8 @@
         if(result.data.code === 200){
           this.list = result.data.data.list;
           this.total = result.data.data.count;
+        } else if(result.data.code === 403){
+          this.$noAuth(result.data.msg);
         } else {
           this.$status(result.data.msg);
         }

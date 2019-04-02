@@ -67,14 +67,7 @@
                 placement="bottom"
               >
                 <div slot="content">
-                  线索/短信收费标准：线索匹配0.13，
-                  <br/>
-                  元/条，短信发送0.05元/条
-                  <br/>
-                  <br/>
-                  外呼收费标准：月租费用15元/月，外
-                  <br/>
-                  呼费用0.12元/分钟
+                  线索收费标准：线索匹配0.1元/条
                 </div>
                 <i class="fa fa-tags icon text-secondary"></i>
               </el-tooltip>
@@ -88,6 +81,15 @@
             <p class="font-weight-bold">
               <img src="../assets/shanxin.png" alt="" style="width: 35px;height: 35px;">
               累计发送闪信
+              <el-tooltip
+                effect="dark"
+                placement="bottom"
+              >
+                <div slot="content">
+                  闪信收费标准：闪信发送0.2元/条
+                </div>
+                <i class="fa fa-tags icon text-secondary"></i>
+              </el-tooltip>
             </p>
             <p class="flow">{{fms_num}}</p>
           </div>
@@ -98,6 +100,15 @@
             <p class="font-weight-bold">
               <img src="../assets/duanxin.png" alt="" style="width: 35px;height: 35px;">
               累计发送短信
+              <el-tooltip
+                effect="dark"
+                placement="bottom"
+              >
+                <div slot="content">
+                  短信收费标准：短信发送0.09元/条
+                </div>
+                <i class="fa fa-tags icon text-secondary"></i>
+              </el-tooltip>
             </p>
             <p class="flow">{{sms_num}}</p>
           </div>
@@ -136,6 +147,8 @@
       this.fms_num = result.data.data.fms_num;
       this.user_num = result.data.data.user_num;
       this.box_num = result.data.data.box_num;
+    } else if(result.data.code === 403){
+      this.$noAuth(result.data.msg);
     } else {
       this.$status(result.data.msg);
     }

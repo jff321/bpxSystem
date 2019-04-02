@@ -622,6 +622,8 @@
           this.list = result.data.data.list;
           this.tempList = result.data.data.list;
           this.total = result.data.data.count;
+        } else if(result.data.code === 403){
+          this.$noAuth(result.data.msg);
         } else {
           this.$status(result.data.msg);
         }

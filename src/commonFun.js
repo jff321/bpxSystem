@@ -5,14 +5,19 @@ commonFun.install = function (Vue) {
   Vue.prototype.$status = function (msg) {
     this.$message.error(msg);
   };
-  // 上传文件
-  // Vue.prototype.$uploadFile = function (result) {
-  //   if (result.code === 200) {
-  //     this.addForm.licenceUrl = result.data.biz_url;
-  //   } else {
-  //     this.$status(result.msg);
-  //   }
-  // }
+
+  Vue.prototype.$noAuth = function (msg) {
+    this.$alert(msg, '提示', {
+      confirmButtonText: '确定',
+      type: 'warning',
+      callback: () => {
+        localStorage.clear();
+        this.$router.push({
+          name: 'login'
+        })
+      }
+    });
+  }
 };
 
 export default commonFun;

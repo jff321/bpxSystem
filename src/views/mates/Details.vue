@@ -33,34 +33,41 @@
         :loading="loading"
         :data="list"
         stripe
+        :default-sort = "{prop: 'times', order: 'descending'}"
         style="width: 100%">
         <el-table-column
           prop="mac"
           label="MAC"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="phone"
           label="手机号"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="phone_name"
           label="机型"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="range"
           label="距离"
+          sortable
         >
         </el-table-column>
         <el-table-column
           label="停留时间(分)"
+          sortable
         >
           <template slot-scope="scope">{{Math.floor(scope.row.stoptime / 60)}}</template>
         </el-table-column>
         <el-table-column
           label="是否通话"
+          sortable
         >
           <template slot-scope="scope">
             <span>{{scope.row.is_call ? '有' : '没有'}}</span>
@@ -69,11 +76,13 @@
         <el-table-column
           prop="times"
           label="创建时间"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="update_time"
           label="更新时间"
+          sortable
         >
         </el-table-column>
       </el-table>
@@ -148,7 +157,8 @@
     },
     methods: {
       async getDetailList(){
-        const result = await details(this.$route.query.id, this.input, this.currentPage, this.pageSize);
+        // console.log('this.end_date:', this.end_date);
+        const result = await details(this.$route.query.id, this.input, this.currentPage, this.pageSize, this.start_date, this.end_date);
         this.loading = false;
         if(result.data.code === 200){
           result.data.data.list.forEach(function (item) {
@@ -163,6 +173,8 @@
           });
           this.list = result.data.data.list;
           this.total = result.data.data.count;
+        } else if(result.data.code === 403){
+          this.$noAuth(result.data.msg);
         } else {
           this.$status(result.data.msg);
         }
@@ -180,6 +192,10 @@
       },
       // 查询筛选日期
       changeDate(val){
+        if (val == null) {
+          this.start_date = '';
+          this.end_date = '';
+        }
         if(val.length > 0){
           this.start_date = val[0];
           this.end_date = val[1];

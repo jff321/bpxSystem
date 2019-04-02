@@ -8,19 +8,23 @@
           :loading="loading"
           :data="list"
           stripe
+          :default-sort = "{prop: 'times', order: 'descending'}"
           style="width: 100%">
           <el-table-column
             prop="uname"
             label="用户"
+            sortable
           >
           </el-table-column>
           <el-table-column
             prop="content"
             label="内容"
+            sortable
           >
           </el-table-column>
           <el-table-column
             label="类型"
+            sortable
           >
             <template slot-scope="scope">
               <span>{{scope.row.types ? '短信' : '闪信'}}</span>
@@ -29,34 +33,31 @@
           <el-table-column
             prop="times"
             label="提交时间"
+            sortable
           >
           </el-table-column>
           <el-table-column
-            label="审核状态"
+            label="发送状态"
+            sortable
           >
             <template slot-scope="scope">
-              <el-switch
-                v-model="scope.row.status"
-                :active-value= "1"
-                :inactive-value= "0"
-                @change="changeStatus(scope.row.id, scope.row.status)"
-              >
-              </el-switch>
+              <span v-if="scope.row.status === 1">成功</span>
+              <span v-if="scope.row.status === 0">失败</span>
             </template>
           </el-table-column>
-          <el-table-column
-            label="操作"
-          >
-            <template slot-scope="scope">
-              <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-              <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-            </template>
-          </el-table-column>
+          <!--<el-table-column-->
+            <!--label="操作"-->
+          <!--&gt;-->
+            <!--<template slot-scope="scope">-->
+              <!--<el-button-->
+                <!--size="mini"-->
+                <!--@click="handleEdit(scope.$index, scope.row)">编辑</el-button>-->
+              <!--<el-button-->
+                <!--size="mini"-->
+                <!--type="danger"-->
+                <!--@click="handleDelete(scope.$index, scope.row)">删除</el-button>-->
+            <!--</template>-->
+          <!--</el-table-column>-->
         </el-table>
       </div>
       <!--分页-->
@@ -147,6 +148,8 @@
         if(result.data.code === 200){
           this.list = result.data.data.list;
           this.total = result.data.data.count;
+        } else if(result.data.code === 403){
+          this.$noAuth(result.data.msg);
         } else {
           this.$status(result.data.msg);
         }

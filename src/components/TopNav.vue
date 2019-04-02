@@ -1,7 +1,7 @@
 <template>
   <div class="w-100 head d-flex justify-content-center align-items-center">
     <div class="d-flex flex-grow-1">
-      <div class="headLogo d-flex justify-content-center align-items-center border-right">
+      <div class="headLogo d-flex justify-content-center align-items-center border-right" @click="toIndex">
         <img class="logo rounded" src="@/assets/logo.png" alt="LOGO">
       </div>
       <div class="company fontColor">
@@ -14,10 +14,10 @@
          <i class="fa fa-rmb icon"></i> 账户余额 : {{balance}}元
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>短信单价：0.05元/条</el-dropdown-item>
-          <el-dropdown-item>外呼单价：0.12元/分</el-dropdown-item>
-          <el-dropdown-item>匹配单价：0.13元/条</el-dropdown-item>
-          <el-dropdown-item>外呼月租：15元/月</el-dropdown-item>
+          <el-dropdown-item>短信单价：0.09元/条</el-dropdown-item>
+          <el-dropdown-item>闪信单价：0.20元/分</el-dropdown-item>
+          <el-dropdown-item>通话单价：0.12元/条</el-dropdown-item>
+          <el-dropdown-item>匹配单价：0.10元/条</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -71,6 +71,11 @@
       },
       basicInfo () {
         this.$emit('listenBasicInfo', '基本信息');
+      },
+      toIndex(){
+        this.$router.push({
+          name: 'index'
+        })
       }
     }
   };

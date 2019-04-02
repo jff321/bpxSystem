@@ -101,24 +101,46 @@
         :loading="loading"
         :data="list"
         stripe
+        :default-sort = "{prop: 'times', order: 'descending'}"
         style="width: 100%">
         <el-table-column
           prop="name"
           label="匹配名称"
+          sortable
         >
         </el-table-column>
         <el-table-column
-          prop="box_id"
           label="探知器盒子ID"
+          sortable
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.box_id == null || scope.row.box_id === '0' ">全部</span>
+            <span v-else>{{scope.row.box_id}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="start_date"
+          label="开始时间"
+          width="100"
+          sortable
+        >
+        </el-table-column>
+        <el-table-column
+          prop="end_date"
+          label="结束时间"
+          width="100"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="uname"
           label="用户"
+          sortable
         >
         </el-table-column>
         <el-table-column
           label="匹配数量"
+          sortable
         >
           <template slot-scope="scope">
             <span>{{scope.row.t_nums}}/{{scope.row.y_nums}}</span>
@@ -126,6 +148,7 @@
         </el-table-column>
         <el-table-column
           label="距离范围"
+          sortable
         >
           <template slot-scope="scope">
             <span v-if="scope.row.range_id===0">不限制</span>
@@ -137,39 +160,31 @@
         </el-table-column>
         <el-table-column
           label="匹配状态"
+          sortable
         >
           <template slot-scope="scope">
-            <span v-if="scope.row.status===1">计算中</span>
-            <span v-else>计算完成</span>
+            <span v-if="scope.row.status===0">计算中</span>
+            <span v-if="scope.row.status===1">计算完成</span>
           </template>
         </el-table-column>
         <el-table-column
           prop="money"
           label="扣费金额"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="times"
           label="创建时间"
           width="100"
+          sortable
         >
         </el-table-column>
         <el-table-column
           prop="update_time"
           label="完成时间"
           width="100"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="start_date"
-          label="开始时间"
-          width="100"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="end_date"
-          label="结束时间"
-          width="100"
+          sortable
         >
         </el-table-column>
         <el-table-column
@@ -276,8 +291,8 @@
     },
     data(){
       return{
-        interval: null,
-        interval1: null,
+        // interval: null,
+        // interval1: null,
         dataset: [],
         circleNumber: 30,
         circlenumbers: null,
@@ -384,10 +399,10 @@
     async mounted(){
       this.getMatesList();
       this.getBoxs();
-      this.interval = setInterval(()=>{
+      const interval = setInterval(()=>{
         this.setRondom();
       },3000);
-      this.interval1 = setInterval(()=>{
+      const interval1 = setInterval(()=>{
         this.deleteCircle();
       },5000);
       // 地图上获取盒子
@@ -402,9 +417,18 @@
       } else {
         this.$status(result.data.msg);
       }
-    },
-    beforeDestroy: function () {
-      clearInterval(this.interval);
+
+      // 我们的建立代码独立于我们的清理代码，这使得我们比较难于程序化地清理我们建立的所有东西。
+      // 通过 $once(eventName, eventHandler) 一次性侦听一个事件
+      // 你应该通过一个程序化的侦听器解决这两个问题：
+
+      this.$once('hook:beforeDestroy', () => {
+        clearInterval(interval);
+      });
+
+      this.$once('hook:beforeDestroy', () => {
+        clearInterval(interval1);
+      });
     },
     methods: {
       //随机出现扫描的探针点
@@ -429,8 +453,20 @@
         const result = await mates(this.id, this.start_date, this.end_date, this.input, this.currentPage, this.pageSize);
         this.loading = false;
         if(result.data.code === 200){
+          result.data.data.list.forEach(function (item) {
+            let date = new Date(item.update_time * 1000);
+            let Y = date.getFullYear() + '-';
+            let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+            let D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1) + ' ';
+            let h = (date.getHours()+1 < 10 ? '0'+(date.getHours()+1) : date.getHours()+1) + ':';
+            let m = (date.getMinutes()+1 < 10 ? '0'+(date.getMinutes()+1) : date.getMinutes()+1) + ':';
+            let s = (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1);
+            item.update_time =  Y+M+D+h+m+s;
+          });
           this.list = result.data.data.list;
           this.total = result.data.data.count;
+        } else if(result.data.code === 403){
+          this.$noAuth(result.data.msg);
         } else {
           this.$status(result.data.msg);
         }
@@ -445,6 +481,8 @@
               name: item.name
             })
           });
+        } else if(result.data.code === 403){
+          this.$noAuth(result.data.msg);
         } else {
           this.$status(result.data.msg);
         }
@@ -561,6 +599,7 @@
         if(val.length > 0){
           this.addForm.start_date = val[0];
           this.addForm.end_date = val[1];
+          this.getMayData();
         }
       },
       // 新增筛选感知器选择完之后触发

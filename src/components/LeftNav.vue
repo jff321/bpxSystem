@@ -13,7 +13,7 @@
           <span>{{nav.title}}</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item v-for="item in nav.child" :key="item.id" :index="item.action">{{item.title}}</el-menu-item>
+          <el-menu-item v-for="item in nav.child" :key="item.id" :index="item.action"><span v-if="item.show">{{item.title}}</span></el-menu-item>
         </el-menu-item-group>
       </el-submenu>
       <el-menu-item  v-else :key="nav.id" :index="nav.action">
@@ -34,6 +34,11 @@
         menus: JSON.parse(localStorage.getItem('menus'))
       }
     },
+    // computed: {
+    //   menus () {
+    //     return this.$store.state.menus
+    //   }
+    // },
     // computed: {
     //   navMenus: function () {
     //     this.menus.forEach((item) => {
