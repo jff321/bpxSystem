@@ -54,6 +54,12 @@ export function commitPay(data) {
   return result ? result : false
 }
 
+// 提现提交
+export function commitCash(data) {
+  const result = axios.post(`manage/users/boxlist`, data);
+  return result ? result : false
+}
+
 // 删除用户
 export function deleteAgent(userId) {
   const result = axios.delete(`manage/users/${userId}`);

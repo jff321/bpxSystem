@@ -144,11 +144,16 @@
             size="mini"
             @click="handleBindBox(scope.$index, scope.row.id)">绑定盒子</el-button>
           <el-button
+            class="mt-2"
             size="mini"
-            @click="handleAgentPwd(scope.$index, scope.row.id)">修改密码</el-button>
+            @click="toUsersBox(scope.row.id)">盒子明细</el-button>
           <el-button
             size="mini"
             class="mt-2 ml-0"
+            @click="handleAgentPwd(scope.$index, scope.row.id)">修改密码</el-button>
+          <el-button
+            size="mini"
+            class="mt-2"
             style="margin-right: 10px;"
             @click="toLists(scope.row.id)">财务明细</el-button>
           <el-button
@@ -235,7 +240,7 @@
           <el-upload
             :headers="addForm.myHeaders"
             class="avatar-uploader"
-            action="http://192.168.0.120/manage/upload/image"
+            action="http://test.bpx.adbpx.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="addCardSuccess"
@@ -248,7 +253,7 @@
           <el-upload
             :headers="addForm.myHeaders"
             class="avatar-uploader"
-            action="http://192.168.0.120/manage/upload/image"
+            action="http://test.bpx.adbpx.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="addLicenceSuccess"
@@ -306,7 +311,7 @@
           <el-upload
             :headers="ruleForm.myHeaders"
             class="avatar-uploader"
-            action="http://192.168.0.120/manage/upload/image"
+            action="http://test.bpx.adbpx.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="editCardSuccess"
@@ -319,7 +324,7 @@
           <el-upload
             :headers="ruleForm.myHeaders"
             class="avatar-uploader"
-            action="http://192.168.0.120/manage/upload/image"
+            action="http://test.bpx.adbpx.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="editLicenceSuccess"
@@ -338,16 +343,16 @@
     <el-dialog title="设置" :visible.sync="setDialogVisible" width="700px" center :before-close="setClose">
       <el-form :model="setForm" :rules="setRules" ref="setForm">
         <el-form-item label="短信扣费金额" :label-width="formLabelWidth" prop="sms">
-          <el-input v-model.number="setForm.sms" autocomplete="off" class="w-75"></el-input>
+          <el-input type="number" v-model.number="setForm.sms" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="闪信扣费金额" :label-width="formLabelWidth" prop="fms">
-          <el-input v-model.number="setForm.fms" autocomplete="off" class="w-75"></el-input>
+          <el-input type="number" v-model.number="setForm.fms" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="匹配扣费金额" :label-width="formLabelWidth" prop="mate">
-          <el-input v-model.number="setForm.mate" autocomplete="off" class="w-75"></el-input>
+          <el-input type="number" v-model.number="setForm.mate" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="拨号扣费金额" :label-width="formLabelWidth" prop="tel">
-          <el-input v-model.number="setForm.tel" autocomplete="off" class="w-75"></el-input>
+          <el-input type="number" v-model.number="setForm.tel" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -598,7 +603,7 @@
         bindRules: {
           name: [
             { required: true, message: '请输入盒子名称', trigger: 'blur' },
-            { min: 2, max: 11, message: '长度在 2 到 11 个字符', trigger: 'blur' }
+            { min: 2, max: 15, message: '长度在 2 到 15 个字符', trigger: 'blur' }
           ],
           code: [
             { required: true, message: '请输入盒子编码', trigger: 'blur' },
@@ -701,12 +706,12 @@
         this.getUserList()
       },
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
+        // console.log(`每页 ${val} 条`);
         this.pageSize = val;
         this.getUserList()
       },
       handleCurrentChange(val) {
-        console.log(`当前 ${val} 页`);
+        // console.log(`当前 ${val} 页`);
         this.currentPage = val;
         this.getUserList()
       },
@@ -815,7 +820,7 @@
       },
       // 设置提交
       submitSet(formName){
-        console.log(this.userSetId);
+        // console.log(this.userSetId);
         this.$refs[formName].validate((valid) => {
           if (valid) {
             let params = {
@@ -890,7 +895,7 @@
       },
       // 启用/禁用用户登录状态
       async changeStatus(id, status){
-        console.log(id, status);
+        // console.log(id, status);
         let params = {
           id: id,
           types: status
@@ -902,7 +907,7 @@
       },
       // 新增上传身份证
       addCardSuccess(result){
-        console.log(1);
+        // console.log(1);
         if (result.code === 200) {
           this.addForm.cardUrl = result.data.big_url;
         } else {
@@ -1019,6 +1024,14 @@
       toLists(id){
         this.$router.push({
           name: 'userLists',
+          query: {
+            id: id
+          }
+        })
+      },
+      toUsersBox(id){
+        this.$router.push({
+          name: 'usersBox',
           query: {
             id: id
           }

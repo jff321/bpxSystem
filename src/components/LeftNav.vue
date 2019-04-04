@@ -34,40 +34,11 @@
         menus: JSON.parse(localStorage.getItem('menus'))
       }
     },
-    // computed: {
-    //   menus () {
-    //     return this.$store.state.menus
-    //   }
-    // },
-    // computed: {
-    //   navMenus: function () {
-    //     this.menus.forEach((item) => {
-    //       if(item.show === 1){
-    //         if(item.child){
-    //           item.child.forEach((itemChild) => {
-    //             if(itemChild.show){
-    //               return itemChild;
-    //             }
-    //           });
-    //           return item.child;
-    //         }
-    //       }
-    //       return item;
-    //     });
-    //     return this.menus
-    //   }
-    // },
     mounted(){
       this.leftHeight = (document.documentElement.clientHeight - 65) + 'px';
       // console.log('MENU:', this.navMenus)
     },
     methods: {
-      handleOpen(key, keyPath) {
-        console.log(key, keyPath);
-      },
-      handleClose(key, keyPath) {
-        console.log(key, keyPath);
-      }
     }
   };
 </script>

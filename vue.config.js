@@ -2,6 +2,6 @@
 module.exports = {
   devServer: {
     port: 3000,
-    proxy: 'http://c.adbpx.com/api'
+    proxy: 'http://test.bpx.adbpx.com/'
   }
 };

@@ -154,6 +154,9 @@
             localStorage.setItem('menus', JSON.stringify(result.data.data.menus));
             localStorage.setItem('mobile', result.data.data.user.mobile);
             localStorage.setItem('balance', result.data.data.user.balance);
+            localStorage.setItem('name', result.data.data.user.contact);
+            localStorage.setItem('company', result.data.data.user.company);
+            localStorage.setItem('logo_url', result.data.data.user.logo_url);
             this.$router.push({
               name: 'index'
             });

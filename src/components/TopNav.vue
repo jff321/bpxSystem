@@ -2,10 +2,10 @@
   <div class="w-100 head d-flex justify-content-center align-items-center">
     <div class="d-flex flex-grow-1">
       <div class="headLogo d-flex justify-content-center align-items-center border-right" @click="toIndex">
-        <img class="logo rounded" src="@/assets/logo.png" alt="LOGO">
+        <img class="logo rounded" :src="logo_url" alt="LOGO">
       </div>
       <div class="company fontColor">
-        <span>成都霸屏熊科技有限公司</span>
+        <span>{{company}}({{name}})</span>
       </div>
     </div>
     <div class="mx-5">
@@ -53,6 +53,9 @@
     data(){
       return {
         loginOutStatus : localStorage.getItem('token'),
+        name: localStorage.getItem('name'),
+        company: localStorage.getItem('company'),
+        logo_url: localStorage.getItem('logo_url'),
         mobile: localStorage.getItem('mobile'),
         balance: localStorage.getItem('balance')
       }

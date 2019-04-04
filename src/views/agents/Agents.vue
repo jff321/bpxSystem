@@ -109,6 +109,9 @@
             @click="handleRecharge(scope.$index, scope.row.id)">充值</el-button>
           <el-button
             size="mini"
+            @click="handleCash(scope.$index, scope.row.id)">退款</el-button>
+          <el-button
+            size="mini"
             style="margin-right: 10px;"
             @click="handleSet(scope.$index, scope.row.id)">设置</el-button>
           <el-button
@@ -117,18 +120,25 @@
             @click="handleEditShow(scope.$index, scope.row.id)">编辑</el-button>
           <el-button
             size="mini"
+            class="mt-2"
+            @click="handleBindBox(scope.$index, scope.row.id)">绑定盒子</el-button>
+          <el-button
+            size="mini"
+            class="mt-2 ml-0"
+            style="margin-right: 10px;"
+            @click="toAgentsBox(scope.row.id)">盒子明细</el-button>
+          <el-button
+            size="mini"
             class="mt-2 ml-0"
             style="margin-right: 10px;"
             @click="toLists(scope.row.id)">财务明细</el-button>
           <el-button
-            size="mini"
-            @click="handleBindBox(scope.$index, scope.row.id)">绑定盒子</el-button>
-          <el-button
             class="mt-2 ml-0"
             size="mini"
+            style="margin-right: 10px;"
             @click="handleAgentPwd(scope.$index, scope.row.id)">修改密码</el-button>
           <el-button
-            class="mt-2"
+            class="mt-2 ml-0 ml-0 ml-0 ml-0"
             size="mini"
             type="danger"
             @click="handleDelete(scope.$index, scope.row.id)">删除</el-button>
@@ -201,7 +211,7 @@
           <el-upload
             :headers="addForm.myHeaders"
             class="avatar-uploader"
-            action="http://192.168.0.120/manage/upload/image"
+            action="http://test.bpx.adbpx.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="addLogoSuccess"
@@ -229,12 +239,33 @@
           <p>{{payForm.payBalance ? payForm.payBalance : '0.00'}}</p>
         </el-form-item>
         <el-form-item label="充值金额" :label-width="formLabelWidth" prop="pay">
-          <el-input v-model.number="payForm.pay" autocomplete="off" class="w-75"></el-input>
+          <el-input type="number" v-model.number="payForm.pay" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="payClose('payForm')">取 消</el-button>
-        <el-button type="primary" @click="submitPay('payForm')">确 定</el-button>
+        <el-button type="primary" @click="submitPay('payForm')" :disabled="buttonDisabled">{{payText}}</el-button>
+      </div>
+    </el-dialog>
+    <!--退款对话框-->
+    <el-dialog title="退款" :visible.sync="cashVisible" width="700px" center :before-close="handleCashClose">
+      <el-form :model="cashForm" :rules="cashRules" ref="cashForm">
+        <el-form-item label="登录账号 :" :label-width="formLabelWidth">
+          <p>{{cashForm.cashAgent ? cashForm.cashAgent : '无'}}</p>
+        </el-form-item>
+        <el-form-item label="联系人 :" :label-width="formLabelWidth">
+          <p>{{cashForm.cashContact}}</p>
+        </el-form-item>
+        <el-form-item label="账户余额 :" :label-width="formLabelWidth" >
+          <p>{{cashForm.cashBalance ? cashForm.cashBalance : '0.00'}}</p>
+        </el-form-item>
+        <el-form-item label="退款金额" :label-width="formLabelWidth" prop="pay">
+          <el-input v-model.number="cashForm.cash" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cashClose('cashForm')">取 消</el-button>
+        <el-button type="primary" @click="submitCash('cashForm')" :disabled="cashDisabled">{{cashText}}</el-button>
       </div>
     </el-dialog>
     <!--编辑对话框-->
@@ -278,7 +309,7 @@
           <el-upload
             :headers="ruleForm.myHeaders"
             class="avatar-uploader"
-            action="http://192.168.0.120/manage/upload/image"
+            action="http://test.bpx.adbpx.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
@@ -297,16 +328,16 @@
     <el-dialog title="设置" :visible.sync="setDialogVisible" width="700px" center :before-close="handleSetClose">
       <el-form :model="setForm" :rules="setRules" ref="setForm">
         <el-form-item label="短信扣费金额" :label-width="formLabelWidth" prop="sms">
-          <el-input v-model.number="setForm.sms" autocomplete="off" class="w-75"></el-input>
+          <el-input type="number" v-model.number="setForm.sms" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="闪信扣费金额" :label-width="formLabelWidth" prop="fms">
-          <el-input v-model.number="setForm.fms" autocomplete="off" class="w-75"></el-input>
+          <el-input type="number" v-model.number="setForm.fms" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="匹配扣费金额" :label-width="formLabelWidth" prop="mate">
-          <el-input v-model.number="setForm.mate" autocomplete="off" class="w-75"></el-input>
+          <el-input type="number" v-model.number="setForm.mate" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="拨号扣费金额" :label-width="formLabelWidth" prop="tel">
-          <el-input v-model.number="setForm.tel" autocomplete="off" class="w-75"></el-input>
+          <el-input type="number" v-model.number="setForm.tel" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -371,6 +402,7 @@
     addAgent,
     showAgent,
     commitAgent,
+    commitCash,
     deleteAgent,
     commitCost,
     commitPwd,
@@ -403,6 +435,7 @@
         list: [],
         logoImages: [],
         loading: true,
+        buttonDisabled: false,
         currentPage: 1,
         pageSize: 10,
         total: 0,
@@ -423,6 +456,8 @@
         },
         userPayIndex: 0,
         userPayId: 0,
+        userCashIndex: 0,
+        userCashId: 0,
         userEditId: 0,
         userEditIndex: 0,
         userSetIndex: 0,
@@ -483,6 +518,7 @@
           ],
         },
         payVisible: false,
+        payText: '充值',
         payForm: {
           payAgent: '',
           payContact: '',
@@ -492,7 +528,22 @@
         payRules: {
           pay: [
             { required: true, message: '请输入充值金额', trigger: 'blur' },
-            { type: 'number', message: '金额必须为数字', trigger: 'blur'}
+            { type: 'number', min: 0, message: '金额必须为数字且大于0', trigger: 'blur'}
+          ],
+        },
+        cashVisible: false,
+        cashDisabled: false,
+        cashText: '退款',
+        cashForm: {
+          cashAgent: '',
+          cashContact: '',
+          cashBalance: '',
+          cash: ''
+        },
+        cashRules: {
+          cash: [
+            { required: true, message: '请输入充值金额', trigger: 'blur' },
+            { type: 'number',  min: 0, message: '金额必须为数字且大于0', trigger: 'blur'}
           ],
         },
         addVisible: false,
@@ -562,7 +613,7 @@
         bindRules: {
           name: [
             { required: true, message: '请输入盒子名称', trigger: 'blur' },
-            { min: 2, max: 11, message: '长度在 2 到 11 个字符', trigger: 'blur' }
+            { min: 2, max: 15, message: '长度在 2 到 15 个字符', trigger: 'blur' }
           ],
           code: [
             { required: true, message: '请输入盒子编码', trigger: 'blur' },
@@ -741,6 +792,8 @@
       },
       // 充值显示
       async handleRecharge(index, userId){
+        this.buttonDisabled = false;
+        this.payText = '充值';
         this.payForm.pay = '';
         this.userPayIndex = index;
         this.userPayId = userId;
@@ -758,6 +811,8 @@
       submitPay(formName){
         this.$refs[formName].validate((valid) => {
           if (valid) {
+            this.buttonDisabled = true;
+            this.payText = '充值中...';
             let params = {
               id: this.userPayId,
               money: this.payForm.pay
@@ -769,10 +824,64 @@
                   message: result.data.msg,
                   type: 'success'
                 });
-                this.list[this.userPayIndex].balance = this.payForm.pay;
+                this.list[this.userPayIndex].balance = Number(this.list[this.userPayIndex].balance) + Number(this.payForm.pay);
                 this.payVisible = false;
+                this.buttonDisabled = false;
+                this.payText = '充值';
               } else {
                 this.$status(result.data.msg);
+                this.buttonDisabled = false;
+                this.payText = '充值';
+              }
+            });
+          } else {
+            return false;
+          }
+        });
+      },
+
+      // 退款显示
+      async handleCash(index, userId){
+        this.cashDisabled = false;
+        this.cashText = '退款';
+        this.cashForm.cash = '';
+        this.userCashIndex = index;
+        this.userCashId = userId;
+        const result = await showAgent(userId);
+        if (result.data.code === 200) {
+          this.cashVisible = true;
+          this.cashForm.cashAgent = result.data.data.mobile;
+          this.cashForm.cashContact = result.data.data.contact;
+          this.cashForm.cashBalance = result.data.data.balance;
+        } else {
+          this.$status(result.data.msg);
+        }
+      },
+      // 退款提交
+      submitCash(formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.cashDisabled = true;
+            this.cashText = '退款中...';
+            let params = {
+              id: this.userCashId,
+              money: this.cashForm.cash
+            };
+            commitCash(params).then((result)=>{
+              // console.log('result:', result);
+              if(result.data.code === 200){
+                this.$message({
+                  message: result.data.msg,
+                  type: 'success'
+                });
+                this.list[this.userCashIndex].balance =Number(this.list[this.userCashIndex].balance) - Number(this.cashForm.cash);
+                this.cashVisible = false;
+                this.cashDisabled = false;
+                this.cashText = '退款';
+              } else {
+                this.$status(result.data.msg);
+                this.cashDisabled = false;
+                this.cashText = '退款';
               }
             });
           } else {
@@ -798,7 +907,6 @@
       },
       // 设置提交
       submitSet(formName){
-        console.log(this.userSetId);
         this.$refs[formName].validate((valid) => {
           if (valid) {
             let params = {
@@ -989,6 +1097,15 @@
       handlePayClose(){
         this.payClose('payForm');
       },
+      // 退款弹框取消按钮
+      cashClose(formName){
+        this.cashVisible = false;
+        this.$refs[formName].clearValidate();
+      },
+      // 退款弹框关闭按钮
+      handleCashClose(){
+        this.cashClose('cashForm');
+      },
       // 编辑弹框取消按钮
       editClose(formName){
         this.dialogFormVisible = false;
@@ -1032,6 +1149,14 @@
             id: id
           }
         })
+      },
+      toAgentsBox(id){
+        this.$router.push({
+          name: 'agentsBox',
+          query: {
+            id: id
+          }
+        })
       }
     }
   }
@@ -1063,4 +1188,12 @@
   }
 </style>
 <style>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 </style>

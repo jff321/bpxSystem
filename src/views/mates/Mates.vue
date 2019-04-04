@@ -489,12 +489,12 @@
       },
       // 分页
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
+        // console.log(`每页 ${val} 条`);
         this.pageSize = val;
         this.getMatesList()
       },
       handleCurrentChange(val) {
-        console.log(`当前 ${val} 页`);
+        // console.log(`当前 ${val} 页`);
         this.currentPage = val;
         this.getMatesList()
       },
@@ -528,7 +528,7 @@
                 money: this.addForm.money
               };
               addMates(params).then((result)=>{
-                console.log('result:', result);
+                // console.log('result:', result);
                 if(result.data.code === 200){
                   this.getMatesList();
                   this.$message({
@@ -569,7 +569,7 @@
       },
       // 地图上筛选创建时间
       changeSelDate(val){
-        console.log(val);
+        // console.log(val);
         if (val == null) {
           this.start_date = '';
           this.end_date = '';

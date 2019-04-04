@@ -124,7 +124,7 @@
       },
       // 删除
       isMenuDelete(index, id) {
-        console.log(index, id);
+        // console.log(index, id);
         this.$confirm('确定删除该条数据?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',

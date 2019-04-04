@@ -12,9 +12,9 @@
           class="main"
           :style={height:leftHeight}
         >
-          <transtion name="fade">
-            <router-view></router-view>
-          </transtion>
+          <transition name="slide-fade">
+          <router-view></router-view>
+          </transition>
         </el-main>
       </el-container>
     </el-container>
@@ -34,6 +34,7 @@
     data(){
       return {
         leftHeight: 0,
+        transitionName: ''
       }
     },
     components:{
@@ -41,6 +42,17 @@
       TopNav
     },
     watch: {
+      //使用watch 监听$router的变化
+      // 监控路由跳转,判断切换页面之间的层级关系,并以此来判断路由前进或者后退.
+      $route(to, from) {
+        //如果to索引大于from索引,判断为前进状态,反之则为后退状态
+        if(to.meta.index > from.meta.index){
+          //设置动画名称
+          this.transitionName = 'slide-left';
+        }else{
+          this.transitionName = 'slide-right';
+        }
+      }
     },
     mounted () {
       this.leftHeight = (document.documentElement.clientHeight - 65) + 'px';
@@ -93,12 +105,6 @@
 </script>
 
 <style lang="scss">
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .5s;
-  }
-  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-    opacity: 0;
-  }
   .el-header{
     padding: 0px!important;
   }
@@ -109,5 +115,18 @@
   .mainMap{
     background-color: #f8f8f8;
     padding: 0px!important;
+  }
+  .slide-fade-enter-active {
+    /*ease：（逐渐变慢）默认值，ease函数等同于贝塞尔曲线(0.25, 0.1, 0.25, 1.0).*/
+    transition: 0.4s all 0.3s ease;
+  }
+
+  .slide-fade-leave-active {
+    transition: all 0.3s ease;
+  }
+  .slide-fade-enter,
+  .slide-fade-leave-to {
+    transform: translate3d(40px, 0, 0);
+    opacity: 0;
   }
 </style>

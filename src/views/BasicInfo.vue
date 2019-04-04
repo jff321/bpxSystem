@@ -35,7 +35,7 @@
           <el-upload
             :headers="ruleForm.myHeaders"
             class="avatar-uploader"
-            action="http://192.168.0.120/manage/upload/image"
+            action="http://test.bpx.adbpx.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
@@ -125,7 +125,7 @@
       },
       // 选择地址并赋值
       handleChange (value) {
-        console.log(this.ruleForm.selectedOptions);
+        // console.log(this.ruleForm.selectedOptions);
         this.ruleForm.address = CodeToText[value[0]]+""+CodeToText[value[1]];
       },
       // 上传LOGO

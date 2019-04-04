@@ -33,7 +33,7 @@
       >
       </el-date-picker>
       <el-button type="primary" class="mr-3 mt-3" @click="query">查询</el-button>
-      <el-button type="success" class="mt-3" @click="addSmsDialog">新增模板</el-button>
+      <!--<el-button type="success" class="mt-3" @click="addSmsDialog">新增模板</el-button>-->
     </div>
     <!--表格-->
     <div class="mt-3">
@@ -220,7 +220,7 @@
 <script>
   import {
     sms,
-    addSms,
+    // addSms,
     deleteSms,
     change,
     showSms,
@@ -371,18 +371,18 @@
       },
       // 分页
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
+        // console.log(`每页 ${val} 条`);
         this.pageSize = val;
         this.getSmsList()
       },
       handleCurrentChange(val) {
-        console.log(`当前 ${val} 页`);
+        // console.log(`当前 ${val} 页`);
         this.currentPage = val;
         this.getSmsList()
       },
       // 审核状态
       async changeStatus(id, status){
-        console.log(id, status);
+        // console.log(id, status);
         let params = {
           id: id,
           types: status
@@ -393,54 +393,54 @@
         }
       },
       // 新增对话框
-      addSmsDialog(){
-        this.addVisible = true;
-        this.addForm.type = '';
-        this.addForm.title = '';
-        this.addForm.sign = '';
-        this.addForm.content = '';
-      },
+      // addSmsDialog(){
+      //   this.addVisible = true;
+      //   this.addForm.type = '';
+      //   this.addForm.title = '';
+      //   this.addForm.sign = '';
+      //   this.addForm.content = '';
+      // },
       // 新增确认框
-      submitAdd(formName){
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            let params = {
-              types: this.addForm.type,
-              title: this.addForm.title,
-              sign: this.addForm.sign,
-              content: this.addForm.content,
-              status: this.addForm.status
-            };
-            addSms(params).then((result)=>{
-              // console.log('result:', result);
-              if(result.data.code === 200){
-                this.getSmsList();
-                this.$message({
-                  message: result.data.msg,
-                  type: 'success'
-                });
-                this.addVisible = false;
-              } else {
-                this.$status(result.data.msg);
-              }
-            });
-          } else {
-            return false;
-          }
-        });
-      },
+      // submitAdd(formName){
+      //   this.$refs[formName].validate((valid) => {
+      //     if (valid) {
+      //       let params = {
+      //         types: this.addForm.type,
+      //         title: this.addForm.title,
+      //         sign: this.addForm.sign,
+      //         content: this.addForm.content,
+      //         status: this.addForm.status
+      //       };
+      //       addSms(params).then((result)=>{
+      //         // console.log('result:', result);
+      //         if(result.data.code === 200){
+      //           this.getSmsList();
+      //           this.$message({
+      //             message: result.data.msg,
+      //             type: 'success'
+      //           });
+      //           this.addVisible = false;
+      //         } else {
+      //           this.$status(result.data.msg);
+      //         }
+      //       });
+      //     } else {
+      //       return false;
+      //     }
+      //   });
+      // },
       // 新增弹框取消按钮
-      addClose(formName){
-        this.addVisible = false;
-        this.$refs[formName].clearValidate();
-      },
+      // addClose(formName){
+      //   this.addVisible = false;
+      //   this.$refs[formName].clearValidate();
+      // },
       // 新增弹框关闭按钮
-      handleAddClose(){
-        this.addClose('addForm');
-      },
+      // handleAddClose(){
+      //   this.addClose('addForm');
+      // },
       // 删除
       handleDelete(index, id) {
-        console.log(index, id);
+        // console.log(index, id);
         this.$confirm('确定删除该条数据?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',

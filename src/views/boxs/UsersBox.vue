@@ -3,7 +3,7 @@
     <div class="navigation">盒子管理/盒子列表</div>
     <!--搜索-->
     <div class="my-3">
-      <el-input class="w-25" v-model="input" placeholder="请输入用户/盒子名称/编码/sim编码" @keyup.enter.native="query"></el-input>
+      <el-input class="w-25" v-model="input" placeholder="请输入盒子名称/编码/sim编码" @keyup.enter.native="query"></el-input>
       <el-button type="primary" class="mx-3" @click="query">查询</el-button>
       <el-button type="success" @click="openAddDialog">新增</el-button>
     </div>
@@ -94,7 +94,7 @@
           <el-input v-model="addForm.name" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <!--<el-form-item label="盒子用户" :label-width="formLabelWidth" prop="uname">-->
-          <!--<el-input v-model="addForm.uname" autocomplete="off" class="w-75"></el-input>-->
+        <!--<el-input v-model="addForm.uname" autocomplete="off" class="w-75"></el-input>-->
         <!--</el-form-item>-->
         <el-form-item label="盒子编码" :label-width="formLabelWidth" prop="code">
           <el-input v-model="addForm.code" autocomplete="off" class="w-75"></el-input>
@@ -150,8 +150,8 @@
 
 <script>
   import {
-    boxs,
-    addBox,
+    usersBoxs,
+    usersBindBox,
     editBoxShow,
     editBox,
     deleteBox,
@@ -220,7 +220,7 @@
     methods: {
       // 得到列表
       async getBoxsList(){
-        const result = await boxs(this.input, this.currentPage, this.pageSize);
+        const result = await usersBoxs(this.$route.query.id, this.input, this.currentPage, this.pageSize);
         this.loading = false;
         // console.log('result:', result);
         if(result.data.code === 200){
@@ -262,12 +262,13 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             let params = {
+              uid: this.$route.query.id,
               name: this.addForm.name,
               code: this.addForm.code,
               sim: this.addForm.sim,
               status: this.addForm.status
             };
-            addBox(params).then((result)=>{
+            usersBindBox(params).then((result)=>{
               // console.log('result:', result);
               if(result.data.code === 200){
                 this.getBoxsList();

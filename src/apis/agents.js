@@ -48,6 +48,12 @@ export function commitPay(data) {
   return result ? result : false
 }
 
+// 提现提交
+export function commitCash(data) {
+  const result = axios.post(`manage/agents/cashed`, data);
+  return result ? result : false
+}
+
 // 删除代理
 export function deleteAgent(userId) {
   const result = axios.delete(`manage/agents/${userId}`);

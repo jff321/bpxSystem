@@ -84,7 +84,11 @@
         >
           <template slot-scope="scope">
             <span v-if="scope.row.types === 1">充值</span>
-            <span v-else-if="scope.row.types === 2">匹配</span>
+            <span v-if="scope.row.types === 2">匹配</span>
+            <span v-if="scope.row.types === 3">拨号</span>
+            <span v-if="scope.row.types === 4">短信</span>
+            <span v-if="scope.row.types === 5">闪信</span>
+            <span v-if="scope.row.types === 6">退款</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -164,6 +168,22 @@
             type: 2,
             label: '匹配'
           },
+          {
+            type: 3,
+            label: '拨号'
+          },
+          {
+            type: 4,
+            label: '短信'
+          },
+          {
+            type: 5,
+            label: '闪信'
+          },
+          {
+            type: 6,
+            label: '退款'
+          }
         ],
         type: '',
         start_time: '',
@@ -240,12 +260,12 @@
       },
       // 分页
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
+        // console.log(`每页 ${val} 条`);
         this.pageSize = val;
         this.getCountsList()
       },
       handleCurrentChange(val) {
-        console.log(`当前 ${val} 页`);
+        // console.log(`当前 ${val} 页`);
         this.currentPage = val;
         this.getCountsList()
       },

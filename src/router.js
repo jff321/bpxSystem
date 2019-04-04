@@ -32,28 +32,12 @@ export default new Router({
       component: () => import('./views/Login.vue')
     },
     {
-      path: '/group',
-      name: 'group',
-      meta: {
-        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
-      },
-      component: () => import('./views/group/Group.vue')
-    },
-    {
       path: '/rules',
       name: 'rules',
       meta: {
         requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
       },
       component: () => import('./views/group/Rules.vue')
-    },
-    {
-      path: '/admin',
-      name: 'admin',
-      meta: {
-        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
-      },
-      component: () => import('./views/group/Admin.vue')
     },
     {
       path: '/mates',
@@ -87,14 +71,6 @@ export default new Router({
       },
       component: () => import('./views/sms/Smslog.vue')
     },
-    // {
-    //   path: '/sms/store',
-    //   name: 'addTemplate',
-    //   meta: {
-    //     requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
-    //   },
-    //   component: () => import('./views/sms/Store.vue')
-    // },
     {
       path: '/boxs',
       name: 'boxs',
@@ -103,14 +79,22 @@ export default new Router({
       },
       component: () => import('./views/boxs/Boxs.vue')
     },
-    // {
-    //   path: '/boxs/store',
-    //   name: 'store',
-    //   meta: {
-    //     requireAuth: false,  // 添加该字段，表示进入这个路由是需要登录的
-    //   },
-    //   component: () => import('./views/boxs/Store.vue')
-    // },
+    {
+      path: '/boxs/agentsBox',
+      name: 'agentsBox',
+      meta: {
+        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+      },
+      component: () => import('./views/boxs/AgentsBox.vue')
+    },
+    {
+      path: '/boxs/usersBox',
+      name: 'usersBox',
+      meta: {
+        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+      },
+      component: () => import('./views/boxs/UsersBox.vue')
+    },
     {
       path: '/finance/lists',
       name: 'lists',
@@ -152,18 +136,11 @@ export default new Router({
       component: () => import('./views/agents/Agents.vue')
     },
     {
-      path: '/agents/store',
-      name: 'store',
-      meta: {
-        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
-      },
-      component: () => import('./views/agents/Store.vue')
-    },
-    {
       path: '/users',
       name: 'users',
       meta: {
         requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+        index: 0 //meta对象的index用来定义当前路由的层级,由小到大,由低到高
       },
       component: () => import('./views/users/Users.vue')
     },
