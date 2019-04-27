@@ -25,7 +25,7 @@
       >
       </el-date-picker>
       <el-button type="primary" @click="query">查询</el-button>
-      <!--<el-button class="mx-4" type="info">导出excel</el-button>-->
+      <el-button class="mx-4" type="success" @click="exportExcel">导出excel</el-button>
     </div>
     <!--表格-->
     <div class="mt-4">
@@ -36,8 +36,8 @@
         :loading="loading"
         style="width: 100%">
         <el-table-column
-          prop="uname"
           label="用户"
+          prop="uname"
           sortable
         >
         </el-table-column>
@@ -61,24 +61,26 @@
         >
         </el-table-column>
         <el-table-column
+          label="金额"
+          sortable
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.model === 1" style="color: #67C23A;">+ {{scope.row.money}}</span>
+            <span v-else style="color: #F56C6C;">- {{scope.row.money}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
           prop="a_money"
           label="操作后余额"
           sortable
         >
         </el-table-column>
         <el-table-column
-          label="金额"
-          sortable
-        >
-          <template slot-scope="scope">
-            <span v-if="scope.row.model === 1">+ {{scope.row.money}}</span>
-            <span v-else>- {{scope.row.money}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
           prop="remark"
           label="备注"
           sortable
+          width="320"
+          align="center"
         >
         </el-table-column>
         <el-table-column
@@ -101,17 +103,33 @@
         :total="total">
       </el-pagination>
     </div>
+    <!--确认导出对话框-->
+    <el-dialog
+      title="提示"
+      :visible.sync="excelVisible"
+      width="20%"
+    >
+      <span>{{excelText}}</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="excelVisible = false">取 消</el-button>
+        <a :href="exportLink" id="test">
+          <el-button class="ml-3" type="primary" @click="excelVisible = false" :loading="isLoading">确定导出</el-button>
+        </a>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
   import {
-    finance
+    finance,
+    usersFinance
   } from '@/apis/finance'
   export default {
     name: "BoxList",
     data(){
       return{
+        group_id: Number(localStorage.getItem('group_id')),
         value1: '全部',
         input: '',
         types: [
@@ -181,7 +199,11 @@
         loading: true,
         list: [],
         editIndex: 0,
-        editId: 0
+        editId: 0,
+        excelVisible: false,
+        exportLink: '',
+        excelText: '数据获取中...',
+        isLoading: true,
       }
     },
     mounted(){
@@ -225,6 +247,26 @@
       async query(){
         this.getMoneyList()
       },
+      // 导出excel
+      async exportExcel(){
+        this.excelVisible = true;
+        document.getElementById('test').onclick = function(ev){
+          ev.preventDefault();
+          // console.log('阻止a标签的默认行为');
+        };
+        const result = await usersFinance('', this.input, this.type, this.start_time, this.end_time);
+        this.excelText = '数据获取完毕';
+        this.isLoading = false;
+        document.getElementById('test').onclick = function(ev){
+          ev.returnValue = true;
+          // console.log('允许a标签的默认行为');
+        };
+        if(result.data.code === 200){
+          this.exportLink = result.data.data;
+        } else {
+          this.$status(result.data.msg);
+        }
+      }
     }
   }
 </script>

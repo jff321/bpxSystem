@@ -12,12 +12,12 @@
           <!--<p class="flow">{{balance}}</p>-->
         <!--</div>-->
       <!--</div>-->
-      <!--&lt;!&ndash;累计收入&ndash;&gt;-->
+      <!--&lt;!&ndash;累计充值&ndash;&gt;-->
       <!--<div class="mt-3 mr-4" style="width: 32%">-->
         <!--<div class="shadow p-5">-->
           <!--<p class="font-weight-bold">-->
             <!--<img src="../../assets/shouru.png" alt="" style="width: 35px;height: 35px;">-->
-            <!--累计收入-->
+            <!--累计充值-->
           <!--</p>-->
           <!--<p class="flow">{{income}}</p>-->
         <!--</div>-->
@@ -100,24 +100,26 @@
         >
         </el-table-column>
         <el-table-column
+          label="金额"
+          sortable
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.model === 1" style="color: #67C23A;">+ {{scope.row.money}}</span>
+            <span v-else style="color: #F56C6C;">- {{scope.row.money}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
           prop="a_money"
           label="操作后余额"
           sortable
         >
         </el-table-column>
         <el-table-column
-          label="金额"
-          sortable
-        >
-          <template slot-scope="scope">
-            <span v-if="scope.row.model === 1">+ {{scope.row.money}}</span>
-            <span v-else>- {{scope.row.money}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
           prop="remark"
           label="备注"
           sortable
+          width="320"
+          align="center"
         >
         </el-table-column>
         <el-table-column

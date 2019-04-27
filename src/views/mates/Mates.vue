@@ -2,71 +2,71 @@
   <div>
     <div class="navigation">匹配列表</div>
     <!--筛选-->
-    <div>
-      <el-select clearable class="mt-3 mr-4" v-model="code" placeholder="请选择" @change="changeCode">
-        <el-option
-          v-for="item in codes"
-          :key="item.code"
-          :label="item.name"
-          :value="item.code"
-        >
-        </el-option>
-      </el-select>
-      <el-date-picker
-        v-model="selDate"
-        type="datetimerange"
-        range-separator="-"
-        :picker-options="pickerOptions"
-        start-placeholder="开始筛选日期"
-        end-placeholder="结束筛选日期"
-        format="yyyy-MM-dd HH:mm:ss"
-        value-format="yyyy-MM-dd HH:mm:ss"
-        @change = "changeSelDate"
-      >
-      </el-date-picker>
-      <el-button type="primary" class="ml-4" @click="queryMac">查询</el-button>
-    </div>
-    <!--人群采集-->
-    <div class="mt-3">
-      <div class="maps">
-        <!--<img src="https://s1.ax1x.com/2018/06/20/CzTjVs.png" alt="" style="width: 100%;height: 100%;">-->
-        <maps :showBusiness="false" :showSearchBox="false" :model="false" :number="1"></maps>
-        <!--
-        changeData map组件传值必须
-        showSearchBox   是否显示搜索框
-        model      是否是显示模式 或者点击模式
-        makers      参数形式
-           [
-             {
-                 position: [121.5273285, 31.21515044]
-             }
-           ]
-        number   每调用一次必须不同的数值
-        lnglat   点击模式必须的参数，才能正常的传值 与 changeData组合
-        -->
-        <div class="maptop"></div>
-        <div class="radar">
-          <div class="radartext">{{MatesTotal}}</div>
+    <!--<div>-->
+      <!--<el-select clearable class="mt-3 mr-4" v-model="code" placeholder="请选择" @change="changeCode">-->
+        <!--<el-option-->
+          <!--v-for="item in codes"-->
+          <!--:key="item.code"-->
+          <!--:label="item.name"-->
+          <!--:value="item.code"-->
+        <!--&gt;-->
+        <!--</el-option>-->
+      <!--</el-select>-->
+      <!--<el-date-picker-->
+        <!--v-model="selDate"-->
+        <!--type="datetimerange"-->
+        <!--range-separator="-"-->
+        <!--:picker-options="pickerOptions"-->
+        <!--start-placeholder="开始筛选日期"-->
+        <!--end-placeholder="结束筛选日期"-->
+        <!--format="yyyy-MM-dd HH:mm:ss"-->
+        <!--value-format="yyyy-MM-dd HH:mm:ss"-->
+        <!--@change = "changeSelDate"-->
+      <!--&gt;-->
+      <!--</el-date-picker>-->
+      <!--<el-button type="primary" class="ml-4" @click="queryMac">查询</el-button>-->
+    <!--</div>-->
+    <!--&lt;!&ndash;人群采集&ndash;&gt;-->
+    <!--<div class="mt-3">-->
+      <!--<div class="maps">-->
+        <!--&lt;!&ndash;<img src="https://s1.ax1x.com/2018/06/20/CzTjVs.png" alt="" style="width: 100%;height: 100%;">&ndash;&gt;-->
+        <!--<maps :showBusiness="false" :showSearchBox="false" :model="false" :number="1"></maps>-->
+        <!--&lt;!&ndash;-->
+        <!--changeData map组件传值必须-->
+        <!--showSearchBox   是否显示搜索框-->
+        <!--model      是否是显示模式 或者点击模式-->
+        <!--makers      参数形式-->
+           <!--[-->
+             <!--{-->
+                 <!--position: [121.5273285, 31.21515044]-->
+             <!--}-->
+           <!--]-->
+        <!--number   每调用一次必须不同的数值-->
+        <!--lnglat   点击模式必须的参数，才能正常的传值 与 changeData组合-->
+        <!--&ndash;&gt;-->
+        <!--<div class="maptop"></div>-->
+        <!--<div class="radar">-->
+          <!--<div class="radartext">{{MatesTotal}}</div>-->
 
-          <transition-group
-            name="fade"
-            tag="ul"
-          >
-            <li
-              v-for="(items, index) in dataset"
-              v-bind:key="index+1"
-              v-bind:data-index="index"
-              class="dot" :style="{left: items.left + 'px', top: items.right + 'px'}"
-            >
-            </li>
-          </transition-group>
+          <!--<transition-group-->
+            <!--name="fade"-->
+            <!--tag="ul"-->
+          <!--&gt;-->
+            <!--<li-->
+              <!--v-for="(items, index) in dataset"-->
+              <!--v-bind:key="index+1"-->
+              <!--v-bind:data-index="index"-->
+              <!--class="dot" :style="{left: items.left + 'px', top: items.right + 'px'}"-->
+            <!--&gt;-->
+            <!--</li>-->
+          <!--</transition-group>-->
 
-          <div class="circleone circle">
-            <div class="circletwo circle"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+          <!--<div class="circleone circle">-->
+            <!--<div class="circletwo circle"></div>-->
+          <!--</div>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
     <!--搜索-->
     <div class="mt-3">
       <div>
@@ -92,7 +92,7 @@
         >
         </el-date-picker>
         <el-button type="primary" @click="query">查询</el-button>
-        <el-button type="success" class="ml-4" @click="openAddDialog">新增人群包数据</el-button>
+        <el-button type="success" class="ml-4" @click="openAddDialog">新增匹配</el-button>
       </div>
     </div>
     <!--表格-->
@@ -110,7 +110,7 @@
         >
         </el-table-column>
         <el-table-column
-          label="探知器盒子ID"
+          label="盒子ID"
           sortable
         >
           <template slot-scope="scope">
@@ -195,6 +195,10 @@
             <el-button
               size="mini"
               @click="handleDetails(scope.row.id)">详情</el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.$index,scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -217,7 +221,7 @@
         <el-form-item label="匹配名称" :label-width="formLabelWidth" prop="name">
           <el-input v-model="addForm.name" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="探知器盒子ID" :label-width="formLabelWidth" class="w-75">
+        <el-form-item label="盒子ID" :label-width="formLabelWidth" class="w-75">
           <el-select clearable v-model="addForm.code" placeholder="请选择" @change="changeCode">
             <el-option
               v-for="item in addForm.codes"
@@ -225,6 +229,12 @@
               :label="item.name"
               :value="item.code"
             >
+              <!-- 插槽，用于放 option 和 option-group -->
+              <slot>
+                <span style="float: left">{{ item.name }}</span>
+                <span v-if="item.online === 0" style="margin-top:13px;float: right;width: 8px;height: 8px;background-color: #999;border-radius: 50%;"></span>
+                <span v-if="item.online === 1" style="margin-top:13px;float: right;width: 8px;height: 8px;background-color: #65B7AC;border-radius: 50%;"></span>
+              </slot>
             </el-option>
           </el-select>
         </el-form-item>
@@ -277,18 +287,18 @@
 </template>
 
 <script>
-  import Maps from '@/components/map/maps.vue'
   import {
     mates,
     boxs,
     addMates,
     getMayNums,
-    todaymac
+    todaymac,
+    deleteMate
   } from '@/apis/mates'
   export default {
-    components: {
-      Maps
-    },
+    // components: {
+    //   Maps
+    // },
     data(){
       return{
         // interval: null,
@@ -341,7 +351,7 @@
             }
           ]
         },
-        formLabelWidth: '180px',
+        formLabelWidth: '200px',
         addVisible: false,
         addForm: {
           name: '',
@@ -399,6 +409,9 @@
     async mounted(){
       this.getMatesList();
       this.getBoxs();
+      const todayInterval = setInterval(() => {
+        this.getTodayMac();
+      }, 6000);
       const interval = setInterval(()=>{
         this.setRondom();
       },3000);
@@ -406,21 +419,25 @@
         this.deleteCircle();
       },5000);
       // 地图上获取盒子
-      const result = await boxs();
-      if(result.data.code === 200){
-        result.data.data.forEach((item) => {
-          this.codes.push({
-            code: item.code,
-            name: item.name
-          })
-        });
-      } else {
-        this.$status(result.data.msg);
-      }
+      // const result = await boxs();
+      // if(result.data.code === 200){
+      //   result.data.data.forEach((item) => {
+      //     this.codes.push({
+      //       code: item.code,
+      //       name: item.name
+      //     })
+      //   });
+      // } else {
+      //   this.$status(result.data.msg);
+      // }
 
       // 我们的建立代码独立于我们的清理代码，这使得我们比较难于程序化地清理我们建立的所有东西。
       // 通过 $once(eventName, eventHandler) 一次性侦听一个事件
       // 你应该通过一个程序化的侦听器解决这两个问题：
+
+      this.$once('hook:beforeDestroy', () => {
+        clearInterval(todayInterval);
+      });
 
       this.$once('hook:beforeDestroy', () => {
         clearInterval(interval);
@@ -454,14 +471,14 @@
         this.loading = false;
         if(result.data.code === 200){
           result.data.data.list.forEach(function (item) {
-            let date = new Date(item.update_time * 1000);
+            let date = new Date(parseInt(item.update_time) * 1000);
             let Y = date.getFullYear() + '-';
-            let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
-            let D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1) + ' ';
-            let h = (date.getHours()+1 < 10 ? '0'+(date.getHours()+1) : date.getHours()+1) + ':';
-            let m = (date.getMinutes()+1 < 10 ? '0'+(date.getMinutes()+1) : date.getMinutes()+1) + ':';
-            let s = (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1);
-            item.update_time =  Y+M+D+h+m+s;
+            let M = ((date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)) + '-';
+            let D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' ';
+            let h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+            let m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+            let s = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
+            item.update_time = Y+M+D+h+m+s;
           });
           this.list = result.data.data.list;
           this.total = result.data.data.count;
@@ -478,7 +495,8 @@
           result.data.data.forEach((item) => {
             this.addForm.codes.push({
               code: item.code,
-              name: item.name
+              name: item.name,
+              online: item.online
             })
           });
         } else if(result.data.code === 403){
@@ -602,7 +620,7 @@
           this.getMayData();
         }
       },
-      // 新增筛选感知器选择完之后触发
+      // 新增筛选盒子选择完之后触发
       changeCode(){
         if(this.addForm.date.length > 0){
           this.getMayData();
@@ -661,138 +679,42 @@
       },
       queryMac(){
         this.getTodayMac();
-      }
+      },
+      // 删除
+      handleDelete(index, boxId) {
+        let params = {
+          id: boxId
+        }
+        this.$confirm('确定删除该条数据?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteMate(params).then((result)=> {
+            if(result.data.code === 200) {
+              this.list.splice(index, 1);
+              this.total--;
+              this.$message({
+                type: 'success',
+                message: result.data.msg
+              });
+            } else {
+              this.$status(result.data.msg);
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
     }
   };
 </script>
 
 <style scoped>
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .5s;
-  }
-  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-    opacity: 0;
-  }
   .inputStyle{
     width: 15%;
-  }
-  .maps{
-    width:100%;
-    height: 435px;
-    /*padding: 10px 0;*/
-    /*background-color:#EEEDDB ;*/
-    /*background：url("http://picuser.city8.com/news/image/20141014/%B3%C9%B6%BC%BD%BB%CD%A8%B5%D8%CD%BC2014%B0%E6.jpg");*/
-    /*overflow: hidden;*/
-    position: relative;
-  }
-  .maptop{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.1);
-  }
-  .dot{
-    position: absolute;
-    z-index: 14;
-    /*top: 100px;*/
-    /*left: 100px;*/
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: #29ea26;
-    list-style: none;
-  }
-  .circleone{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 260px;
-    height: 260px;
-    margin: -130px 0 0 -130px;
-
-  }
-  .circletwo{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100px;
-    height: 100px;
-    margin: -50px 0 0 -50px;
-
-  }
-  .circle{
-    border: 2px solid #169414;
-    border-radius: 50%;
-  }
-  .radar {
-    box-shadow: 0px 0px 30px #00ff33;
-    background:-webkit-linear-gradient(90deg, rgba(12, 77, 11, 0.5) 49.5%, #4CA44B 50%, #4CA44B 50%, rgba(12, 77, 11, 0.5) 50.2%), -webkit-linear-gradient(0deg, rgba(12, 77, 11, 0.5) 49.5%, #29ea26 50%, #29ea26 50%, rgba(12, 77, 11, 0.5) 50.2%);
-    /*background: linear-gradient(90deg, rgba(0, 128, 0, 0.6) 49.5%, #fff 50%, #fff 50%, rgba(0, 128, 0, 0.6) 50.2%), linear-gradient(0deg, rgba(0, 128, 0, 0.6) 49.5%, #fff 50%, #fff 50%, rgba(0, 128, 0, 0.6) 50.2%);*/
-    width: 400px;
-    height: 400px;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    overflow: hidden;
-  }
-  .radartext{
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 15;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    line-height: 400px;
-    color: #fff;
-    font-size: 70px;
-
-  }
-  .radar:after {
-    content: ' ';
-    display: block;
-    background-image: linear-gradient(50deg, rgba(0, 255, 51, 0) 50%, #00ff33 100%);
-    width: 50%;
-    height: 50%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    animation: radar-beam 5s infinite;
-    animation-timing-function: linear;
-    transform-origin: bottom right;
-    border-radius: 100% 0 0 0;
-    z-index: 16;
-  }
-
-  @keyframes radar-beam {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-  @keyframes blips {
-    14% {
-      background: radial-gradient(2vmin circle at 75% 70%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%);
-    }
-    14.0002% {
-      background: radial-gradient(2vmin circle at 75% 70%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%), radial-gradient(2vmin circle at 63% 72%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%);
-    }
-    25% {
-      background: radial-gradient(2vmin circle at 75% 70%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%), radial-gradient(2vmin circle at 63% 72%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%), radial-gradient(2vmin circle at 56% 86%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%);
-    }
-    26% {
-      background: radial-gradient(2vmin circle at 75% 70%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%), radial-gradient(2vmin circle at 63% 72%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%), radial-gradient(2vmin circle at 56% 86%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%);
-      opacity: 1;
-    }
-    100% {
-      background: radial-gradient(2vmin circle at 75% 70%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%), radial-gradient(2vmin circle at 63% 72%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%), radial-gradient(2vmin circle at 56% 86%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%);
-      opacity: 0;
-    }
   }
 </style>

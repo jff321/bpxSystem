@@ -4,7 +4,7 @@
       <div class="pt-5 leftDiv">
         <div class="text-center mb-4">
           <img src="../assets/logo.png" alt="" class="logoImg" />
-          <div class="mt-2 commonFontColor">霸屏熊</div>
+          <div class="mt-2 commonFontColor">优客宝</div>
         </div>
         <div class="mt-2 commonFontColor pl-4">
           <div class="d-flex mb-3 ml-5">
@@ -46,7 +46,7 @@
         </div>
       </div>
       <div class="pt-5 rigthDiv">
-        <div class="title text-center">霸屏熊</div>
+        <div class="title text-center">优客宝</div>
         <div class="d-flex justify-content-center py-4">
           <el-input
             placeholder="用户名"

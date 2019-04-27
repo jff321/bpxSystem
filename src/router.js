@@ -5,6 +5,7 @@ Vue.use(Router);
 
 export default new Router({
   mode: 'history',
+  linkActiveClass: 'aui-active',
   base: process.env.BASE_URL,
   routes: [
     {
@@ -96,7 +97,7 @@ export default new Router({
       component: () => import('./views/boxs/UsersBox.vue')
     },
     {
-      path: '/finance/lists',
+      path: '/finance/lists',  // 后台-->财务管理-->用户财务
       name: 'lists',
       meta: {
         requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
@@ -104,7 +105,7 @@ export default new Router({
       component: () => import('./views/finance/Lists.vue')
     },
     {
-      path: '/finance/userLists',
+      path: '/finance/userLists', // 后台-->客户-->财务明细
       name: 'userLists',
       meta: {
         requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
@@ -120,7 +121,7 @@ export default new Router({
       component: () => import('./views/finance/AgentCounts.vue')
     },
     {
-      path: '/finance/counts',
+      path: '/finance/counts', // 后台-->财务管理-->财务统计
       name: 'counts',
       meta: {
         requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
@@ -167,6 +168,14 @@ export default new Router({
         requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
       },
       component: () => import('./views/BasicInfo.vue')
+    },
+    {
+      path: '/mates/maclist',
+      name: 'macList',
+      meta: {
+        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+      },
+      component: () => import('./views/mac/MacList.vue')
     }
   ]
 })

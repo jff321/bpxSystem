@@ -12,7 +12,13 @@
           style="width: 100%">
           <el-table-column
             prop="uname"
-            label="用户"
+            label="发送人"
+            sortable
+          >
+          </el-table-column>
+          <el-table-column
+            prop="phone"
+            label="手机号"
             sortable
           >
           </el-table-column>
@@ -20,29 +26,35 @@
             prop="content"
             label="内容"
             sortable
+            width="500"
+            align="center"
           >
           </el-table-column>
           <el-table-column
             label="类型"
             sortable
+            align="center"
           >
             <template slot-scope="scope">
-              <span>{{scope.row.types ? '短信' : '闪信'}}</span>
+              <span v-if="scope.row.types === 1">短信</span>
+              <span v-if="scope.row.types === 2">闪信</span>
             </template>
           </el-table-column>
           <el-table-column
             prop="times"
             label="提交时间"
             sortable
+            align="center"
           >
           </el-table-column>
           <el-table-column
             label="发送状态"
             sortable
+            align="center"
           >
             <template slot-scope="scope">
-              <span v-if="scope.row.status === 1">成功</span>
-              <span v-if="scope.row.status === 0">失败</span>
+              <span v-if="scope.row.status === 1" style="color: #67C23A;">成功</span>
+              <span v-if="scope.row.status === 0" style="color: #F56C6C;" >失败</span>
             </template>
           </el-table-column>
           <!--<el-table-column-->

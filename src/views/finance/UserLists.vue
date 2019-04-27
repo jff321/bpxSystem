@@ -61,24 +61,26 @@
         >
         </el-table-column>
         <el-table-column
+          label="金额"
+          sortable
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.model === 1" style="color: #67C23A;">+ {{scope.row.money}}</span>
+            <span v-else style="color: #F56C6C;">- {{scope.row.money}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
           prop="a_money"
           label="操作后余额"
           sortable
         >
         </el-table-column>
         <el-table-column
-          label="金额"
-          sortable
-        >
-          <template slot-scope="scope">
-            <span v-if="scope.row.model === 1">+ {{scope.row.money}}</span>
-            <span v-else>- {{scope.row.money}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
           prop="remark"
           label="备注"
           sortable
+          width="320"
+          align="center"
         >
         </el-table-column>
         <el-table-column

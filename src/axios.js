@@ -6,8 +6,8 @@ import axios from 'axios'
 import router from './router'
 
 // axios 配置
-axios.defaults.timeout = 5000;
-axios.defaults.baseURL = 'http://test.bpx.adbpx.com/';
+axios.defaults.timeout = 6000;
+axios.defaults.baseURL = 'http://api.51miaozhuan.com/';
 // axios.defaults.baseURL = 'http://192.168.0.120/';
 
 // http request 拦截器

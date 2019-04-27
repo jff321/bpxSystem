@@ -23,30 +23,30 @@
         prop="balance"
         label="账户余额"
         sortable
-        width="120"
+        width="100"
       >
       </el-table-column>
       <el-table-column
-        prop="balance"
-        label="冻结金额"
+        prop="frozen"
+        label="累计消费"
         sortable
-        width="120"
+        width="100"
       >
       </el-table-column>
       <el-table-column
         prop="today"
         label="今日花费"
         sortable
-        width="120"
+        width="100"
       >
       </el-table-column>
-      <el-table-column
-        prop="company"
-        label="公司名称"
-        sortable
-        width="120"
-      >
-      </el-table-column>
+      <!--<el-table-column-->
+        <!--prop="company"-->
+        <!--label="所属代理"-->
+        <!--sortable-->
+        <!--width="120"-->
+      <!--&gt;-->
+      <!--</el-table-column>-->
       <!--<el-table-column-->
       <!--label="公司LOGO"-->
       <!--sortable-->
@@ -60,12 +60,65 @@
         prop="uname"
         label="负责人"
         sortable
+        width="100"
       >
+      </el-table-column>
+      <el-table-column
+        label="所属行业"
+        sortable
+        width="120"
+      >
+        <template slot-scope="scope">
+          <span v-if="scope.row.trade_id === 0">其他</span>
+          <span v-if="scope.row.trade_id === 1">生活服务</span>
+          <span v-if="scope.row.trade_id === 2">家具家装</span>
+          <span v-if="scope.row.trade_id === 3">服饰鞋包</span>
+          <span v-if="scope.row.trade_id === 4">食品</span>
+          <span v-if="scope.row.trade_id === 5">教育培训</span>
+          <span v-if="scope.row.trade_id === 6">汽车</span>
+          <span v-if="scope.row.trade_id === 7">房地产</span>
+          <span v-if="scope.row.trade_id === 8">综合电商</span>
+          <span v-if="scope.row.trade_id === 9">钟表首饰</span>
+          <span v-if="scope.row.trade_id === 10">运动户外用品</span>
+          <span v-if="scope.row.trade_id === 11">母婴儿童</span>
+          <span v-if="scope.row.trade_id === 12">护肤彩妆</span>
+          <span v-if="scope.row.trade_id === 13">日用百货</span>
+          <span v-if="scope.row.trade_id === 14">数码家电</span>
+          <span v-if="scope.row.trade_id === 15">自媒体</span>
+          <span v-if="scope.row.trade_id === 16">交通运输</span>
+          <span v-if="scope.row.trade_id === 17">金融</span>
+          <span v-if="scope.row.trade_id === 18">旅游</span>
+          <span v-if="scope.row.trade_id === 19">游戏</span>
+          <span v-if="scope.row.trade_id === 20">软件应用</span>
+          <span v-if="scope.row.trade_id === 21">网站门户</span>
+          <span v-if="scope.row.trade_id === 22">商务服务</span>
+          <span v-if="scope.row.trade_id === 23">文化娱乐</span>
+          <span v-if="scope.row.trade_id === 24">虚拟</span>
+          <span v-if="scope.row.trade_id === 25">法律服务</span>
+          <span v-if="scope.row.trade_id === 26">安全安保</span>
+          <span v-if="scope.row.trade_id === 27">节能环保</span>
+          <span v-if="scope.row.trade_id === 28">工农业</span>
+          <span v-if="scope.row.trade_id === 29">结婚服务</span>
+          <span v-if="scope.row.trade_id === 30">餐饮美食</span>
+          <span v-if="scope.row.trade_id === 31">零售百货</span>
+          <span v-if="scope.row.trade_id === 32">机构协会</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="所在地区"
+        sortable
+        width="120"
+      >
+        <template slot-scope="scope">
+          <span v-if="scope.row.province_id && scope.row.city_id">{{CodeToText[scope.row.province_id]+""+CodeToText[scope.row.city_id]}}</span>
+          <span v-else>未选择</span>
+        </template>
       </el-table-column>
       <el-table-column
         prop="sms"
         label="短信"
         sortable
+        width="80"
       >
       </el-table-column>
       <el-table-column
@@ -216,16 +269,27 @@
         <el-form-item label="详细地址" :label-width="formLabelWidth" prop="address">
           <el-input v-model="addForm.address" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="短信金额" :label-width="formLabelWidth" prop="sms">
+        <el-form-item label="选择行业" :label-width="formLabelWidth">
+          <el-select clearable v-model="addForm.trade_id" placeholder="请选择行业" class="w-75">
+            <el-option
+              v-for="item in addForm.trades"
+              :key="item.trade_id"
+              :label="item.trade"
+              :value="item.trade_id"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="短信扣费单价（元/条）" :label-width="formLabelWidth" prop="sms">
           <el-input v-model.number="addForm.sms" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="闪信金额" :label-width="formLabelWidth" prop="fms">
+        <el-form-item label="闪信扣费单价（元/条）" :label-width="formLabelWidth" prop="fms">
           <el-input v-model.number="addForm.fms" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="匹配金额" :label-width="formLabelWidth" prop="mate">
+        <el-form-item label="匹配扣费单价（元/条）" :label-width="formLabelWidth" prop="mate">
           <el-input v-model.number="addForm.mate" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="拨号金额" :label-width="formLabelWidth" prop="tel">
+        <el-form-item label="拨号扣费单价（元/分钟）" :label-width="formLabelWidth" prop="tel">
           <el-input v-model.number="addForm.tel" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="是否登录" :label-width="formLabelWidth">
@@ -247,7 +311,7 @@
           <el-upload
             :headers="addForm.myHeaders"
             class="avatar-uploader"
-            action="http://test.bpx.adbpx.com/manage/upload/image"
+            action="http://api.51miaozhuan.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="addCardSuccess"
@@ -260,7 +324,7 @@
           <el-upload
             :headers="addForm.myHeaders"
             class="avatar-uploader"
-            action="http://test.bpx.adbpx.com/manage/upload/image"
+            action="http://api.51miaozhuan.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="addLicenceSuccess"
@@ -320,14 +384,25 @@
         <el-form-item label="详细地址" :label-width="formLabelWidth" prop="address">
           <el-input v-model="ruleForm.address" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="是否登录" :label-width="formLabelWidth">
-          <el-switch
-            v-model="ruleForm.status"
-            :active-value= "1"
-            :inactive-value= "0"
-          >
-          </el-switch>
-          <span class="mx-3">是否外呼</span>
+        <el-form-item label="选择行业" :label-width="formLabelWidth">
+          <el-select clearable v-model="ruleForm.trade_id" placeholder="请选择行业" class="w-75">
+            <el-option
+              v-for="item in ruleForm.trades"
+              :key="item.trade_id"
+              :label="item.trade"
+              :value="item.trade_id"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="是否外呼" :label-width="formLabelWidth">
+          <!--<el-switch-->
+            <!--v-model="ruleForm.status"-->
+            <!--:active-value= "1"-->
+            <!--:inactive-value= "0"-->
+          <!--&gt;-->
+          <!--</el-switch>-->
+          <!--<span class="mx-3">是否外呼</span>-->
           <el-switch
             v-model="ruleForm.is_outcall"
             :active-value= "1"
@@ -339,7 +414,7 @@
           <el-upload
             :headers="ruleForm.myHeaders"
             class="avatar-uploader"
-            action="http://test.bpx.adbpx.com/manage/upload/image"
+            action="http://api.51miaozhuan.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="editCardSuccess"
@@ -352,7 +427,7 @@
           <el-upload
             :headers="ruleForm.myHeaders"
             class="avatar-uploader"
-            action="http://test.bpx.adbpx.com/manage/upload/image"
+            action="http://api.51miaozhuan.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="editLicenceSuccess"
@@ -370,16 +445,16 @@
     <!--设置对话框-->
     <el-dialog title="设置" :visible.sync="setDialogVisible" width="700px" center :before-close="setClose">
       <el-form :model="setForm" :rules="setRules" ref="setForm">
-        <el-form-item label="短信扣费金额" :label-width="formLabelWidth" prop="sms">
+        <el-form-item label="短信扣费单价（元/条）" :label-width="formLabelWidth" prop="sms">
           <el-input type="number" v-model.number="setForm.sms" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="闪信扣费金额" :label-width="formLabelWidth" prop="fms">
+        <el-form-item label="闪信扣费单价（元/条）" :label-width="formLabelWidth" prop="fms">
           <el-input type="number" v-model.number="setForm.fms" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="匹配扣费金额" :label-width="formLabelWidth" prop="mate">
+        <el-form-item label="匹配扣费单价（元/条）" :label-width="formLabelWidth" prop="mate">
           <el-input type="number" v-model.number="setForm.mate" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="拨号扣费金额" :label-width="formLabelWidth" prop="tel">
+        <el-form-item label="拨号扣费单价（元/分钟）" :label-width="formLabelWidth" prop="tel">
           <el-input type="number" v-model.number="setForm.tel" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
       </el-form>
@@ -415,10 +490,10 @@
         <el-form-item label="盒子名称" :label-width="formLabelWidth" prop="name" required>
           <el-input v-model="bindForm.name" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="盒子编码" :label-width="formLabelWidth" prop="code">
+        <el-form-item label="盒子ID" :label-width="formLabelWidth" prop="code">
           <el-input v-model="bindForm.code" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="盒子sim编码" :label-width="formLabelWidth" prop="sim">
+        <el-form-item label="盒子SIM" :label-width="formLabelWidth" prop="sim">
           <el-input v-model="bindForm.sim" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="盒子状态" :label-width="formLabelWidth">
@@ -495,7 +570,142 @@
           uname: '',
           sign: '',
           status: '',
-          is_outcall: ''
+          is_outcall: '',
+          trades: [
+            {
+              trade_id: 1,
+              trade: '生活服务'
+            },
+            {
+              trade_id: 2,
+              trade: '家具家装'
+            },
+            {
+              trade_id: 3,
+              trade: '服饰鞋包'
+            },
+            {
+              trade_id: 4,
+              trade: '食品'
+            },
+            {
+              trade_id: 5,
+              trade: '教育培训'
+            },
+            {
+              trade_id: 6,
+              trade: '汽车'
+            },
+            {
+              trade_id: 7,
+              trade: '房地产'
+            },
+            {
+              trade_id: 8,
+              trade: '综合电商'
+            },
+            {
+              trade_id: 9,
+              trade: '钟表首饰'
+            },
+            {
+              trade_id: 10,
+              trade: '运动户外用品'
+            },
+            {
+              trade_id: 11,
+              trade: '母婴儿童'
+            },
+            {
+              trade_id: 12,
+              trade: '护肤彩妆'
+            },
+            {
+              trade_id: 13,
+              trade: '日用百货'
+            },
+            {
+              trade_id: 14,
+              trade: '数码家电'
+            },
+            {
+              trade_id: 15,
+              trade: '自媒体'
+            },
+            {
+              trade_id: 16,
+              trade: '交通运输'
+            },
+            {
+              trade_id: 17,
+              trade: '金融'
+            },
+            {
+              trade_id: 18,
+              trade: '旅游'
+            },
+            {
+              trade_id: 19,
+              trade: '游戏'
+            },
+            {
+              trade_id: 20,
+              trade: '软件应用'
+            },
+            {
+              trade_id: 21,
+              trade: '网站门户'
+            },
+            {
+              trade_id: 22,
+              trade: '商务服务'
+            },
+            {
+              trade_id: 23,
+              trade: '文化娱乐'
+            },
+            {
+              trade_id: 24,
+              trade: '虚拟'
+            },
+            {
+              trade_id: 25,
+              trade: '法律服务'
+            },
+            {
+              trade_id: 26,
+              trade: '安全安保'
+            },
+            {
+              trade_id: 27,
+              trade: '节能环保'
+            },
+            {
+              trade_id: 28,
+              trade: '工农业'
+            },
+            {
+              trade_id: 29,
+              trade: '结婚服务'
+            },
+            {
+              trade_id: 30,
+              trade: '餐饮美食'
+            },
+            {
+              trade_id: 31,
+              trade: '零售百货'
+            },
+            {
+              trade_id: 32,
+              trade: '机构协会'
+            },
+            {
+              trade_id: 0,
+              trade: '其他'
+            }
+          ],
+          trade_id: '',
         },
         userPayIndex: 0,
         userPayId: 0,
@@ -507,7 +717,7 @@
         userRechargeIndex: 0,
         userPwdIndex: 0,
         userPwdId: 0,
-        formLabelWidth: '180px',
+        formLabelWidth: '200px',
         rules: {
           company: [
             { required: true, message: '请输入公司名称', trigger: 'blur' },
@@ -529,11 +739,11 @@
         },
         setRules: {
           sms: [
-            { required: true, message: '请输入短信金额', trigger: 'blur' },
+            { required: true, message: '请输入短信扣费单价（元/条）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ],
           fms: [
-            { required: true, message: '请输入闪信金额', trigger: 'blur' },
+            { required: true, message: '请输入闪信扣费单价（元/条）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ],
           mate: [
@@ -541,7 +751,7 @@
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ],
           tel: [
-            { required: true, message: '请选择拨号金额', trigger: 'blur' },
+            { required: true, message: '请选择拨号扣费单价（元/分钟）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ]
         },
@@ -583,7 +793,142 @@
           mate: '',
           tel: '',
           status: '',
-          is_outcall: ''
+          is_outcall: '',
+          trades: [
+            {
+              trade_id: 1,
+              trade: '生活服务'
+            },
+            {
+              trade_id: 2,
+              trade: '家具家装'
+            },
+            {
+              trade_id: 3,
+              trade: '服饰鞋包'
+            },
+            {
+              trade_id: 4,
+              trade: '食品'
+            },
+            {
+              trade_id: 5,
+              trade: '教育培训'
+            },
+            {
+              trade_id: 6,
+              trade: '汽车'
+            },
+            {
+              trade_id: 7,
+              trade: '房地产'
+            },
+            {
+              trade_id: 8,
+              trade: '综合电商'
+            },
+            {
+              trade_id: 9,
+              trade: '钟表首饰'
+            },
+            {
+              trade_id: 10,
+              trade: '运动户外用品'
+            },
+            {
+              trade_id: 11,
+              trade: '母婴儿童'
+            },
+            {
+              trade_id: 12,
+              trade: '护肤彩妆'
+            },
+            {
+              trade_id: 13,
+              trade: '日用百货'
+            },
+            {
+              trade_id: 14,
+              trade: '数码家电'
+            },
+            {
+              trade_id: 15,
+              trade: '自媒体'
+            },
+            {
+              trade_id: 16,
+              trade: '交通运输'
+            },
+            {
+              trade_id: 17,
+              trade: '金融'
+            },
+            {
+              trade_id: 18,
+              trade: '旅游'
+            },
+            {
+              trade_id: 19,
+              trade: '游戏'
+            },
+            {
+              trade_id: 20,
+              trade: '软件应用'
+            },
+            {
+              trade_id: 21,
+              trade: '网站门户'
+            },
+            {
+              trade_id: 22,
+              trade: '商务服务'
+            },
+            {
+              trade_id: 23,
+              trade: '文化娱乐'
+            },
+            {
+              trade_id: 24,
+              trade: '虚拟'
+            },
+            {
+              trade_id: 25,
+              trade: '法律服务'
+            },
+            {
+              trade_id: 26,
+              trade: '安全安保'
+            },
+            {
+              trade_id: 27,
+              trade: '节能环保'
+            },
+            {
+              trade_id: 28,
+              trade: '工农业'
+            },
+            {
+              trade_id: 29,
+              trade: '结婚服务'
+            },
+            {
+              trade_id: 30,
+              trade: '餐饮美食'
+            },
+            {
+              trade_id: 31,
+              trade: '零售百货'
+            },
+            {
+              trade_id: 32,
+              trade: '机构协会'
+            },
+            {
+              trade_id: 0,
+              trade: '其他'
+            }
+          ],
+          trade_id: '',
         },
         addRules: {
           mobile: [
@@ -605,19 +950,19 @@
             { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
           ],
           sms: [
-            { required: true, message: '请输入短信金额', trigger: 'blur' },
+            { required: true, message: '请输入短信扣费单价（元/条）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ],
           fms: [
-            { required: true, message: '请输入闪信金额', trigger: 'blur' },
+            { required: true, message: '请输入闪信扣费单价（元/条）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ],
           mate: [
-            { required: true, message: '请输入匹配金额', trigger: 'blur' },
+            { required: true, message: '请输入匹配扣费单价（元/条）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ],
           tel: [
-            { required: true, message: '请选择拨号金额', trigger: 'blur' },
+            { required: true, message: '请选择拨号扣费单价（元/分钟）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ]
         },
@@ -636,11 +981,11 @@
             { min: 2, max: 15, message: '长度在 2 到 15 个字符', trigger: 'blur' }
           ],
           code: [
-            { required: true, message: '请输入盒子编码', trigger: 'blur' },
+            { required: true, message: '请输入盒子ID', trigger: 'blur' },
             { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
           ],
           sim: [
-            { required: true, message: '请输入盒子sim编号', trigger: 'blur' },
+            { required: true, message: '请输入盒子SIM', trigger: 'blur' },
             { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
           ]
         },
@@ -704,6 +1049,7 @@
         this.addForm.mate = '';
         this.addForm.tel = '';
         this.addForm.status = 1;
+        this.addForm.trade_id = '';
       },
       // 新增确认提交
       submitAddAgent(formName){
@@ -726,7 +1072,8 @@
               fms: this.addForm.fms,
               mate: this.addForm.mate,
               tel: this.addForm.tel,
-              status: this.addForm.status
+              status: this.addForm.status,
+              trade_id: this.addForm.trade_id
             };
             addUser(params).then((result)=>{
               // console.log('result:', result);
@@ -772,8 +1119,9 @@
           this.ruleForm.cardUrl = result.data.data.id_url;
           this.ruleForm.licenceUrl = result.data.data.biz_url;
           this.ruleForm.uname = result.data.data.uname;
-          this.ruleForm.selectedOptions = [result.data.data.province_id, result.data.data.city_id];
+          this.ruleForm.selectedOptions = [(result.data.data.province_id).toString(), (result.data.data.city_id).toString()];
           this.ruleForm.address = result.data.data.address;
+          this.ruleForm.trade_id = result.data.data.trade_id;
           this.ruleForm.status = result.data.data.status;
           this.ruleForm.is_outcall = result.data.data.is_outcall;
         } else {
@@ -795,7 +1143,8 @@
               address: this.ruleForm.address,
               status: this.ruleForm.status,
               is_outcall: this.ruleForm.is_outcall,
-              sign: this.ruleForm.sign
+              sign: this.ruleForm.sign,
+              trade_id: this.ruleForm.trade_id
             };
             commitAgent(this.userEditId, params).then((result)=>{
               // console.log('result:', result);
@@ -810,6 +1159,7 @@
                 this.list[this.userEditIndex].address = this.ruleForm.address;
                 this.list[this.userEditIndex].status = this.ruleForm.status;
                 this.list[this.userEditIndex].is_outcall = this.ruleForm.is_outcall;
+                this.list[this.userEditIndex].trade_id = this.ruleForm.trade_id;
                 this.dialogFormVisible = false;
               } else {
                 this.$status(result.data.msg);

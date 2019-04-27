@@ -3,8 +3,8 @@
     <div class="d-flex">
       <div class="pt-5 leftDiv">
         <div class="text-center mb-4">
-          <img src="../assets/logo.png" alt="" class="logoImg" />
-          <div class="mt-2 commonFontColor">霸屏熊</div>
+          <img :src="logo_url" alt="" class="logoImg" />
+          <div class="mt-2 commonFontColor">{{company}}</div>
         </div>
         <div class="mt-2 commonFontColor pl-4">
           <div class="d-flex mb-3 ml-5">
@@ -13,7 +13,7 @@
             </div>
             <div>
               <p class="mb-0 secondTitle">优势之势</p>
-              <p class="mb-0 thirdTitle">"硬科技+大产业"的无线可能</p>
+              <p class="mb-0 thirdTitle">"硬科技+大产业"的无限可能</p>
             </div>
           </div>
           <div class="d-flex mb-3 ml-5">
@@ -46,7 +46,7 @@
         </div>
       </div>
       <div class="pt-5 rigthDiv">
-        <div class="title text-center">霸屏熊</div>
+        <div class="title text-center">{{company}}</div>
         <div class="d-flex justify-content-center py-4">
           <el-input
             placeholder="用户名"
@@ -85,14 +85,17 @@
         <!--<div class="d-flex justify-content-center w-100">-->
           <!--<div class="text-right forget" @click="openCode">忘记密码？用短信验证码登录</div>-->
         <!--</div>-->
-        <div class="login-ing" @click="login">登&nbsp;陆</div>
+        <div class="login-ing" @click="login">登&nbsp;录</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import { login } from '@/apis/login'
+  import {
+    login,
+    logo
+  } from '@/apis/login'
   export default {
     name: "Login",
     data(){
@@ -100,17 +103,19 @@
         user: {
           phone: '',
           password: ''
-          // code: '',
-          // sms: false,
-          // time: 60,
-          // isDisabled: false,
-          // sendCodeDisabled: false
-        }
+        },
+        logo_url: '',
+        company: ''
       }
     },
-    mounted(){
+    async mounted(){
       if(localStorage.getItem('token')){
         this.$router.push({name: 'index'});
+      }
+      const result = await logo(document.domain, 2);
+      if(result.data.code === 200){
+        this.logo_url = result.data.data.logo.logo_url;
+        this.company = result.data.data.logo.company
       }
     },
     methods: {
@@ -157,6 +162,8 @@
             localStorage.setItem('name', result.data.data.user.contact);
             localStorage.setItem('company', result.data.data.user.company);
             localStorage.setItem('logo_url', result.data.data.user.logo_url);
+            localStorage.setItem('setting', result.data.data.user.setting);
+            localStorage.setItem('group_id', result.data.data.user.group_id);
             this.$router.push({
               name: 'index'
             });

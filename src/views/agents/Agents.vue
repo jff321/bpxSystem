@@ -44,10 +44,25 @@
           </viewer>
         </template>
       </el-table-column>
+      <!--<el-table-column-->
+        <!--prop="a_domain"-->
+        <!--label="前台域名"-->
+        <!--sortable-->
+        <!--width="160"-->
+      <!--&gt;-->
+      <!--</el-table-column>-->
+      <!--<el-table-column-->
+        <!--prop="b_domain"-->
+        <!--label="后台域名"-->
+        <!--sortable-->
+        <!--width="160"-->
+      <!--&gt;-->
+      <!--</el-table-column>-->
       <el-table-column
         prop="contact"
         label="联系人"
         sortable
+        width="100"
         >
       </el-table-column>
       <el-table-column
@@ -106,14 +121,14 @@
         <template slot-scope="scope" class="text-left border">
           <el-button
             size="mini"
-            @click="handleRecharge(scope.$index, scope.row.id)">充值</el-button>
+            @click="handleRecharge(scope.row.id)">充值</el-button>
           <el-button
             size="mini"
-            @click="handleCash(scope.$index, scope.row.id)">退款</el-button>
+            @click="handleCash(scope.row.id)">退款</el-button>
           <el-button
             size="mini"
             style="margin-right: 10px;"
-            @click="handleSet(scope.$index, scope.row.id)">设置</el-button>
+            @click="handleSet(scope.row.id)">设置</el-button>
           <el-button
             size="mini"
             class="mt-2 ml-0"
@@ -136,7 +151,7 @@
             class="mt-2 ml-0"
             size="mini"
             style="margin-right: 10px;"
-            @click="handleAgentPwd(scope.$index, scope.row.id)">修改密码</el-button>
+            @click="handleAgentPwd(scope.row.id)">修改密码</el-button>
           <el-button
             class="mt-2 ml-0 ml-0 ml-0 ml-0"
             size="mini"
@@ -169,6 +184,12 @@
         <el-form-item label="确认密码" :label-width="formLabelWidth" prop="pwd">
           <el-input type="password" v-model="addForm.epwd" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
+        <el-form-item label="前台域名" :label-width="formLabelWidth">
+          <el-input v-model="addForm.beforeDomain" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="后台域名" :label-width="formLabelWidth">
+          <el-input v-model="addForm.backDomain" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
         <el-form-item label="公司名称" :label-width="formLabelWidth" prop="company">
           <el-input v-model="addForm.company" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
@@ -187,16 +208,16 @@
         <el-form-item label="详细地址" :label-width="formLabelWidth" prop="address">
           <el-input v-model="addForm.address" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="短信金额" :label-width="formLabelWidth" prop="sms">
+        <el-form-item label="短信扣费单价（元/条）" :label-width="formLabelWidth" prop="sms">
           <el-input v-model.number="addForm.sms" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="闪信金额" :label-width="formLabelWidth" prop="fms">
+        <el-form-item label="闪信扣费单价（元/条）" :label-width="formLabelWidth" prop="fms">
           <el-input v-model.number="addForm.fms" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="匹配金额" :label-width="formLabelWidth" prop="mate">
+        <el-form-item label="匹配扣费单价（元/条）" :label-width="formLabelWidth" prop="mate">
           <el-input v-model.number="addForm.mate" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="拨号金额" :label-width="formLabelWidth" prop="tel">
+        <el-form-item label="拨号扣费单价（元/分钟）" :label-width="formLabelWidth" prop="tel">
           <el-input v-model.number="addForm.tel" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="是否登录" :label-width="formLabelWidth">
@@ -211,7 +232,7 @@
           <el-upload
             :headers="addForm.myHeaders"
             class="avatar-uploader"
-            action="http://test.bpx.adbpx.com/manage/upload/image"
+            action="http://api.51miaozhuan.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="addLogoSuccess"
@@ -274,6 +295,12 @@
         <el-form-item label="公司名称" :label-width="formLabelWidth" prop="company">
           <el-input v-model="ruleForm.company" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
+        <el-form-item label="前台域名" :label-width="formLabelWidth">
+          <el-input v-model="ruleForm.beforeDomain" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="后台域名" :label-width="formLabelWidth">
+          <el-input v-model="ruleForm.backDomain" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
         <el-form-item label="联系人" :label-width="formLabelWidth" prop="contact">
           <el-input v-model="ruleForm.contact" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
@@ -297,19 +324,19 @@
           >
           </el-switch>
         </el-form-item>
-        <el-form-item label="是否外呼" :label-width="formLabelWidth">
-          <el-switch
-            v-model="ruleForm.is_outcall"
-            :active-value= "1"
-            :inactive-value= "0"
-          >
-          </el-switch>
-        </el-form-item>
+        <!--<el-form-item label="是否外呼" :label-width="formLabelWidth">-->
+          <!--<el-switch-->
+            <!--v-model="ruleForm.is_outcall"-->
+            <!--:active-value= "1"-->
+            <!--:inactive-value= "0"-->
+          <!--&gt;-->
+          <!--</el-switch>-->
+        <!--</el-form-item>-->
         <el-form-item label="公司LOGO" :label-width="formLabelWidth">
           <el-upload
             :headers="ruleForm.myHeaders"
             class="avatar-uploader"
-            action="http://test.bpx.adbpx.com/manage/upload/image"
+            action="http://api.51miaozhuan.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
@@ -327,16 +354,16 @@
     <!--设置对话框-->
     <el-dialog title="设置" :visible.sync="setDialogVisible" width="700px" center :before-close="handleSetClose">
       <el-form :model="setForm" :rules="setRules" ref="setForm">
-        <el-form-item label="短信扣费金额" :label-width="formLabelWidth" prop="sms">
+        <el-form-item label="短信扣费单价（元/条）" :label-width="formLabelWidth" prop="sms">
           <el-input type="number" v-model.number="setForm.sms" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="闪信扣费金额" :label-width="formLabelWidth" prop="fms">
+        <el-form-item label="闪信扣费单价（元/条）" :label-width="formLabelWidth" prop="fms">
           <el-input type="number" v-model.number="setForm.fms" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="匹配扣费金额" :label-width="formLabelWidth" prop="mate">
+        <el-form-item label="匹配扣费单价（元/条）" :label-width="formLabelWidth" prop="mate">
           <el-input type="number" v-model.number="setForm.mate" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="拨号扣费金额" :label-width="formLabelWidth" prop="tel">
+        <el-form-item label="拨号扣费单价（元/分钟）" :label-width="formLabelWidth" prop="tel">
           <el-input type="number" v-model.number="setForm.tel" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
       </el-form>
@@ -372,10 +399,10 @@
         <el-form-item label="盒子名称" :label-width="formLabelWidth" prop="name" required>
           <el-input v-model="bindForm.name" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="盒子编码" :label-width="formLabelWidth" prop="code">
+        <el-form-item label="盒子ID" :label-width="formLabelWidth" prop="code">
           <el-input v-model="bindForm.code" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="盒子sim编码" :label-width="formLabelWidth" prop="sim">
+        <el-form-item label="盒子SIM" :label-width="formLabelWidth" prop="sim">
           <el-input v-model="bindForm.sim" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="盒子状态" :label-width="formLabelWidth">
@@ -452,21 +479,23 @@
           selectedOptions: [],
           address: '',
           status: '',
-          is_outcall: ''
+          // is_outcall: ''
+          beforeDomain: '',
+          backDomain: ''
         },
-        userPayIndex: 0,
+        // userPayIndex: 0,
         userPayId: 0,
-        userCashIndex: 0,
+        // userCashIndex: 0,
         userCashId: 0,
         userEditId: 0,
-        userEditIndex: 0,
-        userSetIndex: 0,
+        // userEditIndex: 0,
+        // userSetIndex: 0,
         userSetId: 0,
         userRechargeId: 0,
         userRechargeIndex: 0,
-        userPwdIndex: 0,
+        // userPwdIndex: 0,
         userPwdId: 0,
-        formLabelWidth: '180px',
+        formLabelWidth: '200px',
         rules: {
           company: [
             { required: true, message: '请输入公司名称', trigger: 'blur' },
@@ -484,11 +513,11 @@
         },
         setRules: {
           sms: [
-            { required: true, message: '请输入短信金额', trigger: 'blur' },
+            { required: true, message: '请输入短信扣费单价（元/条）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ],
           fms: [
-            { required: true, message: '请输入闪信金额', trigger: 'blur' },
+            { required: true, message: '请输入闪信扣费单价（元/条）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ],
           mate: [
@@ -496,7 +525,7 @@
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ],
           tel: [
-            { required: true, message: '请选择拨号金额', trigger: 'blur' },
+            { required: true, message: '请选择拨号扣费单价（元/分钟）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ]
         },
@@ -565,6 +594,8 @@
           mate: '',
           tel: '',
           status: '',
+          beforeDomain: '',
+          backDomain: ''
         },
         addRules: {
           mobile: [
@@ -585,19 +616,19 @@
             { required: true, message: '请输入地址', trigger: 'blur' }
           ],
           sms: [
-            { required: true, message: '请输入短信金额', trigger: 'blur' },
+            { required: true, message: '请输入短信扣费单价（元/条）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ],
           fms: [
-            { required: true, message: '请输入闪信金额', trigger: 'blur' },
+            { required: true, message: '请输入闪信扣费单价（元/条）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ],
           mate: [
-            { required: true, message: '请输入匹配金额', trigger: 'blur' },
+            { required: true, message: '请输入匹配扣费单价（元/条）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ],
           tel: [
-            { required: true, message: '请选择拨号金额', trigger: 'blur' },
+            { required: true, message: '请选择拨号扣费单价（元/分钟）', trigger: 'blur' },
             { type: 'number', message: '金额必须为数字', trigger: 'blur'}
           ]
         },
@@ -616,11 +647,11 @@
             { min: 2, max: 15, message: '长度在 2 到 15 个字符', trigger: 'blur' }
           ],
           code: [
-            { required: true, message: '请输入盒子编码', trigger: 'blur' },
+            { required: true, message: '请输入盒子ID', trigger: 'blur' },
             { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
           ],
           sim: [
-            { required: true, message: '请输入盒子sim编号', trigger: 'blur' },
+            { required: true, message: '请输入盒子SIM', trigger: 'blur' },
             { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
           ]
         },
@@ -645,6 +676,8 @@
         this.addForm.mate = '';
         this.addForm.tel = '';
         this.addForm.status = 1;
+        this.addForm.beforeDomain = '';
+        this.addForm.backDomain = '';
       },
       submitAddAgent(formName){
         this.$refs[formName].validate((valid) => {
@@ -663,7 +696,9 @@
               fms: this.addForm.fms,
               mate: this.addForm.mate,
               tel: this.addForm.tel,
-              status: this.addForm.status
+              status: this.addForm.status,
+              a_domain: this.addForm.beforeDomain,
+              b_domain: this.addForm.backDomain
             };
             addAgent(params).then((result)=>{
               // console.log('result:', result);
@@ -711,8 +746,8 @@
         this.getDataList()
       },
       // 编辑
-      async handleEditShow(index, userId) {
-        this.userEditIndex = index;
+      async handleEditShow(userId) {
+        // this.userEditIndex = index;
         this.userEditId = userId;
         const result = await showAgent(userId);
         if (result.data.code === 200) {
@@ -724,6 +759,8 @@
           this.ruleForm.selectedOptions = [result.data.data.province_id, result.data.data.city_id];
           this.ruleForm.address = result.data.data.address;
           this.ruleForm.status = result.data.data.status;
+          this.ruleForm.beforeDomain = result.data.data.a_domain;
+          this.ruleForm.backDomain = result.data.data.b_domain;
         } else {
           this.$status(result.data.msg);
         }
@@ -739,7 +776,9 @@
               province_id: this.ruleForm.selectedOptions[0],
               city_id: this.ruleForm.selectedOptions[1],
               address: this.ruleForm.address,
-              status: this.ruleForm.status
+              status: this.ruleForm.status,
+              a_domain: this.ruleForm.beforeDomain,
+              b_domain: this.ruleForm.backDomain
             };
             commitAgent(this.userEditId, params).then((result)=>{
               // console.log('result:', result);
@@ -748,12 +787,14 @@
                   message: result.data.msg,
                   type: 'success'
                 });
-                this.list[this.userEditIndex].company = this.ruleForm.company;
-                this.list[this.userEditIndex].logo_url = this.ruleForm.imageUrl;
-                this.list[this.userEditIndex].contact = this.ruleForm.contact;
-                this.list[this.userEditIndex].address = this.ruleForm.address;
-                this.list[this.userEditIndex].status = this.ruleForm.status;
-                this.list[this.userEditIndex].is_outcall = this.ruleForm.is_outcall;
+                this.list.find(x => x.id === this.userEditId).company = this.ruleForm.company;
+                this.list.find(x => x.id === this.userEditId).logo_url = this.ruleForm.imageUrl;
+                this.list.find(x => x.id === this.userEditId).contact = this.ruleForm.contact;
+                this.list.find(x => x.id === this.userEditId).address = this.ruleForm.address;
+                this.list.find(x => x.id === this.userEditId).status = this.ruleForm.status;
+                this.list.find(x => x.id === this.userEditId).a_domain = this.ruleForm.beforeDomain;
+                this.list.find(x => x.id === this.userEditId).b_domain = this.ruleForm.backDomain;
+                // this.list[this.userEditIndex].is_outcall = this.ruleForm.is_outcall;
                 this.dialogFormVisible = false;
               } else {
                 this.$status(result.data.msg);
@@ -791,11 +832,11 @@
         });
       },
       // 充值显示
-      async handleRecharge(index, userId){
+      async handleRecharge(userId){
         this.buttonDisabled = false;
         this.payText = '充值';
         this.payForm.pay = '';
-        this.userPayIndex = index;
+        // this.userPayIndex = index;
         this.userPayId = userId;
         const result = await showAgent(userId);
         if (result.data.code === 200) {
@@ -824,7 +865,7 @@
                   message: result.data.msg,
                   type: 'success'
                 });
-                this.list[this.userPayIndex].balance = Number(this.list[this.userPayIndex].balance) + Number(this.payForm.pay);
+                this.list.find(x => x.id === this.userPayId).balance = Number(this.list.find(x => x.id === this.userPayId).balance) + Number(this.payForm.pay);
                 this.payVisible = false;
                 this.buttonDisabled = false;
                 this.payText = '充值';
@@ -841,11 +882,11 @@
       },
 
       // 退款显示
-      async handleCash(index, userId){
+      async handleCash(userId){
         this.cashDisabled = false;
         this.cashText = '退款';
         this.cashForm.cash = '';
-        this.userCashIndex = index;
+        // this.userCashIndex = index;
         this.userCashId = userId;
         const result = await showAgent(userId);
         if (result.data.code === 200) {
@@ -874,7 +915,7 @@
                   message: result.data.msg,
                   type: 'success'
                 });
-                this.list[this.userCashIndex].balance =Number(this.list[this.userCashIndex].balance) - Number(this.cashForm.cash);
+                this.list.find(x => x.id === this.userCashId).balance =Number(this.list.find(x => x.id === this.userCashId).balance) - Number(this.cashForm.cash);
                 this.cashVisible = false;
                 this.cashDisabled = false;
                 this.cashText = '退款';
@@ -890,8 +931,8 @@
         });
       },
       // 设置显示
-      async handleSet(index, userId){
-        this.userSetIndex = index;
+      async handleSet(userId){
+        // this.userSetIndex = index;
         this.userSetId = userId;
         const result = await showAgent(userId);
         if (result.data.code === 200) {
@@ -923,10 +964,10 @@
                   message: result.data.msg,
                   type: 'success'
                 });
-                this.list[this.userSetIndex].sms = this.setForm.sms;
-                this.list[this.userSetIndex].fms = this.setForm.fms;
-                this.list[this.userSetIndex].mate = this.setForm.mate;
-                this.list[this.userSetIndex].tel = this.setForm.tel;
+                this.list.find(x => x.id === this.userSetId).sms = this.setForm.sms;
+                this.list.find(x => x.id === this.userSetId).fms = this.setForm.fms;
+                this.list.find(x => x.id === this.userSetId).mate = this.setForm.mate;
+                this.list.find(x => x.id === this.userSetId).tel = this.setForm.tel;
                 this.setDialogVisible = false;
               } else {
                 this.$status(result.data.msg);
@@ -938,10 +979,10 @@
         });
       },
       // 修改密码显示
-      async handleAgentPwd(index, userId){
+      async handleAgentPwd(userId){
         this.pwdForm.pwd = '';
         this.pwdForm.epwd = '';
-        this.userPwdIndex = index;
+        // this.userPwdIndex = index;
         this.userPwdId = userId;
         const result = await showAgent(userId);
         if (result.data.code === 200) {

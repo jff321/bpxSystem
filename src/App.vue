@@ -77,7 +77,7 @@
                   type: 'success',
                   message: result.data.msg
                 });
-                localStorage.clear();
+                localStorage.removeItem('token');
                 // location.reload();
                 this.$router.push({
                   path: '/login'

@@ -26,7 +26,7 @@ export async function  addMates (data){
 
 // 创建匹配
 export async function  getMayNums (box_id, range_id, min_time, max_time, start_date, end_date){
-  const result = await axios.get(`manage/mates/matenum?box_id=${box_id}&range_id=${range_id}&min_time=${min_time}&max_time=${max_time}&start_time=${start_date}&end_date=${end_date}`);
+  const result = await axios.get(`manage/mates/matenum?box_id=${box_id}&range_id=${range_id}&min_time=${min_time}&max_time=${max_time}&start_date=${start_date}&end_date=${end_date}`);
   return result ? result : false
 }
 
@@ -36,3 +36,20 @@ export async function  details (id, keys, page, limit, start_date, end_date){
   return result ? result : false
 }
 
+// 修正MAC电话
+export async function  modify (data){
+  const result = await axios.post(`manage/mates/modify`, data);
+  return result ? result : false
+}
+
+// 删除
+export function deleteMate(Id) {
+  const result = axios.post(`manage/mates/delmate`, Id);
+  return result ? result : false
+}
+
+// 导出匹配详情mac
+export async function  mateDetailMac (id, start_date, end_date, keys){
+  const result = await axios.get(`manage/mates/outmate?id=${id}&start_date=${start_date}&end_date=${end_date}&keys=${keys}&page=all&limit=all`);
+  return result ? result : false
+}

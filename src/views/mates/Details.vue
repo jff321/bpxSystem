@@ -25,6 +25,15 @@
         >
         </el-date-picker>
         <el-button type="primary" @click="query">查询</el-button>
+        <el-button type="success" @click="exportDetailMac">导出excel</el-button>
+        <!--<download-excel-->
+          <!--class="d-inline-block ml-4"-->
+          <!--:data = "list"-->
+          <!--:fields = "json_fields"-->
+          <!--name = "匹配列表.xls">-->
+          <!--&lt;!&ndash; 上面可以自定义自己的样式，还可以引用其他组件button &ndash;&gt;-->
+          <!--<el-button type="success">导出</el-button>-->
+        <!--</download-excel>-->
       </div>
     </div>
     <!--表格-->
@@ -42,14 +51,22 @@
         >
         </el-table-column>
         <el-table-column
-          prop="phone"
           label="手机号"
           sortable
         >
+          <template slot-scope="scope">
+            <span @click="modifyPhone(scope.$index, scope.row.mac_id, scope.row.id)" style="cursor: pointer">{{scope.row.phone}}</span>
+          </template>
         </el-table-column>
         <el-table-column
           prop="phone_name"
           label="机型"
+          sortable
+        >
+        </el-table-column>
+        <el-table-column
+          prop="imei"
+          label="IMEI"
           sortable
         >
         </el-table-column>
@@ -74,14 +91,14 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="times"
+          prop="create_time"
           label="创建时间"
           sortable
         >
         </el-table-column>
         <el-table-column
-          prop="update_time"
-          label="更新时间"
+          prop="times"
+          label="完成时间"
           sortable
         >
         </el-table-column>
@@ -99,12 +116,45 @@
         :total="total">
       </el-pagination>
     </div>
+    <!--确认导出对话框-->
+    <el-dialog
+      title="提示"
+      :visible.sync="macVisible"
+      width="20%"
+      >
+      <span>{{macText}}</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="macVisible = false">取 消</el-button>
+        <a :href="exportLink" id="test">
+          <el-button class="ml-3" type="primary" @click="macVisible = false" :loading="isLoading">确定导出</el-button>
+        </a>
+      </span>
+    </el-dialog>
+    <!--修改手机号-->
+    <el-dialog
+      title="修正手机号"
+      :visible.sync="phoneVisible"
+      width="20%"
+    >
+      <!--<el-form-item label="手机号" :label-width="formLabelWidth" prop="phone">-->
+        <el-input v-model="phone" autocomplete="off" placeholder="请输入修正手机号"></el-input>
+      <!--</el-form-item>-->
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="phoneVisible = false">取 消</el-button>
+        <el-button type="primary" @click="confirmPhone(phone)">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+  // import Vue from 'vue'
+  // import JsonExcel from 'vue-json-excel'
+  // Vue.component('downloadExcel', JsonExcel);
   import {
-    details
+    details,
+    mateDetailMac,
+    modify
   } from "@/apis/mates";
   export default {
     name: "Details",
@@ -149,7 +199,47 @@
         pageSize: 10,
         total: 0,
         start_date: '',
-        end_date: ''
+        end_date: '',
+        // json_fields: {
+        //   "MAC": "mac",    //常规字段
+        //   "手机号": "phone",
+        //   "机型": "phone_name",
+        //   "距离(米)": "range",
+        //   // "停留时间(分)": "stoptime / 60",
+        //   "停留时间(分)": {
+        //     field: "stoptime",
+        //     //自定义回调函数
+        //     callback: value => {
+        //       return `${Math.ceil(value / 60)}`;
+        //     }
+        //   },
+        //   "是否通话": {
+        //     field: "is_call",
+        //     callback: value => {
+        //       return value ? '是' : '否';
+        //     }
+        //   },
+        //   "创建时间": "times",
+        //   "更新时间": "update_time"
+        // },
+        // json_meta: [
+        //   [
+        //     {
+        //       " key ": " charset ",
+        //       " value ": " utf- 8 "
+        //     }
+        //   ]
+        // ],
+        macVisible: false,
+        exportLink: '',
+        macText: '数据获取中...',
+        isLoading: true,
+        phoneVisible: false,
+        macIndex: '',
+        macId: 0,
+        id: 0,
+        phone: '',
+        formLabelWidth: '120px'
       }
     },
     mounted(){
@@ -162,14 +252,14 @@
         this.loading = false;
         if(result.data.code === 200){
           result.data.data.list.forEach(function (item) {
-            let date = new Date(item.update_time * 1000);
+            let date = new Date(parseInt(item.create_time) * 1000);
             let Y = date.getFullYear() + '-';
-            let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
-            let D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1) + ' ';
-            let h = (date.getHours()+1 < 10 ? '0'+(date.getHours()+1) : date.getHours()+1) + ':';
-            let m = (date.getMinutes()+1 < 10 ? '0'+(date.getMinutes()+1) : date.getMinutes()+1) + ':';
-            let s = (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1);
-            item.update_time =  Y+M+D+h+m+s;
+            let M = ((date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)) + '-';
+            let D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' ';
+            let h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+            let m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+            let s = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
+            item.create_time = Y+M+D+h+m+s;
           });
           this.list = result.data.data.list;
           this.total = result.data.data.count;
@@ -205,6 +295,45 @@
       // 查询
       query(){
         this.getDetailList();
+      },
+      async exportDetailMac(){
+        this.macVisible = true;
+        document.getElementById('test').onclick = function(ev){
+          ev.preventDefault();
+          // console.log('阻止a标签的默认行为');
+        };
+        const result = await mateDetailMac(this.$route.query.id, this.start_date, this.end_date, this.input);
+        this.macText = '数据获取完毕';
+        this.isLoading = false;
+        document.getElementById('test').onclick = function(ev){
+          ev.returnValue = true;
+          // console.log('允许a标签的默认行为');
+        };
+        if(result.data.code === 200){
+          this.exportLink = result.data.data;
+        } else {
+          this.$status(result.data.msg);
+        }
+      },
+      modifyPhone(index, mac_id, id){
+        this.phoneVisible = true;
+        this.macIndex = index; // 用于保存
+        this.macId = mac_id;
+        this.id = id;
+      },
+      async confirmPhone(phone){
+        let params = {
+          id: this.macId,
+          phone: phone
+        };
+        const result = await modify(params);
+        if(result.data.code === 200){
+          this.phoneVisible = false;
+          this.list.find(x => x.id === this.id).phone = phone;
+        } else {
+          this.phoneVisible = false;
+          this.$status(result.data.msg);
+        }
       }
     }
   }

@@ -125,50 +125,50 @@
       </el-pagination>
     </div>
     <!--新增对话框-->
-    <div>
-      <el-dialog title="添加短信模板" :visible.sync="addVisible" width="500px" :before-close="handleAddClose">
-        <el-form :model="addForm" :rules="addRules" ref="addForm">
-          <el-form-item label="模板类型" prop="type" :label-width="formLabelWidth">
-            <el-select clearable v-model="addForm.type" placeholder="请选择">
-              <el-option
-                v-for="item in addForm.types"
-                :key="item.type"
-                :label="item.label"
-                :value="item.type"
-              >
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="标题" prop="title" :label-width="formLabelWidth">
-            <el-input v-model="addForm.title" style="width: 300px"></el-input>
-          </el-form-item>
-          <el-form-item label="签名" prop="sign" :label-width="formLabelWidth">
-            <el-input v-model="addForm.sign" style="width: 300px"></el-input>
-          </el-form-item>
-          <el-form-item label="内容" prop="content" :label-width="formLabelWidth">
-            <el-input
-              type="textarea"
-              :rows="4"
-              style="width: 300px"
-              v-model="addForm.content">
-            </el-input>
-            <p class="notice">营销内容发送格式：【签名】+内容+回复TD退订。营销内容不超过66个字符，支持英文格式的,.!?</p>
-          </el-form-item>
-          <el-form-item label="是否审核通过" :label-width="formLabelWidth">
-            <el-switch
-              v-model="addForm.status"
-              :active-value= "1"
-              :inactive-value= "0"
-            >
-            </el-switch>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="addClose('addForm')">取 消</el-button>
-          <el-button type="primary" @click="submitAdd('addForm')">确 定</el-button>
-        </div>
-      </el-dialog>
-    </div>
+    <!--<div>-->
+      <!--<el-dialog title="添加短信模板" :visible.sync="addVisible" width="500px" :before-close="handleAddClose">-->
+        <!--<el-form :model="addForm" :rules="addRules" ref="addForm">-->
+          <!--<el-form-item label="模板类型" prop="type" :label-width="formLabelWidth">-->
+            <!--<el-select clearable v-model="addForm.type" placeholder="请选择">-->
+              <!--<el-option-->
+                <!--v-for="item in addForm.types"-->
+                <!--:key="item.type"-->
+                <!--:label="item.label"-->
+                <!--:value="item.type"-->
+              <!--&gt;-->
+              <!--</el-option>-->
+            <!--</el-select>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item label="标题" prop="title" :label-width="formLabelWidth">-->
+            <!--<el-input v-model="addForm.title" style="width: 300px"></el-input>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item label="签名" prop="sign" :label-width="formLabelWidth">-->
+            <!--<el-input v-model="addForm.sign" style="width: 300px"></el-input>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item label="内容" prop="content" :label-width="formLabelWidth">-->
+            <!--<el-input-->
+              <!--type="textarea"-->
+              <!--:rows="4"-->
+              <!--style="width: 300px"-->
+              <!--v-model="addForm.content">-->
+            <!--</el-input>-->
+            <!--<p class="notice">营销内容发送格式：【签名】+内容+回复TD退订。营销内容不超过66个字符，支持英文格式的,.!?</p>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item label="是否审核通过" :label-width="formLabelWidth">-->
+            <!--<el-switch-->
+              <!--v-model="addForm.status"-->
+              <!--:active-value= "1"-->
+              <!--:inactive-value= "0"-->
+            <!--&gt;-->
+            <!--</el-switch>-->
+          <!--</el-form-item>-->
+        <!--</el-form>-->
+        <!--<div slot="footer" class="dialog-footer">-->
+          <!--<el-button @click="addClose('addForm')">取 消</el-button>-->
+          <!--<el-button type="primary" @click="submitAdd('addForm')">确 定</el-button>-->
+        <!--</div>-->
+      <!--</el-dialog>-->
+    <!--</div>-->
     <!--编辑对话框-->
     <div>
       <el-dialog title="编辑短信模板" :visible.sync="editVisible" width="500px" :before-close="handleEditClose">
@@ -197,7 +197,15 @@
               style="width: 300px"
               v-model="editForm.content">
             </el-input>
-            <p class="notice">营销内容发送格式：【签名】+内容+回复TD退订。营销内容不超过66个字符，支持英文格式的,.!?</p>
+          </el-form-item>
+          <el-form-item label="示例" :label-width="formLabelWidth">
+            <p style="line-height: 25px;padding-top: 6px;">
+              <span style="color: #DCDFE6;">【xxx旗舰店】</span>
+              <span>偷偷告诉您！10月狂欢将于10月10日，火爆开启！更有定金膨胀。</span>
+              <span v-if="editForm.type === 1" style="color: #DCDFE6;">退订回复T。</span>
+            </p>
+            <p v-if="editForm.type === 1" class="notice"> 注：灰色部分不用填写，系统自动添加。普通短信70字符，长短信67字符为一条计费。</p>
+            <p v-if="editForm.type === 2" class="notice"> 注：灰色部分不用填写，系统自动添加。每条闪信内容不能超过67个字符，67个字符（含以下）为一条计费。</p>
           </el-form-item>
           <el-form-item label="是否审核通过" :label-width="formLabelWidth">
             <el-switch
@@ -552,5 +560,16 @@
   }
   .inputStyle{
     width: 15%;
+  }
+  .content {
+    color: #333;
+    font-size: 0;
+  }
+  .auto-text {
+    font-size: 14px;
+    color: #ccc;
+  }
+  .text {
+    font-size: 14px;
   }
 </style>

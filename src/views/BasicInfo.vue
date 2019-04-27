@@ -35,7 +35,7 @@
           <el-upload
             :headers="ruleForm.myHeaders"
             class="avatar-uploader"
-            action="http://test.bpx.adbpx.com/manage/upload/image"
+            action="http://api.51miaozhuan.com/manage/upload/image"
             :limit="1"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
@@ -88,7 +88,7 @@
           mobile: '',
           options: provinceAndCityData,
           selectedOptions: [],
-          address: '',
+          address: ''
         },
         formLabelWidth: '130px',
         rules: {
@@ -116,6 +116,7 @@
           this.ruleForm.contact = result.data.data.contact;
           this.ruleForm.selectedOptions = [result.data.data.province_id, result.data.data.city_id];
           this.ruleForm.address = result.data.data.address;
+          this.ruleForm.trade_id = result.data.data.trade_id;
           this.ruleForm.imageUrl = result.data.data.logo_url;
         } else if(result.data.code === 403){
           this.$noAuth(result.data.msg);
@@ -146,6 +147,7 @@
               contact: this.ruleForm.contact,
               province_id: this.ruleForm.selectedOptions[0],
               city_id: this.ruleForm.selectedOptions[1],
+              trade_id: this.ruleForm.trade_id,
               address: this.ruleForm.address,
               logo_url: this.ruleForm.imageUrl,
             };

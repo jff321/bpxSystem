@@ -3,7 +3,7 @@
     <div class="navigation">盒子管理/盒子列表</div>
     <!--搜索-->
     <div class="my-3">
-      <el-input class="w-25" v-model="input" placeholder="请输入盒子名称/编码/sim编码" @keyup.enter.native="query"></el-input>
+      <el-input class="w-25" v-model="input" placeholder="请输入盒子名称/编码/KEY" @keyup.enter.native="query"></el-input>
       <el-button type="primary" class="mx-3" @click="query">查询</el-button>
       <el-button type="success" @click="openAddDialog">新增</el-button>
     </div>
@@ -29,13 +29,13 @@
         </el-table-column>
         <el-table-column
           prop="code"
-          label="盒子编码"
+          label="盒子ID"
           sortable
         >
         </el-table-column>
         <el-table-column
           prop="sim"
-          label="盒子sim编码"
+          label="盒子SIM"
           sortable
         >
         </el-table-column>
@@ -96,10 +96,10 @@
         <!--<el-form-item label="盒子用户" :label-width="formLabelWidth" prop="uname">-->
         <!--<el-input v-model="addForm.uname" autocomplete="off" class="w-75"></el-input>-->
         <!--</el-form-item>-->
-        <el-form-item label="盒子编码" :label-width="formLabelWidth" prop="code">
+        <el-form-item label="盒子ID" :label-width="formLabelWidth" prop="code">
           <el-input v-model="addForm.code" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="盒子sim编码" :label-width="formLabelWidth" prop="sim">
+        <el-form-item label="盒子SIM" :label-width="formLabelWidth" prop="sim">
           <el-input v-model="addForm.sim" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="盒子状态" :label-width="formLabelWidth">
@@ -125,10 +125,10 @@
         <!--<el-form-item label="盒子用户" :label-width="formLabelWidth" prop="uname">-->
         <!--<el-input v-model="addForm.uname" autocomplete="off" class="w-75"></el-input>-->
         <!--</el-form-item>-->
-        <el-form-item label="盒子编码" :label-width="formLabelWidth" prop="code">
+        <el-form-item label="盒子ID" :label-width="formLabelWidth" prop="code">
           <el-input v-model="editForm.code" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
-        <el-form-item label="盒子sim编码" :label-width="formLabelWidth" prop="sim">
+        <el-form-item label="盒子SIM" :label-width="formLabelWidth" prop="sim">
           <el-input v-model="editForm.sim" autocomplete="off" class="w-75"></el-input>
         </el-form-item>
         <el-form-item label="盒子状态" :label-width="formLabelWidth">
@@ -167,7 +167,7 @@
         currentPage: 1,
         pageSize: 10,
         total: 0,
-        formLabelWidth: '180px',
+        formLabelWidth: '200px',
         addVisible: false,
         addForm: {
           name: '',
@@ -181,11 +181,11 @@
             { min: 2, max: 15, message: '长度在 2 到 15 个字符', trigger: 'blur' }
           ],
           code: [
-            { required: true, message: '请输入盒子编码', trigger: 'blur' },
+            { required: true, message: '请输入盒子ID', trigger: 'blur' },
             { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
           ],
           sim: [
-            { required: true, message: '请输入盒子sim编号', trigger: 'blur' },
+            { required: true, message: '请输入盒子SIM', trigger: 'blur' },
             { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
           ]
         },
@@ -204,11 +204,11 @@
             { min: 2, max: 15, message: '长度在 2 到 15 个字符', trigger: 'blur' }
           ],
           code: [
-            { required: true, message: '请输入盒子编码', trigger: 'blur' },
+            { required: true, message: '请输入盒子ID', trigger: 'blur' },
             { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
           ],
           sim: [
-            { required: true, message: '请输入盒子sim编号', trigger: 'blur' },
+            { required: true, message: '请输入盒子SIM', trigger: 'blur' },
             { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
           ]
         },

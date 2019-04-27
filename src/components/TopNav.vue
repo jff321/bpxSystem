@@ -2,24 +2,29 @@
   <div class="w-100 head d-flex justify-content-center align-items-center">
     <div class="d-flex flex-grow-1">
       <div class="headLogo d-flex justify-content-center align-items-center border-right" @click="toIndex">
-        <img class="logo rounded" :src="logo_url" alt="LOGO">
+        <img class="logo rounded-circle" :src="logo_url" alt="LOGO">
       </div>
       <div class="company fontColor">
         <span>{{company}}({{name}})</span>
       </div>
     </div>
     <div class="mx-5">
-      <el-dropdown>
+      <el-dropdown v-if="group_id === 4">
         <span class="el-dropdown-link d-inline-block d-flex align-items-center fontColor" style="height: 65px;cursor: pointer">
          <i class="fa fa-rmb icon"></i> 账户余额 : {{balance}}元
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>短信单价：0.09元/条</el-dropdown-item>
-          <el-dropdown-item>闪信单价：0.20元/分</el-dropdown-item>
-          <el-dropdown-item>通话单价：0.12元/条</el-dropdown-item>
-          <el-dropdown-item>匹配单价：0.10元/条</el-dropdown-item>
+          <el-dropdown-item>短信单价：{{setting.sms}}元/条</el-dropdown-item>
+          <el-dropdown-item>闪信单价：{{setting.fms}}元/分</el-dropdown-item>
+          <el-dropdown-item>通话单价：{{setting.tel}}元/条</el-dropdown-item>
+          <el-dropdown-item>匹配单价：{{setting.mate}}元/条</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+      <div v-else class="fontColor" style="font-size: 14px;">
+        <span class="el-dropdown-link d-inline-block d-flex align-items-center fontColor" style="height: 65px;">
+         <i class="fa fa-rmb icon"></i> 账户余额 : {{balance}}元
+        </span>
+      </div>
     </div>
     <div class="mr-5">
       <el-dropdown @command="handleCommand">
@@ -48,6 +53,12 @@
 </template>
 
 <script>
+  import {
+    logo
+  } from '@/apis/login'
+  import {
+    counts
+  } from '@/apis/index'
   export default {
     name: 'topNav',
     data(){
@@ -57,7 +68,20 @@
         company: localStorage.getItem('company'),
         logo_url: localStorage.getItem('logo_url'),
         mobile: localStorage.getItem('mobile'),
-        balance: localStorage.getItem('balance')
+        balance: localStorage.getItem('balance'),
+        group_id: Number(localStorage.getItem('group_id')),
+        setting: JSON.parse(localStorage.getItem('setting'))
+      }
+    },
+    async mounted(){
+      const result = await logo(document.domain, 2);
+      const res = await counts();
+      this.balance = res.data.data.balance;
+      if(result.data.code === 200){
+        this.logo_url = result.data.data.logo.logo_url;
+        this.company = result.data.data.logo.company;
+      } else {
+        this.$status(result.data.msg);
       }
     },
     methods: {
@@ -96,7 +120,7 @@
     padding: 15px 0px;
   }
   .company{
-    width: 200px;
+    width: 500px;
     height: 35px;
     line-height: 35px;
     margin-left: 30px;
