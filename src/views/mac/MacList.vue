@@ -3,7 +3,7 @@
     <div>MAC列表</div>
     <!--筛选-->
     <div>
-      <el-select clearable class="mt-3 mr-4" v-model="code" placeholder="请选择" @change="changeCode">
+      <el-select clearable class="mt-3 mr-4" v-model="code" placeholder="请选择">
         <el-option
           v-for="item in codes"
           :key="item.code"
@@ -97,8 +97,9 @@
           @change = "changeDate"
         >
         </el-date-picker>
-        <el-button type="primary" @click="query">查询</el-button>
-        <el-button type="success" @click="exportMacExcel">导出excel</el-button>
+        <el-button type="primary" class="mr-3" @click="query">查询</el-button>
+        <el-button type="success" class="mr-3" @click="openAddDialog">新增</el-button>
+        <el-button type="warning" @click="exportMacExcel">导出excel</el-button>
         <!--<download-excel-->
         <!--class="d-inline-block ml-4"-->
         <!--:data = "list"-->
@@ -195,6 +196,44 @@
         </a>
       </span>
     </el-dialog>
+    <!--新增对话框-->
+    <el-dialog title="新增MAC" status-icon :visible.sync="addVisible" width="700px" center :before-close="handleAddClose">
+      <el-form :model="addForm" :rules="addRules" ref="addForm">
+        <el-form-item label="MAC名称" :label-width="formLabelWidth" prop="mac">
+          <el-input v-model="addForm.mac" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="盒子ID" :label-width="formLabelWidth" class="w-75" prop="code">
+          <el-select clearable v-model="addForm.code" placeholder="请选择">
+            <el-option
+              v-for="item in addForm.codes"
+              :key="item.code"
+              :label="item.name"
+              :value="item.code"
+            >
+              <!-- 插槽，用于放 option 和 option-group -->
+              <slot>
+                <span style="float: left">{{ item.name }}</span>
+                <span v-if="item.online === 0" style="margin-top:13px;float: right;width: 8px;height: 8px;background-color: #999;border-radius: 50%;"></span>
+                <span v-if="item.online === 1" style="margin-top:13px;float: right;width: 8px;height: 8px;background-color: #65B7AC;border-radius: 50%;"></span>
+              </slot>
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="距离" :label-width="formLabelWidth" class="w-75">
+          <el-input type="number" v-model="addForm.range" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号" :label-width="formLabelWidth" prop="phone" required>
+          <el-input v-model.number="addForm.phone" autocomplete="off" class="w-75" maxlength="11"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号型号" :label-width="formLabelWidth" prop="phoneType">
+          <el-input v-model="addForm.phoneType" autocomplete="off" class="w-75"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addClose('addForm')">取 消</el-button>
+        <el-button type="primary" @click="submitAdd('addForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -205,7 +244,8 @@
   // Vue.component('downloadExcel', JsonExcel);
   import {
     mac,
-    exportMac
+    exportMac,
+    addMac
   } from "@/apis/mac";
   import {
     boxs,
@@ -217,6 +257,19 @@
       Maps
     },
     data(){
+      var checkPhone = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('手机号不能为空'));
+        } else {
+          const reg = /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/;
+          // console.log(reg.test(value));
+          if (reg.test(value)) {
+            callback();
+          } else {
+            return callback(new Error('请输入正确的手机号'));
+          }
+        }
+      };
       return {
         id: '',
         list: [],
@@ -297,6 +350,28 @@
         exportLink: '',
         macText: '数据获取中...',
         isLoading: true,
+        formLabelWidth: '200px',
+        addVisible: false,
+        addForm: {
+          mac: '',
+          phone: '',
+          codes: [],
+          code: '',
+          range: '',
+          phoneType: ''
+        },
+        addRules: {
+          mac: [
+            { required: true, message: '请输入MAC', trigger: 'blur' },
+            { min: 12, max: 17, message: '长度在 12 到 17 个字符', trigger: 'blur'  }
+          ],
+          phone: [
+            { validator: checkPhone, trigger: 'blur' }
+          ],
+          code: [
+            { required: true, message: '请选择盒子ID', trigger: 'blur' }
+          ],
+        }
       }
     },
     async mounted(){
@@ -321,6 +396,7 @@
             online: item.online
           })
         });
+        this.addForm.codes = this.codes;
       } else {
         this.$status(result.data.msg);
       }
@@ -409,14 +485,6 @@
       query(){
         this.getDetailList();
       },
-      changeCode(){
-        if(this.addForm.date.length > 0){
-          this.getMayData();
-        } else {
-          this.addForm.y_nums = 0;
-          this.addForm.money = '0.00';
-        }
-      },
       // 地图上筛选创建时间
       changeSelDate(val){
         // console.log(val);
@@ -470,7 +538,59 @@
         } else {
           this.$status(result.data.msg);
         }
-      }
+      },
+      // 新增对话框
+      openAddDialog(){
+        this.addVisible = true;
+        this.addForm.mac = '';
+        this.addForm.phone = '';
+        this.addForm.range = '';
+        this.addForm.code = '';
+        this.addForm.phoneType = '';
+      },
+      // 新增弹框取消按钮
+      addClose(formName){
+        this.addVisible = false;
+        this.$refs[formName].clearValidate();
+      },
+      // 新增弹框关闭按钮
+      handleAddClose(){
+        this.addClose('addForm');
+      },
+      // 新增确认框
+      submitAdd(formName){
+        this.$refs[formName].validate((valid) => {
+          // if(!(/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/.test(this.addForm.phone))){
+          //   this.$status('请输入正确的手机号');
+          //   return false;
+          // } else {
+          //   return true;
+          // }
+          if (valid) {
+            let params = {
+              mac: this.addForm.mac,
+              phone: this.addForm.phone,
+              phone_name: this.addForm.phoneType,
+              box_id: this.addForm.code,
+              range: this.addForm.range
+            };
+            addMac(params).then((result)=>{
+              if(result.data.code === 200){
+                this.getDetailList();
+                this.$message({
+                  message: result.data.msg,
+                  type: 'success'
+                });
+                this.addVisible = false;
+              } else {
+                this.$status(result.data.msg);
+              }
+            });
+          } else {
+            return false;
+          }
+        });
+      },
     }
   }
 </script>
@@ -603,5 +723,15 @@
       background: radial-gradient(2vmin circle at 75% 70%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%), radial-gradient(2vmin circle at 63% 72%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%), radial-gradient(2vmin circle at 56% 86%, #ffffff 10%, #20ff4d 30%, rgba(255, 255, 255, 0) 100%);
       opacity: 0;
     }
+  }
+</style>
+<style>
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
   }
 </style>

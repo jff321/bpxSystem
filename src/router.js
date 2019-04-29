@@ -176,6 +176,14 @@ export default new Router({
         requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
       },
       component: () => import('./views/mac/MacList.vue')
+    },
+    {
+      path: '/mates/tellist',
+      name: 'allPhone',
+      meta: {
+        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+      },
+      component: () => import('./views/mates/AllPhone.vue')
     }
   ]
 })

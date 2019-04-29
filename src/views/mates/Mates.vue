@@ -93,6 +93,9 @@
         </el-date-picker>
         <el-button type="primary" @click="query">查询</el-button>
         <el-button type="success" class="ml-4" @click="openAddDialog">新增匹配</el-button>
+        <!--<router-link to="/mates/allPhone">-->
+          <!--<el-button type="info" class="ml-4" @click="openAddDialog">所有手机号</el-button>-->
+        <!--</router-link>-->
       </div>
     </div>
     <!--表格-->
@@ -684,7 +687,7 @@
       handleDelete(index, boxId) {
         let params = {
           id: boxId
-        }
+        };
         this.$confirm('确定删除该条数据?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',

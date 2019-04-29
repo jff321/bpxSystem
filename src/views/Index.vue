@@ -14,16 +14,6 @@
             <p class="flow">{{user_num}}</p>
           </div>
         </div>
-        <!--账户余额-->
-        <div class="mt-3 w-25 mr-4">
-          <div class="shadow p-5 cardHeight">
-            <p class="font-weight-bold">
-              <img src="../assets/yue.png" alt="" style="width: 35px;height: 35px;">
-              账户余额
-            </p>
-            <p class="flow">{{balance}}</p>
-          </div>
-        </div>
         <!--累计充值-->
         <div class="mt-3 w-25 mr-4">
           <div class="shadow p-5 cardHeight">
@@ -35,13 +25,23 @@
           </div>
         </div>
         <!--累计支出-->
-        <div class="mt-3 w-25">
+        <div class="mt-3 w-25 mr-4">
           <div class="shadow p-5 cardHeight">
             <p class="font-weight-bold">
               <img src="../assets/zhichu.png" alt="" style="width: 35px;height: 35px;">
               累计支出
             </p>
             <p class="flow">{{pays}}</p>
+          </div>
+        </div>
+        <!--账户余额-->
+        <div class="mt-3 w-25">
+          <div class="shadow p-5 cardHeight">
+            <p class="font-weight-bold">
+              <img src="../assets/yue.png" alt="" style="width: 35px;height: 35px;">
+              账户余额
+            </p>
+            <p class="flow">{{balance}}</p>
           </div>
         </div>
       </div>

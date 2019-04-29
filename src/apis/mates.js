@@ -53,3 +53,15 @@ export async function  mateDetailMac (id, start_date, end_date, keys){
   const result = await axios.get(`manage/mates/outmate?id=${id}&start_date=${start_date}&end_date=${end_date}&keys=${keys}&page=all&limit=all`);
   return result ? result : false
 }
+
+// 所有手机号
+export async function  allPhone (start_date, end_date, keys, page, limit){
+  const result = await axios.get(`manage/mates/tellist?start_date=${start_date}&end_date=${end_date}&keys=${keys}&page=${page}&limit=${limit}`);
+  return result ? result : false
+}
+
+// 导出手机号
+export async function  exportAllPhone (start_date, end_date, keys, page, limit){
+  const result = await axios.get(`manage/mates/outtel?start_date=${start_date}&end_date=${end_date}&keys=${keys}&page=${page}&limit=${limit}`);
+  return result ? result : false
+}

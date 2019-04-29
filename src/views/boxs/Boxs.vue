@@ -72,7 +72,7 @@
           <template slot-scope="scope">
             <el-button
               size="mini"
-              @click="handleEditShow(scope.$index, scope.row.id)">编辑</el-button>
+              @click="handleEditShow(scope.row.id)">编辑</el-button>
             <el-button
               size="mini"
               @click="handleDelete(scope.$index, scope.row.id)"
@@ -195,7 +195,7 @@
             { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
           ]
         },
-        boxEditIndex: 0,
+        // boxEditIndex: 0,
         boxEditId: 0,
         editVisible: false,
         editForm: {
@@ -292,8 +292,8 @@
         });
       },
       // 编辑显示对话框
-      async handleEditShow(index, boxId) {
-        this.boxEditIndex = index;
+      async handleEditShow(boxId) {
+        // this.boxEditIndex = index;
         this.boxEditId = boxId;
         const result = await editBoxShow(boxId);
         if (result.data.code === 200) {
@@ -322,10 +322,10 @@
                   message: result.data.msg,
                   type: 'success'
                 });
-                this.list[this.boxEditIndex].name = this.editForm.name;
-                this.list[this.boxEditIndex].code = this.editForm.code;
-                this.list[this.boxEditIndex].sim = this.editForm.sim;
-                this.list[this.boxEditIndex].status = this.editForm.status;
+                this.list.find(x => x.id === this.boxEditId).name = this.editForm.name;
+                this.list.find(x => x.id === this.boxEditId).code = this.editForm.code;
+                this.list.find(x => x.id === this.boxEditId).sim = this.editForm.sim;
+                this.list.find(x => x.id === this.boxEditId).status = this.editForm.status;
                 this.editVisible = false;
               } else {
                 this.$status(result.data.msg);

@@ -186,16 +186,16 @@
         <template slot-scope="scope" class="text-left border">
           <el-button
             size="mini"
-            @click="handleRecharge(scope.$index, scope.row.id)">充值</el-button>
+            @click="handleRecharge(scope.row.id)">充值</el-button>
           <el-button
             size="mini"
             style="margin-right: 10px;"
-            @click="handleEditShow(scope.$index, scope.row.id)">编辑</el-button>
+            @click="handleEditShow(scope.row.id)">编辑</el-button>
           <el-button
             size="mini"
             style="margin-right: 10px;"
             class="mt-2 ml-0"
-            @click="handleSet(scope.$index, scope.row.id)">设置</el-button>
+            @click="handleSet(scope.row.id)">设置</el-button>
           <el-button
             size="mini"
             class="mt-2 ml-0"
@@ -205,7 +205,7 @@
             size="mini"
             class="mt-2 ml-0"
             style="margin-right: 10px;"
-            @click="handleBindBox(scope.$index, scope.row.id)">绑定盒子</el-button>
+            @click="handleBindBox(scope.row.id)">绑定盒子</el-button>
           <el-button
             size="mini"
             class="mt-2 ml-0"
@@ -215,7 +215,7 @@
             size="mini"
             class="mt-2 ml-0"
             style="margin-right: 10px;"
-            @click="handleAgentPwd(scope.$index, scope.row.id)">修改密码</el-button>
+            @click="handleAgentPwd(scope.row.id)">修改密码</el-button>
           <el-button
             class="mt-2 ml-0"
             size="mini"
@@ -707,15 +707,15 @@
           ],
           trade_id: '',
         },
-        userPayIndex: 0,
+        // userPayIndex: 0,
         userPayId: 0,
         userEditId: 0,
-        userEditIndex: 0,
-        userSetIndex: 0,
+        // userEditIndex: 0,
+        // userSetIndex: 0,
         userSetId: 0,
         userRechargeId: 0,
         userRechargeIndex: 0,
-        userPwdIndex: 0,
+        // userPwdIndex: 0,
         userPwdId: 0,
         formLabelWidth: '200px',
         rules: {
@@ -968,7 +968,7 @@
         },
         bindVisible: false,
         userBindId: 0,
-        userBindIndex: 0,
+        // userBindIndex: 0,
         bindForm: {
           name: '',
           code: '',
@@ -1107,8 +1107,8 @@
         this.getUserList()
       },
       // 编辑对话框
-      async handleEditShow(index, userId) {
-        this.userEditIndex = index;
+      async handleEditShow(userId) {
+        // this.userEditIndex = index;
         this.userEditId = userId;
         const result = await showUser(userId);
         if (result.data.code === 200) {
@@ -1153,13 +1153,13 @@
                   message: result.data.msg,
                   type: 'success'
                 });
-                this.list[this.userEditIndex].company = this.ruleForm.company;
-                this.list[this.userEditIndex].logo_url = this.ruleForm.imageUrl;
-                this.list[this.userEditIndex].contact = this.ruleForm.contact;
-                this.list[this.userEditIndex].address = this.ruleForm.address;
-                this.list[this.userEditIndex].status = this.ruleForm.status;
-                this.list[this.userEditIndex].is_outcall = this.ruleForm.is_outcall;
-                this.list[this.userEditIndex].trade_id = this.ruleForm.trade_id;
+                this.list.find(x => x.id === this.userEditId).company = this.ruleForm.company;
+                this.list.find(x => x.id === this.userEditId).logo_url = this.ruleForm.imageUrl;
+                this.list.find(x => x.id === this.userEditId).contact = this.ruleForm.contact;
+                this.list.find(x => x.id === this.userEditId).address = this.ruleForm.address;
+                this.list.find(x => x.id === this.userEditId).status = this.ruleForm.status;
+                this.list.find(x => x.id === this.userEditId).is_outcall = this.ruleForm.is_outcall;
+                this.list.find(x => x.id === this.userEditId).trade_id = this.ruleForm.trade_id;
                 this.dialogFormVisible = false;
               } else {
                 this.$status(result.data.msg);
@@ -1197,8 +1197,8 @@
         });
       },
       // 设置显示
-      async handleSet(index, userId){
-        this.userSetIndex = index;
+      async handleSet(userId){
+        // this.userSetIndex = index;
         this.userSetId = userId;
         const result = await showUser(userId);
         if (result.data.code === 200) {
@@ -1231,10 +1231,10 @@
                   message: result.data.msg,
                   type: 'success'
                 });
-                this.list[this.userSetIndex].sms = this.setForm.sms;
-                this.list[this.userSetIndex].fms = this.setForm.fms;
-                this.list[this.userSetIndex].mate = this.setForm.mate;
-                this.list[this.userSetIndex].tel = this.setForm.tel;
+                this.list.find(x => x.id === this.userSetId).sms = this.setForm.sms;
+                this.list.find(x => x.id === this.userSetId).fms = this.setForm.fms;
+                this.list.find(x => x.id === this.userSetId).mate = this.setForm.mate;
+                this.list.find(x => x.id === this.userSetId).tel = this.setForm.tel;
                 this.setDialogVisible = false;
               } else {
                 this.$status(result.data.msg);
@@ -1246,10 +1246,10 @@
         });
       },
       // 修改密码显示
-      async handleAgentPwd(index, userId){
+      async handleAgentPwd(userId){
         this.pwdForm.pwd = '';
         this.pwdForm.epwd = '';
-        this.userPwdIndex = index;
+        // this.userPwdIndex = index;
         this.userPwdId = userId;
         const result = await showUser(userId);
         if (result.data.code === 200) {
@@ -1333,9 +1333,9 @@
         }
       },
       // 绑定盒子对话框
-      handleBindBox(index, userId){
+      handleBindBox(userId){
         this.userBindId = userId;
-        this.userBindIndex = index;
+        // this.userBindIndex = index;
         this.bindVisible = true;
         this.bindForm.name = '';
         this.bindForm.code = '';
@@ -1416,11 +1416,11 @@
         this.pwdClose('pwdForm');
       },
       // 充值显示
-      async handleRecharge(index, userId){
+      async handleRecharge(userId){
         this.buttonDisabled = false;
         this.payText = '充值';
         this.payForm.pay = '';
-        this.userPayIndex = index;
+        // this.userPayIndex = index;
         this.userPayId = userId;
         const result = await showUser(userId);
         if (result.data.code === 200) {
@@ -1449,7 +1449,7 @@
                   message: result.data.msg,
                   type: 'success'
                 });
-                this.list[this.userPayIndex].balance = Number(this.list[this.userPayIndex].balance) +  Number(this.payForm.pay);
+                this.list.find(x => x.id === this.userPayId).balance = Number(this.list.find(x => x.id === this.userPayId).balance) +  Number(this.payForm.pay);
                 this.buttonDisabled = false;
                 this.payText = '充值';
                 // console.log(this.list[this.userPayIndex].balance);

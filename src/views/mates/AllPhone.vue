@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="navigation">所有手机号</div>
     <!--搜索-->
     <div class="mt-3">
       <div>
@@ -24,16 +25,8 @@
           @change = "changeDate"
         >
         </el-date-picker>
-        <el-button type="primary" @click="query">查询</el-button>
+        <el-button type="primary" class="mx-3" @click="query">查询</el-button>
         <el-button type="success" @click="exportDetailMac">导出excel</el-button>
-        <!--<download-excel-->
-          <!--class="d-inline-block ml-4"-->
-          <!--:data = "list"-->
-          <!--:fields = "json_fields"-->
-          <!--name = "匹配列表.xls">-->
-          <!--&lt;!&ndash; 上面可以自定义自己的样式，还可以引用其他组件button &ndash;&gt;-->
-          <!--<el-button type="success">导出</el-button>-->
-        <!--</download-excel>-->
       </div>
     </div>
     <!--表格-->
@@ -122,7 +115,7 @@
       title="提示"
       :visible.sync="macVisible"
       width="20%"
-      >
+    >
       <span>{{macText}}</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="macVisible = false">取 消</el-button>
@@ -131,40 +124,24 @@
         </a>
       </span>
     </el-dialog>
-    <!--修改手机号-->
-    <el-dialog
-      title="修正手机号"
-      :visible.sync="phoneVisible"
-      width="20%"
-    >
-      <!--<el-form-item label="手机号" :label-width="formLabelWidth" prop="phone">-->
-        <el-input v-model="phone" autocomplete="off" placeholder="请输入修正手机号"></el-input>
-      <!--</el-form-item>-->
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="phoneVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmPhone(phone)">确 定</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-  // import Vue from 'vue'
-  // import JsonExcel from 'vue-json-excel'
-  // Vue.component('downloadExcel', JsonExcel);
-  import {
-    details,
-    mateDetailMac,
-    modify
-  } from "@/apis/mates";
+  import { allPhone, exportAllPhone } from '@/apis/mates'
   export default {
-    name: "Details",
+    name: "allPhone",
     data(){
       return {
         group_id: Number(localStorage.getItem('group_id')),
         list: [],
         loading: true,
         input: '',
+        start_date: '',
+        end_date: '',
+        currentPage: 1,
+        pageSize: 10,
+        total: 0,
         date: '',
         pickerOptions: {
           shortcuts: [
@@ -197,60 +174,19 @@
             }
           ]
         },
-        currentPage: 1,
-        pageSize: 10,
-        total: 0,
-        start_date: '',
-        end_date: '',
-        // json_fields: {
-        //   "MAC": "mac",    //常规字段
-        //   "手机号": "phone",
-        //   "机型": "phone_name",
-        //   "距离(米)": "range",
-        //   // "停留时间(分)": "stoptime / 60",
-        //   "停留时间(分)": {
-        //     field: "stoptime",
-        //     //自定义回调函数
-        //     callback: value => {
-        //       return `${Math.ceil(value / 60)}`;
-        //     }
-        //   },
-        //   "是否通话": {
-        //     field: "is_call",
-        //     callback: value => {
-        //       return value ? '是' : '否';
-        //     }
-        //   },
-        //   "创建时间": "times",
-        //   "更新时间": "update_time"
-        // },
-        // json_meta: [
-        //   [
-        //     {
-        //       " key ": " charset ",
-        //       " value ": " utf- 8 "
-        //     }
-        //   ]
-        // ],
         macVisible: false,
         exportLink: '',
         macText: '数据获取中...',
         isLoading: true,
-        phoneVisible: false,
-        // macIndex: '',
-        macId: 0,
-        id: 0,
-        phone: '',
-        formLabelWidth: '120px'
       }
     },
     mounted(){
-      this.getDetailList();
+      this.getAllPhone();
     },
     methods: {
-      async getDetailList(){
-        // console.log('this.end_date:', this.end_date);
-        const result = await details(this.$route.query.id, this.input, this.currentPage, this.pageSize, this.start_date, this.end_date);
+      // 匹配列表
+      async getAllPhone(){
+        const result = await allPhone(this.start_date, this.end_date, this.input, this.currentPage, this.pageSize);
         this.loading = false;
         if(result.data.code === 200){
           result.data.data.list.forEach(function (item) {
@@ -271,16 +207,8 @@
           this.$status(result.data.msg);
         }
       },
-      // 分页
-      handleSizeChange(val) {
-        // console.log(`每页 ${val} 条`);
-        this.pageSize = val;
-        this.getDetailList()
-      },
-      handleCurrentChange(val) {
-        // console.log(`当前 ${val} 页`);
-        this.currentPage = val;
-        this.getDetailList()
+      query(){
+        this.getAllPhone()
       },
       // 查询筛选日期
       changeDate(val){
@@ -294,17 +222,14 @@
         }
         this.getDetailList();
       },
-      // 查询
-      query(){
-        this.getDetailList();
-      },
+      // 导出手机号
       async exportDetailMac(){
         this.macVisible = true;
         document.getElementById('test').onclick = function(ev){
           ev.preventDefault();
           // console.log('阻止a标签的默认行为');
         };
-        const result = await mateDetailMac(this.$route.query.id, this.start_date, this.end_date, this.input);
+        const result = await exportAllPhone(this.start_date, this.end_date, this.input, this.currentPage, this.pageSize);
         this.macText = '数据获取完毕';
         this.isLoading = false;
         document.getElementById('test').onclick = function(ev){
@@ -317,31 +242,17 @@
           this.$status(result.data.msg);
         }
       },
-      modifyPhone(index, mac_id, id){
-        this.phoneVisible = true;
-        // this.macIndex = index; // 用于保存
-        this.macId = mac_id;
-        this.id = id;
+      // 分页
+      handleSizeChange(val) {
+        // console.log(`每页 ${val} 条`);
+        this.pageSize = val;
+        this.getDetailList()
       },
-      async confirmPhone(phone){
-        if(!(/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/.test(phone))){
-          this.$status('请输入正确的手机号');
-        } else {
-          return false;
-        }
-        let params = {
-          id: this.macId,
-          phone: phone
-        };
-        const result = await modify(params);
-        if(result.data.code === 200){
-          this.phoneVisible = false;
-          this.list.find(x => x.id === this.id).phone = phone;
-        } else {
-          this.phoneVisible = false;
-          this.$status(result.data.msg);
-        }
-      }
+      handleCurrentChange(val) {
+        // console.log(`当前 ${val} 页`);
+        this.currentPage = val;
+        this.getDetailList()
+      },
     }
   }
 </script>

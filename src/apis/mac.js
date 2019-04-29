@@ -6,6 +6,12 @@ export async function  mac (box_id, start_date, end_date, keys, page, limit){
   return result ? result : false
 }
 
+// 添加MAC
+export async function  addMac (data){
+  const result = await axios.post(`manage/mates/addmac`, data);
+  return result ? result : false
+}
+
 // 查询盒子采集数据
 export async function  todaymac (box_id, start_date, end_date){
   const result = await axios.get(`manage/mates/todaymac?box_id=${box_id}&start_date=${start_date}&end_date=${end_date}`);

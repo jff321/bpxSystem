@@ -103,7 +103,7 @@
           <template slot-scope="scope">
             <el-button
               size="mini"
-              @click="handleEdit(scope.$index, scope.row.id)">编辑</el-button>
+              @click="handleEdit(scope.row.id)">编辑</el-button>
             <el-button
               size="mini"
               type="danger"
@@ -323,7 +323,7 @@
             { required: true, message: '请输入短信内容', trigger: 'blur' }
           ]
         },
-        editIndex: 0,
+        // editIndex: 0,
         editId: 0,
         editVisible: false,
         editForm: {
@@ -483,8 +483,8 @@
         this.editClose('editForm');
       },
       // 编辑对话框
-      async handleEdit(index, id) {
-        this.editIndex = index;
+      async handleEdit(id) {
+        // this.editIndex = index;
         this.editId = id;
         const result = await showSms(id);
         if (result.data.code === 200) {
@@ -516,11 +516,11 @@
                   message: result.data.msg,
                   type: 'success'
                 });
-                this.list[this.editIndex].types = this.editForm.type;
-                this.list[this.editIndex].title = this.editForm.title;
-                this.list[this.editIndex].sign = this.editForm.sign;
-                this.list[this.editIndex].content = this.editForm.content;
-                this.list[this.editIndex].status = this.editForm.status;
+                this.list.find(x => x.id === this.editId).types = this.editForm.type;
+                this.list.find(x => x.id === this.editId).title = this.editForm.title;
+                this.list.find(x => x.id === this.editId).sign = this.editForm.sign;
+                this.list.find(x => x.id === this.editId).content = this.editForm.content;
+                this.list.find(x => x.id === this.editId).status = this.editForm.status;
                 this.editVisible = false;
               } else {
                 this.$status(result.data.msg);

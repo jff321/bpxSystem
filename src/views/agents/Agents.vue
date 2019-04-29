@@ -132,11 +132,11 @@
           <el-button
             size="mini"
             class="mt-2 ml-0"
-            @click="handleEditShow(scope.$index, scope.row.id)">编辑</el-button>
+            @click="handleEditShow(scope.row.id)">编辑</el-button>
           <el-button
             size="mini"
             class="mt-2"
-            @click="handleBindBox(scope.$index, scope.row.id)">绑定盒子</el-button>
+            @click="handleBindBox(scope.row.id)">绑定盒子</el-button>
           <el-button
             size="mini"
             class="mt-2 ml-0"
@@ -634,7 +634,7 @@
         },
         bindVisible: false,
         userBindId: 0,
-        userBindIndex: 0,
+        // userBindIndex: 0,
         bindForm: {
           name: '',
           code: '',
@@ -1083,9 +1083,9 @@
         this.addForm.address = CodeToText[value[0]]+""+CodeToText[value[1]];
       },
       // 绑定盒子对话框
-      handleBindBox(index, userId){
+      handleBindBox(userId){
         this.userBindId = userId;
-        this.userBindIndex = index;
+        // this.userBindIndex = index;
         this.bindVisible = true;
         this.bindForm.name = '';
         this.bindForm.code = '';
